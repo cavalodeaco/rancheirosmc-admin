@@ -1,26 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { MantineProvider, Box } from "@mantine/core";
+import { theme } from "./theme";
+import { useThemeDetector } from "./utils/useThemeDetector";
+import { AuthenticationForm } from "./AuthenticationForm";
 
 function App() {
-  document.title = 'PPV Admin';
+  document.title = "PPV Admin";
+  const isDarkTheme = useThemeDetector();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MantineProvider
+      theme={{ ...theme, colorScheme: isDarkTheme ? "dark" : "light" }}
+      withGlobalStyles
+      withNormalizeCSS
+    >
+      <Box
+        sx={{
+          marginLeft: "auto",
+          marginRight: "auto",
+          maxWidth: 420,
+          paddingTop: 40,
+        }}
+      >
+        <AuthenticationForm />
+      </Box>
+    </MantineProvider>
   );
 }
 
