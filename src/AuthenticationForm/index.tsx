@@ -11,7 +11,7 @@ import {
   Stack,
 } from '@mantine/core';
 
-export function AuthenticationForm(props: PaperProps) {
+export default function AuthenticationForm(props: PaperProps) {
   const form = useForm({
     initialValues: {
       email: '',

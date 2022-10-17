@@ -2,7 +2,7 @@ import React from "react";
 import { MantineProvider, Box } from "@mantine/core";
 import { theme } from "./theme";
 import { useThemeDetector } from "./utils/useThemeDetector";
-import { AuthenticationForm } from "./AuthenticationForm";
+import AuthenticationForm from "./AuthenticationForm";
 
 function App() {
   document.title = "PPV Admin";
