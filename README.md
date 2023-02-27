@@ -7,3 +7,4 @@ To register the PWA during development, create a production build and serve it, 
 ```
 npm run build && serve -s build     
 ```
+
