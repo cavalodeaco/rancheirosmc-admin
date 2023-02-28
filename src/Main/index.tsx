@@ -5,22 +5,24 @@ import {
 } from "@mantine/core";
 import { Menu } from "../Menu";
 import { EnrollTable } from "../Enrolltable";
+import { UserTable } from "../UserTable";
 
 
 export default function Main() {
   const theme = useMantineTheme();
-  const [data, setData] = useState([]);
-console.log(JSON.stringify({
-  "SK": "373b1f7cdc8f540606891c43eb531b5148a78f68d3a455aa77a13b03d17e83e6",
-  "PK": "enroll-891ac671-7078-417b-bff1-88a5d0bb6e06"
-}));
+  const [enrollData, setEnrollData] = useState([]);
+  const [userData, setUserData] = useState([]);
+  const [isEnroll, setIsEnroll] = useState(false);
+  const [isUser, setIsUser] = useState(false);
+
   return (
     <AppShell
       navbar={
-        <Menu setData={setData} />
+        <Menu setEnrollData={setEnrollData} setUserData={setUserData} setIsEnroll={setIsEnroll} setIsUser={setIsUser} />
       }
     >
-      <EnrollTable data={data} />
+      {isEnroll && <EnrollTable data={enrollData} />}
+      {isUser && <UserTable data={userData} />}
     </AppShell>
   );
 }

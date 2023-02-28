@@ -64,30 +64,51 @@ const useStyles = createStyles((theme, _params, getRef) => {
   };
 });
 
-const data = [
-  {
-    link: '', label: 'Inscrições', icon: IconMotorbike, action: async (page: string = "") => {
-      return await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
-        headers: page ? {
+interface MenuProps {
+  setEnrollData: Function | any;
+  setUserData: Function | any;
+  setIsEnroll: Function | any;
+  setIsUser: Function | any;
+}
+
+export function Menu({ setEnrollData, setUserData, setIsEnroll, setIsUser }: MenuProps) {
+  const { classes, cx } = useStyles();
+  const [active, setActive] = useState('Inscrições');
+  const [enrollPage, setEnrollPage] = useState("");
+  const [userPage, setUserPage] = useState("");
+
+  const data = [
+    {
+      link: '', label: 'Inscrições', icon: IconMotorbike, action: async () => {
+        const enrolls = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+          headers: enrollPage ? {
+            "limit": "2",
+            "page": JSON.stringify(enrollPage)
+          } : { limit: "2" },
+        }) // add body
+          .then((response) => response.json())
+          .then((data) => data.message);
+        setIsEnroll(true);
+        setIsUser(false);
+        setEnrollPage(enrolls.page || "");
+        setEnrollData(enrolls.Items);
+      }
+    },
+    { link: '', label: 'Alunos', icon: IconUser, action: async () => {
+      const users = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`, {
+        headers: userPage ? {
           "limit": "2",
-          "page": JSON.stringify(page)
-        } : {limit: "2"},
+          "page": JSON.stringify(userPage)
+        } : { limit: "2" },
       }) // add body
         .then((response) => response.json())
         .then((data) => data.message);
-    }
-  },
-  { link: '', label: 'Alunos', icon: IconUser, action: () => console.log('Alunos') },
-];
-
-interface MenuProps {
-  setData: Function | any;
-}
-
-export function Menu({ setData }: MenuProps) {
-  const { classes, cx } = useStyles();
-  const [active, setActive] = useState('Billing');
-  const [ page, setPage ] = useState("");
+      setIsUser(true);
+      setIsEnroll(false);
+      setUserPage(users.page || "");
+      setUserData(users.Items);
+    }}
+  ];
 
   const links = data.map((item) => (
     <a
@@ -97,9 +118,7 @@ export function Menu({ setData }: MenuProps) {
       onClick={async (event) => {
         event.preventDefault();
         setActive(item.label);
-        const message = await item.action(page);
-        setPage(message.page||"");
-        setData(message.Items);
+        await item.action();
       }}
     >
       <item.icon />
