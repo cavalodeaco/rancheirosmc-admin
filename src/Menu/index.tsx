@@ -66,10 +66,15 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 const data = [
   {
-    link: '', label: 'Inscrições', icon: IconMotorbike, action: async () => {
-      return await fetch( `${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`)
-                    .then((response) => response.json())
-                    .then((data) => data.message.Items);;
+    link: '', label: 'Inscrições', icon: IconMotorbike, action: async (page: string = "") => {
+      return await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+        headers: page ? {
+          "limit": "2",
+          "page": JSON.stringify(page)
+        } : {limit: "2"},
+      }) // add body
+        .then((response) => response.json())
+        .then((data) => data.message);
     }
   },
   { link: '', label: 'Alunos', icon: IconUser, action: () => console.log('Alunos') },
@@ -79,9 +84,10 @@ interface MenuProps {
   setData: Function | any;
 }
 
-export function Menu({setData}: MenuProps) {
+export function Menu({ setData }: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState('Billing');
+  const [ page, setPage ] = useState("");
 
   const links = data.map((item) => (
     <a
@@ -91,8 +97,9 @@ export function Menu({setData}: MenuProps) {
       onClick={async (event) => {
         event.preventDefault();
         setActive(item.label);
-        const data = await item.action();
-        setData(data);
+        const message = await item.action(page);
+        setPage(message.page||"");
+        setData(message.Items);
       }}
     >
       <item.icon />
@@ -101,7 +108,7 @@ export function Menu({setData}: MenuProps) {
   ));
 
   return (
-    <Navbar height={700} width={{ sm: 300 }} p="md">
+    <Navbar height={"100vh"} width={{ sm: 300 }} p="md">
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
           <MantineLogo size={28} />
