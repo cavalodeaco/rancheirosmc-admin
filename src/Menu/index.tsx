@@ -66,12 +66,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
 });
 
 interface MenuProps {
-  setEnrollData: Function | any;
-  setUserData: Function | any;
   setIsEnroll: Function | any;
   setIsUser: Function | any;
-  setPagEnrollOnchange: Function | any;
-  setTotalEnrollPage: Function | any;
 }
 
 interface Enroll {
@@ -79,67 +75,30 @@ interface Enroll {
   page: any;
 }
 
-export function Menu({ setEnrollData, setPagEnrollOnchange, setTotalEnrollPage, setUserData, setIsEnroll, setIsUser }: MenuProps) {
+export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState('Métricas');
-  const [enrollPage, setEnrollPage] = useState("");
   const [userPage, setUserPage] = useState("");
-  
-  const [activeEnrollPage, setActiveEnrollPage] = useState(1);
-
-  async function getEnrollData() {
-    const enrolls = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
-      headers: enrollPage ? {
-        "limit": "10",
-        "page": JSON.stringify(enrollPage)
-      } : { limit: "10" },
-    }) // add body
-      .then((response) => response.json())
-      .then((data) => data.message);
-    return enrolls;
-  }
-
-  // function handleEnrollPageChange(page: number) {
-  //   setActiveEnrollPage(page); // change local page
-  //   setEnrollData(enrollsList[page - 1]); // change data on main table
-  // }
 
   const data = [
     {
-      link: '', label: 'Métricas', icon: IconHome, action: ()=> {
+      link: '', label: 'Métricas', icon: IconHome, action: () => {
         if (active != "Métricas") { // if not in the same page
           setIsEnroll(false);
           setIsUser(false);
-        } 
-      }
-    },
-    {
-      link: '', label: 'Inscrições', icon: IconMotorbike, action: async () => {
-        if (active != "Inscrições") { // if not in the same page
-          const enrolls:Enroll = await getEnrollData(); // get first data
-          // setEnrollsList([...enrollsList, enrolls.Items]);
-          setIsEnroll(true);
-          setIsUser(false);
-          setEnrollPage(enrolls.page || "");
-          setEnrollData(enrolls.Items);
-          setTotalEnrollPage()
         }
       }
     },
     {
+      link: '', label: 'Inscrições', icon: IconMotorbike, action: async () => {
+        setIsEnroll(true);
+        setIsUser(false);
+      }
+    },
+    {
       link: '', label: 'Alunos', icon: IconUser, action: async () => {
-        const users = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`, {
-          headers: userPage ? {
-            "limit": "10",
-            "page": JSON.stringify(userPage)
-          } : { limit: "10" },
-        }) // add body
-          .then((response) => response.json())
-          .then((data) => data.message);
-        setIsUser(true);
         setIsEnroll(false);
-        setUserPage(users.page || "");
-        setUserData(users.Items);
+        setIsUser(true);
       }
     }
   ];
