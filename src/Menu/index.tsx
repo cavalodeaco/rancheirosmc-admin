@@ -138,7 +138,10 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
       </Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <a href="#" className={classes.link} onClick={(event) => event.preventDefault()}>
+        <a href="#" className={classes.link} onClick={(event) => {
+          localStorage.clear();
+          window.location.href = "/";
+        }}>
           <IconLogout />
           <span>Logout</span>
         </a>
