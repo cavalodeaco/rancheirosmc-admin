@@ -17,7 +17,12 @@ export function EnrollManager() {
 
     async function getEnrollData() {
         console.log("Request enroll data");
-        const enrolls: Enroll = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`) // add body
+        const enrolls: Enroll = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+            headers: enrollPage ? {
+                "limit": `${limitData}`,
+                "page": JSON.stringify(enrollPage)
+            } : { limit: `${limitData}` },
+        }) // add body
             .then((response) => response.json())
             .then((data) => data.message);
         return enrolls;
