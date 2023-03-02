@@ -71,20 +71,15 @@ interface MenuProps {
   setIsUser: Function | any;
 }
 
-interface Enroll {
-  Items: any;
-  page: any;
-}
 
 export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState('Métricas');
-  const [userPage, setUserPage] = useState("");
 
   const data = [
     {
       link: '', label: 'Métricas', icon: IconHome, action: () => {
-        if (active != "Métricas") { // if not in the same page
+        if (active !== "Métricas") { // if not in the same page
           setIsEnroll(false);
           setIsUser(false);
         }
@@ -92,14 +87,18 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
     },
     {
       link: '', label: 'Inscrições', icon: IconMotorbike, action: async () => {
-        setIsEnroll(true);
-        setIsUser(false);
+        if (active !== "Inscrições") { // if not in the same page
+          setIsEnroll(true);
+          setIsUser(false);
+        }
       }
     },
     {
       link: '', label: 'Alunos', icon: IconUser, action: async () => {
-        setIsEnroll(false);
-        setIsUser(true);
+        if (active !== "Alunos") { // if not in the same page
+          setIsEnroll(false);
+          setIsUser(true);
+        }
       }
     }
   ];

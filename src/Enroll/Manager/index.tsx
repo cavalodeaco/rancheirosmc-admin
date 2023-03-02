@@ -1,5 +1,7 @@
 import { Pagination, Stack } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { useEffect, useState } from "react";
+import Tokens from "../../AuthenticationForm/Tokens";
 import { EnrollTable } from "../Table";
 
 interface Enroll {
@@ -8,6 +10,9 @@ interface Enroll {
 }
 
 export function EnrollManager() {
+    const [tokens, setTokens] = useLocalStorage<Tokens>({
+        key: "tokens",
+    });
     const [limitData, setLimitData] = useState(2); // limit data shown on table
     const [enrollData, setEnrollData] = useState([]); // enroll data shown on table
     const [enrollsList, setEnrollsList] = useState([[]]); // manages the pages of enrolls
@@ -17,24 +22,30 @@ export function EnrollManager() {
 
     async function getEnrollData() {
         console.log("Request enroll data");
-        const enrolls: Enroll = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
-            method: "GET",
-            headers: enrollPage ? {
+        if (tokens) { // only proceed if tokens are available
+            const headers = {
                 "limit": `${limitData}`,
-                "page": JSON.stringify(enrollPage)
-            } : { "limit": `${limitData}` },
-        }) // add body
-            .then((response) => response.json())
-            .then((data) => data.message);
-        return enrolls;
+                // add tokens from localstorage        
+                "access_token": `${tokens.access_token}`,
+                "id_token": `${tokens.id_token}`
+            };
+            const enrolls: Enroll = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+                method: "GET",
+                headers: enrollPage ? {...headers, "page": JSON.stringify(enrollPage) } : headers
+            }) // add body
+                .then((response) => response.json())
+                .then((data) => data.message);
+            return enrolls;
+        }
+        return undefined;
     }
 
     function manageRequest(enrolls: any) {
-        console.log("Manage request");
+        console.log("Manage request - enroll data");
         if (enrolls.Items.length === 0) { // if no data
             setEnrollPage(""); // stop request
-            setActiveEnrollPage(totalEnrollPage-1); // set last valid page
-            setTotalEnrollPage(totalEnrollPage-1); 
+            setActiveEnrollPage(totalEnrollPage - 1); // set last valid page
+            setTotalEnrollPage(totalEnrollPage - 1);
         } else {
             setEnrollData(enrolls.Items); // table data
             setEnrollsList([...enrollsList, enrolls.Items]); // store all data
@@ -48,16 +59,18 @@ export function EnrollManager() {
     useEffect(() => {
         const fetchData = async () => {
             await getEnrollData().then(async (enrolls) => {
-                setEnrollData(enrolls.Items); // table data
-                setEnrollsList([enrolls.Items]); // store all data
-                setEnrollPage(enrolls.page || "ABC"); // manages next data
-                if (enrolls.page) { // if more data
-                    setTotalEnrollPage(totalEnrollPage + 1);
+                if (enrolls) {
+                    setEnrollData(enrolls.Items); // table data
+                    setEnrollsList([enrolls.Items]); // store all data
+                    setEnrollPage(enrolls.page || ""); // manages next data
+                    if (enrolls.page) { // if more data
+                        setTotalEnrollPage(totalEnrollPage + 1);
+                    }
                 }
             });
         };
         fetchData();
-    }, []); // only once
+    }, [tokens]); // execute only if tokens change
 
 
     async function handleEnrollPaginationChange(page: number) {
