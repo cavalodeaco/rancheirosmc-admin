@@ -8,6 +8,7 @@ interface Enroll {
 }
 
 export function EnrollManager() {
+    const [limitData, setLimitData] = useState(2); // limit data shown on table
     const [enrollData, setEnrollData] = useState([]); // enroll data shown on table
     const [enrollsList, setEnrollsList] = useState([[]]); // manages the pages of enrolls
     const [enrollPage, setEnrollPage] = useState(""); // manages 
@@ -18,9 +19,9 @@ export function EnrollManager() {
         console.log("Request enroll data");
         const enrolls: Enroll = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
             headers: enrollPage ? {
-                "limit": "2",
+                "limit": `${limitData}`,
                 "page": JSON.stringify(enrollPage)
-            } : { limit: "2" },
+            } : { limit: `${limitData}` },
         }) // add body
             .then((response) => response.json())
             .then((data) => data.message);
@@ -28,11 +29,18 @@ export function EnrollManager() {
     }
 
     function manageRequest(enrolls: any) {
-        setEnrollData(enrolls.Items); // table data
-        setEnrollsList([enrollsList, enrolls.Items]); // store all data
-        setEnrollPage(enrolls.page || ""); // manages next data
-        if (enrolls.page) { // if more data
-            setTotalEnrollPage(totalEnrollPage + 1); // not using enrollList because the setState is async
+        console.log("Manage request");
+        if (enrolls.Items.length == 0) { // if no data
+            setEnrollPage(""); // stop request
+            setActiveEnrollPage(totalEnrollPage-1); // set last valid page
+            setTotalEnrollPage(totalEnrollPage-1); 
+        } else {
+            setEnrollData(enrolls.Items); // table data
+            setEnrollsList([...enrollsList, enrolls.Items]); // store all data
+            setEnrollPage(enrolls.page || ""); // manages next data
+            if (enrolls.page) { // if more data
+                setTotalEnrollPage(totalEnrollPage + 1); // not using enrollList because the setState is async
+            }
         }
     }
 
@@ -52,12 +60,10 @@ export function EnrollManager() {
 
 
     async function handleEnrollPaginationChange(page: number) {
-        console.log("page: ", page);
         setActiveEnrollPage(page);
         // request data if page not empty
         if (enrollPage && page == totalEnrollPage) {
             await getEnrollData().then((enrolls) => {
-                console.log("pagination get enrolls");
                 manageRequest(enrolls);
             });
         } else {
