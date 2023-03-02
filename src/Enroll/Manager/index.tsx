@@ -18,10 +18,11 @@ export function EnrollManager() {
     async function getEnrollData() {
         console.log("Request enroll data");
         const enrolls: Enroll = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+            method: "GET",
             headers: enrollPage ? {
-                "limit_data": `${limitData}`,
-                "page_data": JSON.stringify(enrollPage)
-            } : { "limit_data": `${limitData}` },
+                "limit": `${limitData}`,
+                "page": JSON.stringify(enrollPage)
+            } : { "limit": `${limitData}` },
         }) // add body
             .then((response) => response.json())
             .then((data) => data.message);
@@ -30,7 +31,7 @@ export function EnrollManager() {
 
     function manageRequest(enrolls: any) {
         console.log("Manage request");
-        if (enrolls.Items.length == 0) { // if no data
+        if (enrolls.Items.length === 0) { // if no data
             setEnrollPage(""); // stop request
             setActiveEnrollPage(totalEnrollPage-1); // set last valid page
             setTotalEnrollPage(totalEnrollPage-1); 
@@ -62,7 +63,7 @@ export function EnrollManager() {
     async function handleEnrollPaginationChange(page: number) {
         setActiveEnrollPage(page);
         // request data if page not empty
-        if (enrollPage && page == totalEnrollPage) {
+        if (enrollPage && page === totalEnrollPage) {
             await getEnrollData().then((enrolls) => {
                 manageRequest(enrolls);
             });
