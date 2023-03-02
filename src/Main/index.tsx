@@ -1,27 +1,30 @@
 import { useState } from "react";
 import {
   AppShell,
+  Pagination,
+  Stack,
   useMantineTheme,
 } from "@mantine/core";
 import { Menu } from "../Menu";
-import { EnrollTable } from "../Enrolltable";
+import { EnrollTable } from "../Enroll/Table";
 import { UserTable } from "../UserTable";
+import { EnrollManager } from "../Enroll/Manager";
 
 
 export default function Main() {
   const theme = useMantineTheme();
-  const [enrollData, setEnrollData] = useState([]);
+  
   const [userData, setUserData] = useState([]);
-  const [isEnroll, setIsEnroll] = useState(false);
+  const [isEnroll, setIsEnroll] = useState(true); // change to false
   const [isUser, setIsUser] = useState(false);
 
   return (
     <AppShell
-      navbar={
-        <Menu setEnrollData={setEnrollData} setUserData={setUserData} setIsEnroll={setIsEnroll} setIsUser={setIsUser} />
-      }
+      // navbar={
+      //   <Menu setUserData={setUserData} setIsEnroll={setIsEnroll} setIsUser={setIsUser} />
+      // }
     >
-      {isEnroll && <EnrollTable data={enrollData} />}
+      {isEnroll && <EnrollManager/>}
       {isUser && <UserTable data={userData} />}
     </AppShell>
   );
