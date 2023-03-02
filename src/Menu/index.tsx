@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { createStyles, Navbar, Group, Code } from '@mantine/core';
+import { createStyles, Navbar, Group, Code, Center, Space, Title } from '@mantine/core';
 import {
   IconHome,
   IconLogout,
   IconMotorbike,
   IconUser,
 } from '@tabler/icons';
-import { MantineLogo } from '@mantine/ds';
+import ppvicon from '../img/iconppv.svg';
+import TextPPV from '../TextPPV/TextPPV';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -123,8 +124,15 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
     <Navbar height={"100vh"} width={{ sm: 300 }} p="md">
       <Navbar.Section grow>
         <Group className={classes.header} position="apart">
-          <MantineLogo size={28} />
-          <Code sx={{ fontWeight: 700 }}>v3.1.2</Code>
+          <Title order={3} transform="uppercase" italic>
+            <Center>
+              <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
+              <Space w="xs" />
+              Pilotando Para
+              {' '}
+              <TextPPV text="Vida" />
+            </Center>
+          </Title>
         </Group>
         {links}
       </Navbar.Section>

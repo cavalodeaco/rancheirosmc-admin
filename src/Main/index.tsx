@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   AppShell,
-  useMantineTheme,
 } from "@mantine/core";
 import { Menu } from "../Menu";
 import { EnrollManager } from "../Enroll/Manager";
@@ -9,7 +8,6 @@ import { UserManager } from "../User/Manager";
 
 
 export default function Main() {
-  const theme = useMantineTheme();
   const [isEnroll, setIsEnroll] = useState(false);
   const [isUser, setIsUser] = useState(false);
 
