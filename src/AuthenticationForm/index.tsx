@@ -12,18 +12,31 @@ import {
   Alert,
   LoadingOverlay,
   Box,
+  createStyles,
+  Container,
 } from "@mantine/core";
 import { AlertCircle } from "tabler-icons-react";
 import { useState } from "react";
 import { useLocalStorage } from "@mantine/hooks";
 import Tokens from "./Tokens";
+import logo from '../img/logoppv.svg';
 
 interface LoginFormValues {
   email: string;
   password: string;
 }
 
+const useStyles = createStyles(() => ({
+  image: {
+    width: '100%',
+    maxWidth: '400px',
+    margin: '0 auto',
+    textAlign: 'center',
+  },
+}));
+
 export default function AuthenticationForm(props: PaperProps) {
+  const { classes } = useStyles();
   const form = useForm({
     initialValues: {
       email: "",
@@ -98,9 +111,9 @@ export default function AuthenticationForm(props: PaperProps) {
       <div style={{ position: "relative" }}>
         <LoadingOverlay visible={overlay} overlayBlur={2} />
         <Paper radius="md" p="xl" withBorder {...props}>
-          <Text size="lg" weight={500}>
-            Boas vindas ao sistema interno do projeto Pilotando Para Vida
-          </Text>
+          <Box className={classes.image}>
+            <img src={logo} alt="Pilotando Para Vida" height={200} />
+          </Box>
           <Divider
             label="Entre com seus dados de acesso"
             labelPosition="center"
