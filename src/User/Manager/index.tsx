@@ -29,7 +29,7 @@ export function UserManager() {
                 "access_token": `${tokens.access_token}`,
                 "id_token": `${tokens.id_token}`
             };
-            const users: User = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+            const users: User = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`, {
                 method: "GET",
                 headers: userPage ? { ...headers, "page": JSON.stringify(userPage) } : headers
             }) // add body
@@ -70,7 +70,7 @@ export function UserManager() {
             });
         };
         fetchData();
-    }, []); // only once
+    }, [tokens]); // only once
 
 
     async function handleUserPaginationChange(page: number) {
