@@ -1,4 +1,4 @@
-import { Pagination, Stack } from "@mantine/core";
+import { Pagination, Stack, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import Tokens from "../../AuthenticationForm/Tokens";
@@ -87,6 +87,7 @@ export function UserManager() {
 
     return (
         <Stack>
+            <Title>Alunos</Title>
             <UserTable data={userData} />
             <Pagination page={activeUserPage} onChange={handleUserPaginationChange} total={totalUserPage} />
         </Stack>
