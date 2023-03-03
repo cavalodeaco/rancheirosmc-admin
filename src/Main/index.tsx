@@ -30,7 +30,7 @@ export default function Main() {
     <AppShell
       header={
         <Header height={60} p="xs">
-          <Group className={classes.header} position="apart">
+          <Group className={classes.header} position="center">
             <Title order={3} transform="uppercase" italic>
               <Center>
                 <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
