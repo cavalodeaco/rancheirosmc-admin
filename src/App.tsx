@@ -17,7 +17,7 @@ function App() {
 
   return (
     <MantineProvider
-      theme={{ ...theme, colorScheme: isDarkTheme ? "dark" : "light" }}
+      theme={{ ...theme, colorScheme: "dark" }} // isDarkTheme ? "dark" : "light"
       withGlobalStyles
       withNormalizeCSS
     >

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Navbar, Group, Code, Center, Space, Title } from '@mantine/core';
+import { createStyles, Navbar, Group, Code, Center, Space, Title, Header } from '@mantine/core';
 import {
   IconHome,
   IconLogout,
@@ -12,6 +12,7 @@ import TextPPV from '../TextPPV/TextPPV';
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
   return {
+
     header: {
       paddingBottom: theme.spacing.md,
       marginBottom: theme.spacing.md * 1.5,
@@ -122,17 +123,6 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
   return (
     <Navbar height={"100vh"} width={{ sm: 300 }} p="md">
       <Navbar.Section grow>
-        <Group className={classes.header} position="apart">
-          <Title order={3} transform="uppercase" italic>
-            <Center>
-              <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
-              <Space w="xs" />
-              Pilotando Para
-              {' '}
-              <TextPPV text="Vida" />
-            </Center>
-          </Title>
-        </Group>
         {links}
       </Navbar.Section>
 
@@ -145,6 +135,6 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
           <span>Logout</span>
         </a>
       </Navbar.Section>
-    </Navbar>
+    </Navbar >
   );
 }
