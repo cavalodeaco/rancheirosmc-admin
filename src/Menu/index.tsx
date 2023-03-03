@@ -6,8 +6,6 @@ import {
   IconMotorbike,
   IconUser,
 } from '@tabler/icons';
-import ppvicon from '../img/iconppv.svg';
-import TextPPV from '../TextPPV/TextPPV';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -121,7 +119,7 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
   ));
 
   return (
-    <Navbar height={"100vh"} width={{ sm: 300 }} p="md">
+    <Navbar height={"95vh"} width={{ sm: 300 }} p="md">
       <Navbar.Section grow>
         {links}
       </Navbar.Section>
