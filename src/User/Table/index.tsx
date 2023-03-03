@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea } from '@mantine/core';
+import { createStyles, Table, Checkbox, ScrollArea, Title } from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
     rowSelected: {
@@ -78,11 +78,11 @@ export function UserTable({ data }: UserTableProps) {
                                 transitionDuration={0}
                             />
                         </th>
-                        <th>Nome</th>
-                        <th>Telefone</th>
-                        <th>E-mail</th>
-                        <th>CNH</th>
-                        <th>UF</th>
+                        <th><Title size={15}>Nome</Title></th>
+                        <th><Title size={15}>Telefone</Title></th>
+                        <th><Title size={15}>E-mail</Title></th>
+                        <th><Title size={15}>CNH</Title></th>
+                        <th><Title size={15}>UF</Title></th>
                     </tr>
                 </thead>
                 <tbody>{rows}</tbody>

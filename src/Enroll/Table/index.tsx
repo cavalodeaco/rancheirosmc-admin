@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea } from '@mantine/core';
+import { createStyles, Table, Checkbox, ScrollArea, Title } from '@mantine/core';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -63,9 +63,9 @@ export function EnrollTable({ data }: EnrollTableProps) {
                 transitionDuration={0}
               />
             </th>
-            <th>Cidade</th>
-            <th>Status</th>
-            <th>Data inscrição</th>
+            <th><Title size={15}>Cidade</Title></th>
+            <th><Title size={15}>Status</Title></th>
+            <th><Title size={15}>Data inscrição</Title></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>

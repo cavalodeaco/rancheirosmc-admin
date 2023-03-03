@@ -114,7 +114,8 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
       }}
     >
       <item.icon />
-      <span>{item.label}</span>
+      <Space w="xs" />
+      <Title size={18}>{item.label}</Title>
     </a>
   ));
 
@@ -130,7 +131,8 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
           window.location.href = "/";
         }}>
           <IconLogout />
-          <span>Logout</span>
+          <Space w="xs" />
+          <Title size={18}>Logout</Title>
         </a>
       </Navbar.Section>
     </Navbar >
