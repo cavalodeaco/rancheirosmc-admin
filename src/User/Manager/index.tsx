@@ -1,5 +1,7 @@
 import { Pagination, Stack } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { useEffect, useState } from "react";
+import Tokens from "../../AuthenticationForm/Tokens";
 import { UserTable } from "../Table";
 
 interface User {
@@ -8,6 +10,9 @@ interface User {
 }
 
 export function UserManager() {
+    const [tokens, setTokens] = useLocalStorage<Tokens>({
+        key: "tokens",
+    });
     const [limitData, setLimitData] = useState(2); // limit data shown on table
     const [userData, setUserData] = useState([]); // user data shown on table
     const [usersList, setUsersList] = useState([[]]); // manages the pages of users
@@ -17,23 +22,30 @@ export function UserManager() {
 
     async function getData() {
         console.log("Request data");
-        const users: User = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`, {
-            headers: userPage ? {
+        if (tokens) { // only proceed if tokens are available
+            const headers = {
                 "limit": `${limitData}`,
-                "page": JSON.stringify(userPage)
-            } : { limit: `${limitData}` },
-        }) // add body
-            .then((response) => response.json())
-            .then((data) => data.message);
-        return users;
+                // add tokens from localstorage        
+                "access_token": `${tokens.access_token}`,
+                "id_token": `${tokens.id_token}`
+            };
+            const users: User = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+                method: "GET",
+                headers: userPage ? { ...headers, "page": JSON.stringify(userPage) } : headers
+            }) // add body
+                .then((response) => response.json())
+                .then((data) => data.message);
+            return users;
+        }
+        return undefined;
     }
 
     function manageRequest(users: any) {
         console.log("Manage request");
         if (users.Items.length == 0) { // if no data
             setUserPage(""); // stop request
-            setActiveUserPage(totalUserPage-1); // set last valid page
-            setTotalUserPage(totalUserPage-1); 
+            setActiveUserPage(totalUserPage - 1); // set last valid page
+            setTotalUserPage(totalUserPage - 1);
         } else {
             setUserData(users.Items); // table data
             setUsersList([...usersList, users.Items]); // store all data
@@ -47,11 +59,13 @@ export function UserManager() {
     useEffect(() => {
         const fetchData = async () => {
             await getData().then(async (users) => {
-                setUserData(users.Items); // table data
-                setUsersList([users.Items]); // store all data
-                setUserPage(users.page || "ABC"); // manages next data
-                if (users.page) { // if more data
-                    setTotalUserPage(totalUserPage + 1);
+                if (users) {
+                    setUserData(users.Items); // table data
+                    setUsersList([users.Items]); // store all data
+                    setUserPage(users.page || ""); // manages next data
+                    if (users.page) { // if more data
+                        setTotalUserPage(totalUserPage + 1);
+                    }
                 }
             });
         };
