@@ -5,7 +5,8 @@ import { useThemeDetector } from "./utils/useThemeDetector";
 import AuthenticationForm from "./AuthenticationForm";
 import { useLocalStorage } from "@mantine/hooks";
 import Tokens from "./AuthenticationForm/Tokens";
-import Main from "./Main";
+import { CustomFonts } from "./CustomFonts";
+import { FetchData } from "./FetchData";
 
 function App() {
   document.title = "PPV Admin";
@@ -17,11 +18,12 @@ function App() {
 
   return (
     <MantineProvider
-      theme={{ ...theme, colorScheme: isDarkTheme ? "dark" : "light" }}
+      theme={{ ...theme, colorScheme: "dark" }} // isDarkTheme ? "dark" : "light"
       withGlobalStyles
       withNormalizeCSS
     >
-      {!tokens ? <AuthenticationForm /> : <Main />}
+      <CustomFonts/>
+      {!tokens ? <AuthenticationForm /> : <FetchData />}
     </MantineProvider>
   );
 }
