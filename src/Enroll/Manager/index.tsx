@@ -19,7 +19,7 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
     }
 
     useEffect(() => {
-        handlePagination(1);
+        setTableEnrollData(enrollData.slice((activeEnrollPage-1)*limitPage, activeEnrollPage*limitPage));
     }, [enrollData]);
 
     return (

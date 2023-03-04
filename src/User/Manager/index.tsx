@@ -19,7 +19,7 @@ export function UserManager({ userData }: UserManagerProps) {
     }
 
     useEffect(() => {
-        handlePagination(1);
+        setTableUserData(userData.slice((activeUserPage-1)*limitPage, activeUserPage*limitPage));
     }, [userData]);
 
     return (
