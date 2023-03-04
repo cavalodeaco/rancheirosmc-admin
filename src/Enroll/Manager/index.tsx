@@ -13,7 +13,7 @@ export function EnrollManager() {
     const [tokens, setTokens] = useLocalStorage<Tokens>({
         key: "tokens",
     });
-    const [limitData, setLimitData] = useState(2); // limit data shown on table
+    const [limitData, setLimitData] = useState(10); // limit data shown on table
     const [enrollData, setEnrollData] = useState([]); // enroll data shown on table
     const [enrollsList, setEnrollsList] = useState([[]]); // manages the pages of enrolls
     const [enrollPage, setEnrollPage] = useState(""); // manages 

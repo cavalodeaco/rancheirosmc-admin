@@ -13,7 +13,7 @@ export function UserManager() {
     const [tokens, setTokens] = useLocalStorage<Tokens>({
         key: "tokens",
     });
-    const [limitData, setLimitData] = useState(2); // limit data shown on table
+    const [limitData, setLimitData] = useState(10); // limit data shown on table
     const [userData, setUserData] = useState([]); // user data shown on table
     const [usersList, setUsersList] = useState([[]]); // manages the pages of users
     const [userPage, setUserPage] = useState(""); // manages 
