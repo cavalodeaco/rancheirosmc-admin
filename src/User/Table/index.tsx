@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title } from '@mantine/core';
+import { User } from '../../FetchData';
 
 const useStyles = createStyles((theme) => ({
     rowSelected: {
@@ -11,23 +12,10 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface UserTableProps {
-    data: {
-        driverLicenseUF: string;
-        createdAt: string;
-        phone: string;
-        name: string;
-        driverLicense: string;
-        PK: string;
-        enroll: {
-            city: string;
-            id: string;
-        }[];
-        email: string;
-        updatedAt: string;
-    }[]
+    userData: User[]
 }
 
-export function UserTable({ data }: UserTableProps) {
+export function UserTable({ userData }: UserTableProps) {
     const { classes, cx } = useStyles();
     const [selection, setSelection] = useState(['1']);
     const toggleRow = (PK: string) =>
@@ -35,9 +23,9 @@ export function UserTable({ data }: UserTableProps) {
             current.includes(PK) ? current.filter((item) => item !== PK) : [...current, PK]
         );
     const toggleAll = () =>
-        setSelection((current) => (current.length === data.length ? [] : data.map((item) => item.PK)));
+        setSelection((current) => (current.length === userData.length ? [] : userData.map((item) => item.PK)));
 
-    const rows = data.map((item) => {
+    const rows = userData.map((item) => {
         const selected = selection.includes(item.PK);
         return (
             <tr key={item.PK} className={cx({ [classes.rowSelected]: selected })}>
@@ -59,8 +47,9 @@ export function UserTable({ data }: UserTableProps) {
                 <td>{item.name}</td>
                 <td>{item.phone}</td>
                 <td>{item.email}</td>
-                <td>{item.driverLicense}</td>
-                <td>{item.driverLicenseUF}</td>
+                <td>{item.driver_license}</td>
+                <td>{item.driver_license_UF}</td>
+                <td>{item.enroll.length}</td>
             </tr>
         );
     });
@@ -73,8 +62,8 @@ export function UserTable({ data }: UserTableProps) {
                         <th style={{ width: 40 }}>
                             <Checkbox
                                 onChange={toggleAll}
-                                checked={selection.length === data.length}
-                                indeterminate={selection.length > 0 && selection.length !== data.length}
+                                checked={selection.length === userData.length}
+                                indeterminate={selection.length > 0 && selection.length !== userData.length}
                                 transitionDuration={0}
                             />
                         </th>
@@ -83,6 +72,7 @@ export function UserTable({ data }: UserTableProps) {
                         <th><Title size={15}>E-mail</Title></th>
                         <th><Title size={15}>CNH</Title></th>
                         <th><Title size={15}>UF</Title></th>
+                        <th><Title size={15}>Total de inscrições</Title></th>
                     </tr>
                 </thead>
                 <tbody>{rows}</tbody>

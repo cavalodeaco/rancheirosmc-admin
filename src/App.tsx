@@ -5,8 +5,8 @@ import { useThemeDetector } from "./utils/useThemeDetector";
 import AuthenticationForm from "./AuthenticationForm";
 import { useLocalStorage } from "@mantine/hooks";
 import Tokens from "./AuthenticationForm/Tokens";
-import Main from "./Main";
 import { CustomFonts } from "./CustomFonts";
+import { FetchData } from "./FetchData";
 
 function App() {
   document.title = "PPV Admin";
@@ -23,7 +23,7 @@ function App() {
       withNormalizeCSS
     >
       <CustomFonts/>
-      {!tokens ? <AuthenticationForm /> : <Main />}
+      {!tokens ? <AuthenticationForm /> : <FetchData />}
     </MantineProvider>
   );
 }

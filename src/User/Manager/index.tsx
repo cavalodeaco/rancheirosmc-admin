@@ -1,95 +1,32 @@
 import { Pagination, Stack, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { useEffect, useState } from "react";
-import Tokens from "../../AuthenticationForm/Tokens";
+import { User } from "../../FetchData";
 import { UserTable } from "../Table";
 
-interface User {
-    Items: any;
-    page: any;
+interface UserManagerProps {
+    userData: User[];
 }
 
-export function UserManager() {
-    const [tokens, setTokens] = useLocalStorage<Tokens>({
-        key: "tokens",
-    });
-    const [limitData, setLimitData] = useState(10); // limit data shown on table
-    const [userData, setUserData] = useState([]); // user data shown on table
-    const [usersList, setUsersList] = useState([[]]); // manages the pages of users
-    const [userPage, setUserPage] = useState(""); // manages 
+export function UserManager({ userData }: UserManagerProps) {
+    const [tableUserData, setTableUserData] = useState<User[]>([]);
     const [activeUserPage, setActiveUserPage] = useState(1);
-    const [totalUserPage, setTotalUserPage] = useState(1);
+    const [limitPage, setLimitPage] = useState(10);
 
-    async function getData() {
-        console.log("Request data");
-        if (tokens) { // only proceed if tokens are available
-            const headers = {
-                "limit": `${limitData}`,
-                // add tokens from localstorage        
-                "access_token": `${tokens.access_token}`,
-                "id_token": `${tokens.id_token}`
-            };
-            const users: User = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`, {
-                method: "GET",
-                headers: userPage ? { ...headers, "page": JSON.stringify(userPage) } : headers
-            }) // add body
-                .then((response) => response.json())
-                .then((data) => data.message);
-            return users;
-        }
-        return undefined;
-    }
-
-    function manageRequest(users: any) {
-        console.log("Manage request");
-        if (users.Items.length == 0) { // if no data
-            setUserPage(""); // stop request
-            setActiveUserPage(totalUserPage - 1); // set last valid page
-            setTotalUserPage(totalUserPage - 1);
-        } else {
-            setUserData(users.Items); // table data
-            setUsersList([...usersList, users.Items]); // store all data
-            setUserPage(users.page || ""); // manages next data
-            if (users.page) { // if more data
-                setTotalUserPage(totalUserPage + 1); // not using userList because the setState is async
-            }
-        }
+    function handlePagination(page: number) {
+        setActiveUserPage(page);
+        setTableUserData(userData.slice((page-1)*limitPage, page*limitPage));
     }
 
     useEffect(() => {
-        const fetchData = async () => {
-            await getData().then(async (users) => {
-                if (users) {
-                    setUserData(users.Items); // table data
-                    setUsersList([users.Items]); // store all data
-                    setUserPage(users.page || ""); // manages next data
-                    if (users.page) { // if more data
-                        setTotalUserPage(totalUserPage + 1);
-                    }
-                }
-            });
-        };
-        fetchData();
-    }, [tokens]); // only once
-
-
-    async function handleUserPaginationChange(page: number) {
-        setActiveUserPage(page);
-        // request data if page not empty
-        if (userPage && page == totalUserPage) {
-            await getData().then((users) => {
-                manageRequest(users);
-            });
-        } else {
-            setUserData(usersList[page - 1]);
-        }
-    }
+        handlePagination(1);
+    }, [userData]);
 
     return (
         <Stack>
-            <Title>Alunos</Title>
-            <UserTable data={userData} />
-            <Pagination page={activeUserPage} onChange={handleUserPaginationChange} total={totalUserPage} />
+            <Title>Inscrições</Title>
+            <UserTable userData={tableUserData} />
+            <Pagination page={activeUserPage} onChange={handlePagination} total={userData?.length/limitPage} />
         </Stack>
     );
 

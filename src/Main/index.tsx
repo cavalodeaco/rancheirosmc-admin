@@ -7,6 +7,7 @@ import { EnrollManager } from "../Enroll/Manager";
 import { UserManager } from "../User/Manager";
 import TextPPV from "../TextPPV/TextPPV";
 import ppvicon from '../img/iconppv.svg';
+import { Enroll, User } from "../FetchData";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -21,7 +22,12 @@ const useStyles = createStyles((theme, _params, getRef) => {
 }
 );
 
-export default function Main() {
+interface MainProps {
+  enrollData: Enroll[];
+  userData: User[];
+}
+
+export default function Main({ enrollData, userData }: MainProps) {
   const { classes, cx } = useStyles();
   const [isEnroll, setIsEnroll] = useState(false);
   const [isUser, setIsUser] = useState(false);
@@ -46,8 +52,8 @@ export default function Main() {
         <Menu setIsEnroll={setIsEnroll} setIsUser={setIsUser} />
       }
     >
-      {isEnroll && <EnrollManager />}
-      {isUser && <UserManager />}
+      {isEnroll && <EnrollManager enrollData={enrollData} />}
+      {isUser && <UserManager userData={userData}/>}
     </AppShell>
   );
 }

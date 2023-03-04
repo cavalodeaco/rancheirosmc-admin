@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title } from '@mantine/core';
+import { Enroll } from '../../FetchData';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -11,27 +12,27 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface EnrollTableProps {
-  data: { city: string; status: string; createdAt: string; PK: string }[];
+  enrollData: Enroll[];  
 }
 
-export function EnrollTable({ data }: EnrollTableProps) {
+export function EnrollTable({ enrollData }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState(['1']);
-  const toggleRow = (PK: string) =>
+  const toggleRow = (enroll_date: string) =>
     setSelection((current) =>
-      current.includes(PK) ? current.filter((item) => item !== PK) : [...current, PK]
+      current.includes(enroll_date) ? current.filter((item) => item !== enroll_date) : [...current, enroll_date]
     );
   const toggleAll = () =>
-    setSelection((current) => (current.length === data.length ? [] : data.map((item) => item.PK)));
+    setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.enroll_date)));
 
-  const rows = data.map((item) => {
-    const selected = selection.includes(item.PK);
+  const rows = enrollData.map((item) => {
+    const selected = selection.includes(item.enroll_date);
     return (
-      <tr key={item.PK} className={cx({ [classes.rowSelected]: selected })}>
+      <tr key={item.enroll_date} className={cx({ [classes.rowSelected]: selected })}>
         <td>
           <Checkbox
-            checked={selection.includes(item.PK)}
-            onChange={() => toggleRow(item.PK)}
+            checked={selection.includes(item.enroll_date)}
+            onChange={() => toggleRow(item.enroll_date)}
             transitionDuration={0}
           />
         </td>
@@ -44,8 +45,12 @@ export function EnrollTable({ data }: EnrollTableProps) {
           </Group>
         </td> */}
         <td>{item.city}</td>
-        <td>{item.status}</td>
-        <td>{item.createdAt}</td>
+        <td>{item.enroll_status}</td>
+        <td>{item.enroll_date}</td>
+        <td>{item.user.driver_license}</td>
+        <td>{item.motorcycle_brand}</td>
+        <td>{item.updated_by}</td>
+        <td>{item.updated_at}</td>
       </tr>
     );
   });
@@ -58,14 +63,18 @@ export function EnrollTable({ data }: EnrollTableProps) {
             <th style={{ width: 40 }}>
               <Checkbox
                 onChange={toggleAll}
-                checked={selection.length === data.length}
-                indeterminate={selection.length > 0 && selection.length !== data.length}
+                checked={selection.length === enrollData.length}
+                indeterminate={selection.length > 0 && selection.length !== enrollData.length}
                 transitionDuration={0}
               />
             </th>
             <th><Title size={15}>Cidade</Title></th>
             <th><Title size={15}>Status</Title></th>
-            <th><Title size={15}>Data inscrição</Title></th>
+            <th><Title size={15}>Data da inscrição</Title></th>
+            <th><Title size={15}>Aluno (DL)</Title></th>
+            <th><Title size={15}>Marca moto</Title></th>
+            <th><Title size={15}>Atualizado por</Title></th>
+            <th><Title size={15}>Data de atualização</Title></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
