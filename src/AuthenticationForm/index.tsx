@@ -115,7 +115,7 @@ export default function AuthenticationForm(props: PaperProps) {
             <img src={logo} alt="Pilotando Para Vida" height={200} />
           </Box>
           <Divider
-            label="Entre com seus dados de acesso"
+            label="Acesso restrito - Admin PPV"
             labelPosition="center"
             my="lg"
           />
