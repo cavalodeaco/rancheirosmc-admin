@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title } from '@mantine/core';
+import { createStyles, Table, Checkbox, ScrollArea, Title} from '@mantine/core';
 import { Enroll } from '../../FetchData';
 
 const useStyles = createStyles((theme) => ({
@@ -9,10 +9,26 @@ const useStyles = createStyles((theme) => ({
         ? theme.fn.rgba(theme.colors[theme.primaryColor][7], 0.2)
         : theme.colors[theme.primaryColor][0],
   },
+  th: {
+    padding: '0 !important',
+  },
+  // icon: {
+  //   width: rem(21),
+  //   height: rem(21),
+  //   borderRadius: rem(21),
+  // },
+  control: {
+    width: '100%',
+    padding: `${theme.spacing.xs} ${theme.spacing.md}`,
+
+    '&:hover': {
+      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+    },
+  },
 }));
 
 interface EnrollTableProps {
-  enrollData: Enroll[];  
+  enrollData: Enroll[];
 }
 
 export function EnrollTable({ enrollData }: EnrollTableProps) {
@@ -47,7 +63,7 @@ export function EnrollTable({ enrollData }: EnrollTableProps) {
         <td>{item.city}</td>
         <td>{item.enroll_status}</td>
         <td>{item.enroll_date}</td>
-        <td>{item.user.driver_license}</td>
+        <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td>{item.motorcycle_brand}</td>
         <td>{item.updated_by}</td>
         <td>{item.updated_at}</td>
@@ -71,7 +87,7 @@ export function EnrollTable({ enrollData }: EnrollTableProps) {
             <th><Title size={15}>Cidade</Title></th>
             <th><Title size={15}>Status</Title></th>
             <th><Title size={15}>Data da inscrição</Title></th>
-            <th><Title size={15}>Aluno (DL)</Title></th>
+            <th><Title size={15}>Aluno (CNH)</Title></th>
             <th><Title size={15}>Marca moto</Title></th>
             <th><Title size={15}>Atualizado por</Title></th>
             <th><Title size={15}>Data de atualização</Title></th>
