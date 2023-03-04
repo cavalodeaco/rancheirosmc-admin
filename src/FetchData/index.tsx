@@ -17,10 +17,7 @@ export interface Enroll {
     enroll_status: string;
     motorcycle_brand: string;
     enroll_date: string;
-    user: {
-        driver_license: string;
-        driver_license_UF: string;
-    };
+    user: User;
 }
 
 interface EnrollResponse {
@@ -35,10 +32,7 @@ export interface User {
     name: string;
     driver_license: string;
     PK: string;
-    enroll: {
-        city: string;
-        enroll_date: string;
-    }[];
+    enroll: Enroll[];
     email: string;
     updatedAt: string;
     done: boolean;
@@ -100,40 +94,70 @@ export function FetchData() {
     }
 
     useEffect(() => {
-        const fetchEnrollData = async () => {
+        const fetchData = async () => {
+            // enroll data
             console.log("Fetching enroll data");
             let flag = false;
+            let dataEnroll: Enroll[] = [];
             do {
                 let enrolls: EnrollResponse | undefined = await getEnrollData();
                 if (enrolls) {
-                    const data = [...enrollData, ...enrolls.Items];
-                    setEnrollData(data); // table data
+                    dataEnroll = [...dataEnroll, ...enrolls.Items];
                     setEnrollPage(enrolls.page || ""); // manages next data
                 }
                 flag = enrolls?.page;
             } while (flag);
             console.log("Enroll data fetched");
-        };
-        fetchEnrollData();
 
-        
-        const fetchUserData = async () => {
+
             console.log("Fetching user data");
-            let flag = false;
+            flag = false;
+            let dataUser: User[] = [];
             do {
                 let users: UserResponse | undefined = await getUserData();
                 if (users) {
-                    const data = [...userData, ...users.Items];
-                    setUserData(data); // table data
+                    dataUser = [...userData, ...users.Items];
                     setUserPage(users.page || ""); // manages next data
                 }
                 flag = users?.page;
             } while (flag);
             console.log("User data fetched");
-        };
-        fetchUserData();
 
-    }, [tokens]); // execute only if tokens change
+            // Process data
+            // Find the user of each enroll
+            dataEnroll = dataEnroll.map((enroll) => {
+                const user = dataUser.find((user) =>
+                    user.driver_license === enroll.user.driver_license && user.driver_license_UF === enroll.user.driver_license_UF
+                );
+                if (user) {
+                    enroll.user = user;
+                }
+                return enroll;
+            });
+            // Find enrolls of each user
+            dataUser = dataUser.map((user) => {
+                user.enroll = user.enroll.map((user_enroll) => {
+                    const enroll = dataEnroll.filter((enroll) =>
+                        enroll.enroll_date === user_enroll.enroll_date && enroll.city === user_enroll.city
+                    );
+                    if (enroll.length > 1) {
+                        console.log("####-----> More than one enroll found!! ");
+                    }
+                    return enroll[0]; // needs to be only one
+                });
+                return user;
+            });
+
+            // Save data
+            setEnrollData(dataEnroll); // table data
+            setUserData(dataUser); // table data
+        };
+        fetchData();
+
+
+
+
+    }, [tokens]); // execute only if tokens change    
 
     return (
         <Main enrollData={enrollData} userData={userData} />

@@ -63,6 +63,7 @@ export function EnrollTable({ enrollData }: EnrollTableProps) {
         <td>{item.city}</td>
         <td>{item.enroll_status}</td>
         <td>{item.enroll_date}</td>
+        <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td>{item.motorcycle_brand}</td>
         <td>{item.updated_by}</td>
@@ -87,7 +88,8 @@ export function EnrollTable({ enrollData }: EnrollTableProps) {
             <th><Title size={15}>Cidade</Title></th>
             <th><Title size={15}>Status</Title></th>
             <th><Title size={15}>Data da inscrição</Title></th>
-            <th><Title size={15}>Aluno (CNH)</Title></th>
+            <th><Title size={15}>Nome</Title></th>
+            <th><Title size={15}>CNH</Title></th>
             <th><Title size={15}>Marca moto</Title></th>
             <th><Title size={15}>Atualizado por</Title></th>
             <th><Title size={15}>Data de atualização</Title></th>
