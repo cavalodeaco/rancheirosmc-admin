@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title} from '@mantine/core';
+import { createStyles, Table, Checkbox, ScrollArea, Title } from '@mantine/core';
 import { Enroll } from '../../FetchData';
+import { IconBrandHipchat, IconBrandWhatsapp, IconHourglassEmpty } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -30,6 +31,8 @@ const useStyles = createStyles((theme) => ({
 interface EnrollTableProps {
   enrollData: Enroll[];
 }
+
+const regex = /\d+/g;
 
 export function EnrollTable({ enrollData }: EnrollTableProps) {
   const { classes, cx } = useStyles();
@@ -61,9 +64,15 @@ export function EnrollTable({ enrollData }: EnrollTableProps) {
           </Group>
         </td> */}
         <td>{item.city}</td>
-        <td>{item.enroll_status}</td>
+        <td align='center'>{item.enroll_status === "waiting" ? <IconHourglassEmpty /> : ((item.enroll_status === "called") ? <IconBrandHipchat /> : item.enroll_status)}</td>
         <td>{item.enroll_date}</td>
+        <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
+        <td>
+          <a href={`https://web.whatsapp.com/send/?phone=55${item.user.phone.match(regex)?.join('')}&text&type=phone_number&app_absent=0`} target='_blank'>
+            <IconBrandWhatsapp />
+          </a>
+        </td>
         <td>{item.motorcycle_brand}</td>
         <td>{item.updated_by}</td>
         <td>{item.updated_at}</td>
@@ -87,7 +96,9 @@ export function EnrollTable({ enrollData }: EnrollTableProps) {
             <th><Title size={15}>Cidade</Title></th>
             <th><Title size={15}>Status</Title></th>
             <th><Title size={15}>Data da inscrição</Title></th>
-            <th><Title size={15}>Aluno (CNH)</Title></th>
+            <th><Title size={15}>Nome</Title></th>
+            <th><Title size={15}>CNH</Title></th>
+            <th><Title size={15}>Contato</Title></th>
             <th><Title size={15}>Marca moto</Title></th>
             <th><Title size={15}>Atualizado por</Title></th>
             <th><Title size={15}>Data de atualização</Title></th>
