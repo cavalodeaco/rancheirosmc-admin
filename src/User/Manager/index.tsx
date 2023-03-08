@@ -2,10 +2,12 @@ import { Button, Flex, Pagination, Paper, ScrollArea, Stack, TextInput, Title } 
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { User } from "../../FetchData";
+import { Admin } from "../../Main";
 import { UserTable } from "../Table";
 
 interface UserManagerProps {
     userData: User[];
+    admin: Admin | undefined;
 }
 
 const searchableFields = ["name", "driver_license_UF", "driver_license", "email", "phone", "updated_at", "updated_by", "created_at"];
@@ -49,7 +51,7 @@ function sortData(
     return filterData(data, payload.search, payload.searchBy);
 }
 
-export function UserManager({ userData }: UserManagerProps) {
+export function UserManager({ userData, admin }: UserManagerProps) {
     const [tableUserData, setTableUserData] = useState<User[]>([]);
     const [activeUserPage, setActiveUserPage] = useState(1);
     const [limitPage, setLimitPage] = useState(10);
@@ -74,6 +76,10 @@ export function UserManager({ userData }: UserManagerProps) {
         setActiveUserPage(page);
         setTableUserData(sortedData.slice((page - 1) * limitPage, page * limitPage));
     }
+
+    useEffect(() => {
+        console.log("Admin", admin);
+    }, [admin]);
 
     useEffect(() => {
         setSortedData(userData);

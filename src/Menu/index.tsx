@@ -6,6 +6,7 @@ import {
   IconMotorbike,
   IconUser,
 } from '@tabler/icons';
+import { Admin } from '../Main';
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -68,10 +69,11 @@ const useStyles = createStyles((theme, _params, getRef) => {
 interface MenuProps {
   setIsEnroll: Function | any;
   setIsUser: Function | any;
+  admin: Admin | undefined;
 }
 
 
-export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
+export function Menu({ setIsEnroll, setIsUser, admin }: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState('Métricas');
 
@@ -130,6 +132,7 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
           localStorage.clear();
           window.location.href = "/";
         }}>
+          <Title size={12}>{admin?.name || "--"}</Title>
           <IconLogout />
           <Space w="xs" />
           <Title size={18}>Logout</Title>

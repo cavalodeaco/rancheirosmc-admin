@@ -1,12 +1,13 @@
 import { Flex, Pagination, Paper, ScrollArea, Slider, Stack, TextInput, Title } from "@mantine/core";
-import { useLocalStorage } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
+import { Admin } from "../../Main";
 import { EnrollTable } from "../Table";
 
 interface EnrollManagerProps {
     enrollData: Enroll[];
+    admin: Admin | undefined;
 }
 
 const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at"];
@@ -50,7 +51,7 @@ function sortData(
     return filterData(data, payload.search, payload.searchBy);
 }
 
-export function EnrollManager({ enrollData }: EnrollManagerProps) {
+export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
     const [limitPage, setLimitPage] = useState(10);
@@ -75,6 +76,10 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
         setActiveEnrollPage(page);
         setTableEnrollData(sortedData.slice((page - 1) * limitPage, page * limitPage));
     }
+
+    useEffect(() => {
+        console.log("Admin", admin);
+    }, [admin]);
 
     useEffect(() => {
         setSortedData(enrollData);

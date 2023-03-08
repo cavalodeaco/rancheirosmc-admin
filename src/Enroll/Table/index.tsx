@@ -75,9 +75,9 @@ export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
             <IconBrandWhatsapp />
           </a>
         </td> */}
-        <td>{item.motorcycle_brand}</td>
+        {/* <td>{item.motorcycle_brand}</td> */}
         <td>{item.updated_by}</td>
-        <td>{item.updated_at.substring(0,9)}</td>
+        {/* <td>{item.updated_at.substring(0,9)}</td> */}
       </tr>
     );
   });
