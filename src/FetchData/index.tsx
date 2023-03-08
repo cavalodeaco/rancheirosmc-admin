@@ -62,13 +62,21 @@ export function FetchData() {
                 "access_token": `${tokens.access_token}`,
                 "id_token": `${tokens.id_token}`
             };
-            const enrolls: EnrollResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
-                method: "GET",
-                headers: enrollPage ? { ...headers, "page": JSON.stringify(enrollPage) } : headers
-            }) // add body
-                .then((response) => response.json())
-                .then((data) => data.message);
-            return enrolls;
+            try {
+                const enrolls: EnrollResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+                    method: "GET",
+                    headers: enrollPage ? { ...headers, "page": JSON.stringify(enrollPage) } : headers
+                }) // add body
+                    .then((response) => response.json())
+                    .then((data) => data.message);
+
+                return enrolls;
+            } catch (error: any) {
+                if (error.status === 401 || error.name == "UnauthorizedError") {
+                    localStorage.clear();
+                    window.location.href = "/";
+                }
+            }
         }
         return undefined;
     }

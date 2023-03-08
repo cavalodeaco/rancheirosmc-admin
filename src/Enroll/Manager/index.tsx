@@ -1,4 +1,4 @@
-import { Pagination, Stack, TextInput, Title } from "@mantine/core";
+import { Flex, Pagination, Paper, ScrollArea, Slider, Stack, TextInput, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
@@ -33,7 +33,7 @@ function filterData(data: Enroll[], search: string, searchBy: string = 'todos') 
         }
         if (searchBy === 'todos') {
             for (const field of searchableFields) {
-                if (search(field)) 
+                if (search(field))
                     return true;
             }
             return false;
@@ -57,7 +57,19 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
     const [searchBy, setSearchBy] = useState('todos');
     const [search, setSearch] = useState('');
     const [sortedData, setSortedData] = useState(enrollData);
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalEnrollData, setTotalEnrollData] = useState(0);
+    const marks = [
+        { value: 25, label: "25%" },
+        { value: 50, label: "50%" },
+        { value: 75, label: "75%" },
+    ];
+
+    function changeLimit(value: number) {
+        console.log("Limit: ", value);
+        // limit % of totalEnrollData
+        setLimitPage(Math.ceil(value * 100 / totalEnrollData));
+        handlePagination(1); // move to first page
+    }
 
     function handlePagination(page: number) {
         setActiveEnrollPage(page);
@@ -67,7 +79,7 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
     useEffect(() => {
         setSortedData(enrollData);
         setTableEnrollData(enrollData.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
-        setTotalPages(enrollData.length / limitPage);
+        setTotalEnrollData(enrollData.length);
     }, [enrollData]);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,21 +88,38 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
         const sorted = sortData(enrollData, { search: value, searchBy: searchBy });
         setSortedData(sorted);
         setTableEnrollData(sorted.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
-        setTotalPages(Math.ceil(sorted?.length / limitPage));
     };
 
     return (
         <Stack>
-            <Title>Inscrições</Title>
-            <TextInput
-                placeholder={`Buscar por ${searchBy}`}
-                mb="md"
-                icon={<IconSearch size="0.9rem" stroke={1.5} />}
-                value={search}
-                onChange={handleSearchChange}
-            />
-            <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} />
-            <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
+            <ScrollArea>
+                <Title>Inscrições</Title>
+                <Flex gap={"md"}>
+                    <TextInput 
+                        placeholder={`Buscar por ${searchBy}`}
+                        mb="md"
+                        icon={<IconSearch size="0.9rem" stroke={1.5} />}
+                        value={search}
+                        onChange={handleSearchChange}
+                    />
+                    <Paper shadow={"xs"} p="xs" withBorder>Total de Inscrições: {enrollData.length}</Paper>
+                    <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>    
+                    {/* <Slider
+                        labelAlwaysOn
+                        labelTransition="skew-down"
+                        labelTransitionDuration={150}
+                        labelTransitionTimingFunction="ease"
+                        showLabelOnHover
+                        defaultValue={10}
+                        marks={marks}
+                        onChange={changeLimit}
+                        min={1}
+                        max={100}
+                    />                 */}
+                </Flex>                
+                <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} />
+                <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
+            </ScrollArea>
         </Stack>
     );
 
