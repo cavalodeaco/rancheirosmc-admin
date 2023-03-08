@@ -153,10 +153,6 @@ export function FetchData() {
             setUserData(dataUser); // table data
         };
         fetchData();
-
-
-
-
     }, [tokens]); // execute only if tokens change    
 
     return (

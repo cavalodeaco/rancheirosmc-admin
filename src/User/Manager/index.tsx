@@ -1,5 +1,4 @@
 import { Pagination, Stack, Title } from "@mantine/core";
-import { useLocalStorage } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { User } from "../../FetchData";
 import { UserTable } from "../Table";
@@ -24,7 +23,7 @@ export function UserManager({ userData }: UserManagerProps) {
 
     return (
         <Stack>
-            <Title>Inscrições</Title>
+            <Title>Alunos</Title>
             <UserTable userData={tableUserData} />
             <Pagination page={activeUserPage} onChange={handlePagination} total={userData?.length/limitPage} />
         </Stack>

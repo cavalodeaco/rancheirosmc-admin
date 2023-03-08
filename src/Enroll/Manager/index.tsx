@@ -9,74 +9,52 @@ interface EnrollManagerProps {
     enrollData: Enroll[];
 }
 
+const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at"];
 
-const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand"]; //, "user.driver_license", "user.driver_license_UF"];
-
-function filterData(data: Enroll[], search: string) {
+function filterData(data: Enroll[], search: string, searchBy: string = 'todos') {
     console.log("filterData", search);
     const query = search.toLowerCase().trim();
     return data.filter((item) => {
         if (query === "") {
             return true;
         }
-
-        if (item["enroll_date"].toLowerCase().includes(query)) {
-            return true;
+        const n_item = item as any;
+        function search(field: string) {
+            const [key, rest] = field.split(".");
+            if (rest) {
+                console.log("rest", rest, n_item[key][rest].toLowerCase().includes(query));
+                if (n_item[key][rest].toLowerCase().includes(query)) {
+                    return true;
+                }
+            } else if (n_item[key].toLowerCase().includes(query)) {
+                return true;
+            }
+            return false;
         }
-
-        if (item["enroll_status"].toLowerCase().includes(query)) {
-            return true;
+        if (searchBy === 'todos') {
+            for (const field of searchableFields) {
+                if (search(field)) 
+                    return true;
+            }
+            return false;
+        } else {
+            search(searchBy);
         }
-
-        if (item["city"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["motorcycle_model"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["motorcycle_use"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["motorcycle_brand"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["user"]["driver_license_UF"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["user"]["driver_license"].toLowerCase().includes(query)) {
-            return true;
-        }
-        // TODO: check why has any type?!
-        // for (const field of searchableFields) {
-        //   const [key, ...rest] = field.split(".");
-        //   if (rest.length) {
-        //     if (item[key][rest].toLowerCase().includes(query)) {
-        //       return true;
-        //     }
-        //   } else if (item[key].toLowerCase().includes(query)) {
-        //     return true;
-        //   }
-        // }
     });
 }
 
 function sortData(
     data: Enroll[],
-    payload: { search: string }
+    payload: { search: string, searchBy: string }
 ) {
-    return filterData(data, payload.search);
+    return filterData(data, payload.search, payload.searchBy);
 }
 
 export function EnrollManager({ enrollData }: EnrollManagerProps) {
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
     const [limitPage, setLimitPage] = useState(10);
-
+    const [searchBy, setSearchBy] = useState('todos');
     const [search, setSearch] = useState('');
     const [sortedData, setSortedData] = useState(enrollData);
     const [totalPages, setTotalPages] = useState(0);
@@ -95,7 +73,7 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.currentTarget;
         setSearch(value);
-        const sorted = sortData(enrollData, { search: value });
+        const sorted = sortData(enrollData, { search: value, searchBy: searchBy });
         setSortedData(sorted);
         setTableEnrollData(sorted.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
         setTotalPages(Math.ceil(sorted?.length / limitPage));
@@ -105,13 +83,13 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
         <Stack>
             <Title>Inscrições</Title>
             <TextInput
-                placeholder="Search by any field"
+                placeholder={`Buscar por ${searchBy}`}
                 mb="md"
                 icon={<IconSearch size="0.9rem" stroke={1.5} />}
                 value={search}
                 onChange={handleSearchChange}
             />
-            <EnrollTable enrollData={tableEnrollData} />
+            <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} />
             <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
         </Stack>
     );
