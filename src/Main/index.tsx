@@ -56,7 +56,6 @@ export default function Main({ enrollData, userData }: MainProps) {
   useEffect(() => {
     // decode id token using jsonwebtoken
     if (tokens) {
-      console.log(tokens);
       const decoded = jwtDecode(tokens.id_token);
       setAdmin(decoded as Admin);
     }

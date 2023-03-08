@@ -101,9 +101,9 @@ export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
             <th><UnstyledButton onClick={() => setSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></th>
             <th><UnstyledButton onClick={() => setSearchBy('user.driver_license')}><Title size={15}>CNH</Title></UnstyledButton></th>
             <th><Title size={15}>Contato</Title></th>
-            <th><UnstyledButton onClick={() => setSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th>
+            {/* <th><UnstyledButton onClick={() => setSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
             <th><UnstyledButton onClick={() => setSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></th>
-            <th><UnstyledButton onClick={() => setSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th>
+            {/* <th><UnstyledButton onClick={() => setSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
           </tr>
         </thead>
         <tbody>{rows}</tbody>
