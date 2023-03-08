@@ -66,7 +66,7 @@ export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
         </td> */}
         <td>{item.city}</td>
         <td align='center'>{item.enroll_status === "waiting" ? <IconHourglassEmpty /> : ((item.enroll_status === "called") ? <IconBrandHipchat /> : item.enroll_status)}</td>
-        <td>{item.enroll_date}</td>
+        <td>{item.enroll_date.substring(0,9)}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td>{item.user.phone.match(regex)?.join('')}</td>
@@ -77,7 +77,7 @@ export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
         </td> */}
         <td>{item.motorcycle_brand}</td>
         <td>{item.updated_by}</td>
-        <td>{item.updated_at}</td>
+        <td>{item.updated_at.substring(0,9)}</td>
       </tr>
     );
   });
