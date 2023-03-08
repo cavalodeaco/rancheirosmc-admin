@@ -69,11 +69,12 @@ export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
         <td>{item.enroll_date}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
-        <td>
+        <td>{item.user.phone.match(regex)?.join('')}</td>
+        {/* <td>
           <a href={`https://web.whatsapp.com/send/?phone=55${item.user.phone.match(regex)?.join('')}&text&type=phone_number&app_absent=0`} target='_blank'>
             <IconBrandWhatsapp />
           </a>
-        </td>
+        </td> */}
         <td>{item.motorcycle_brand}</td>
         <td>{item.updated_by}</td>
         <td>{item.updated_at}</td>
