@@ -26,15 +26,16 @@ interface EnrollResponse {
 }
 
 export interface User {
-    driver_license_UF: string;
-    createdAt: string;
-    phone: string;
     name: string;
-    driver_license: string;
-    PK: string;
-    enroll: Enroll[];
     email: string;
-    updatedAt: string;
+    phone: string;
+    driver_license: string;
+    driver_license_UF: string;
+    enroll: Enroll[];
+    created_at: string;
+    updated_at: string;
+    updated_by: string;
+    PK: string;
     done: boolean;
 }
 
@@ -52,7 +53,6 @@ export function FetchData() {
     const [enrollPage, setEnrollPage] = useState(""); // manages 
     const [userPage, setUserPage] = useState(""); // manages 
 
-
     async function getEnrollData() {
         console.log("Request data");
         if (tokens) { // only proceed if tokens are available
@@ -62,13 +62,21 @@ export function FetchData() {
                 "access_token": `${tokens.access_token}`,
                 "id_token": `${tokens.id_token}`
             };
-            const enrolls: EnrollResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
-                method: "GET",
-                headers: enrollPage ? { ...headers, "page": JSON.stringify(enrollPage) } : headers
-            }) // add body
-                .then((response) => response.json())
-                .then((data) => data.message);
-            return enrolls;
+            try {
+                const enrolls: EnrollResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+                    method: "GET",
+                    headers: enrollPage ? { ...headers, "page": JSON.stringify(enrollPage) } : headers
+                }) // add body
+                    .then((response) => response.json())
+                    .then((data) => data.message);
+
+                return enrolls;
+            } catch (error: any) {
+                if (error.status === 401 || error.name == "UnauthorizedError") {
+                    localStorage.clear();
+                    window.location.href = "/";
+                }
+            }
         }
         return undefined;
     }
@@ -145,6 +153,7 @@ export function FetchData() {
                     }
                     return enroll[0]; // needs to be only one
                 });
+                user.PK = `${user.driver_license}/${user.driver_license_UF}`;
                 return user;
             });
 
@@ -153,10 +162,6 @@ export function FetchData() {
             setUserData(dataUser); // table data
         };
         fetchData();
-
-
-
-
     }, [tokens]); // execute only if tokens change    
 
     return (

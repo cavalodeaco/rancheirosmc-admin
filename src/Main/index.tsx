@@ -33,7 +33,7 @@ export default function Main({ enrollData, userData }: MainProps) {
   const [isUser, setIsUser] = useState(false);
 
   return (
-    <AppShell
+    <AppShell      
       header={
         <Header height={60} p="xs">
           <Group className={classes.header} position="center">

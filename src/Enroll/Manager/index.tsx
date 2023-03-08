@@ -1,4 +1,4 @@
-import { Pagination, Stack, TextInput, Title } from "@mantine/core";
+import { Flex, Pagination, Paper, ScrollArea, Slider, Stack, TextInput, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
@@ -9,77 +9,67 @@ interface EnrollManagerProps {
     enrollData: Enroll[];
 }
 
+const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at"];
 
-const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand"]; //, "user.driver_license", "user.driver_license_UF"];
-
-function filterData(data: Enroll[], search: string) {
+function filterData(data: Enroll[], search: string, searchBy: string = 'todos') {
     console.log("filterData", search);
     const query = search.toLowerCase().trim();
     return data.filter((item) => {
         if (query === "") {
             return true;
         }
-
-        if (item["enroll_date"].toLowerCase().includes(query)) {
-            return true;
+        const n_item = item as any;
+        function search(field: string) {
+            const [key, rest] = field.split(".");
+            if (rest) {
+                console.log("rest", rest, n_item[key][rest].toLowerCase().includes(query));
+                if (n_item[key][rest].toLowerCase().includes(query)) {
+                    return true;
+                }
+            } else if (n_item[key].toLowerCase().includes(query)) {
+                return true;
+            }
+            return false;
         }
-
-        if (item["enroll_status"].toLowerCase().includes(query)) {
-            return true;
+        if (searchBy === 'todos') {
+            for (const field of searchableFields) {
+                if (search(field))
+                    return true;
+            }
+            return false;
+        } else {
+            search(searchBy);
         }
-
-        if (item["city"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["motorcycle_model"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["motorcycle_use"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["motorcycle_brand"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["user"]["driver_license_UF"].toLowerCase().includes(query)) {
-            return true;
-        }
-
-        if (item["user"]["driver_license"].toLowerCase().includes(query)) {
-            return true;
-        }
-        // TODO: check why has any type?!
-        // for (const field of searchableFields) {
-        //   const [key, ...rest] = field.split(".");
-        //   if (rest.length) {
-        //     if (item[key][rest].toLowerCase().includes(query)) {
-        //       return true;
-        //     }
-        //   } else if (item[key].toLowerCase().includes(query)) {
-        //     return true;
-        //   }
-        // }
     });
 }
 
 function sortData(
     data: Enroll[],
-    payload: { search: string }
+    payload: { search: string, searchBy: string }
 ) {
-    return filterData(data, payload.search);
+    return filterData(data, payload.search, payload.searchBy);
 }
 
 export function EnrollManager({ enrollData }: EnrollManagerProps) {
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
     const [limitPage, setLimitPage] = useState(10);
-
+    const [searchBy, setSearchBy] = useState('todos');
     const [search, setSearch] = useState('');
     const [sortedData, setSortedData] = useState(enrollData);
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalEnrollData, setTotalEnrollData] = useState(0);
+    const marks = [
+        { value: 25, label: "25%" },
+        { value: 50, label: "50%" },
+        { value: 75, label: "75%" },
+    ];
+
+    function changeLimit(value: number) {
+        console.log("Limit: ", value);
+        // limit % of totalEnrollData
+        setLimitPage(Math.ceil(value * 100 / totalEnrollData));
+        handlePagination(1); // move to first page
+    }
 
     function handlePagination(page: number) {
         setActiveEnrollPage(page);
@@ -89,29 +79,50 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
     useEffect(() => {
         setSortedData(enrollData);
         setTableEnrollData(enrollData.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
-        setTotalPages(enrollData.length / limitPage);
+        setTotalEnrollData(enrollData.length);
     }, [enrollData]);
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.currentTarget;
-        setSearch(value);
-        const sorted = sortData(enrollData, { search: value });
+    function handleSearch() {
+        console.log("handleButtonSearch", search, searchBy)
+        const sorted = sortData(enrollData, { search: search, searchBy: searchBy });
+        console.log("sorted", sorted.length);
         setSortedData(sorted);
-        setTableEnrollData(sorted.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
-        setTotalPages(Math.ceil(sorted?.length / limitPage));
-    };
+        setActiveEnrollPage(1);
+        setTableEnrollData(sorted.slice(0, limitPage));
+    }
 
     return (
         <Stack>
             <Title>Inscrições</Title>
-            <TextInput
-                placeholder="Search by any field"
-                mb="md"
-                icon={<IconSearch size="0.9rem" stroke={1.5} />}
-                value={search}
-                onChange={handleSearchChange}
-            />
-            <EnrollTable enrollData={tableEnrollData} />
+            <Flex gap={"md"}>
+                <TextInput
+                    placeholder={`Buscar por ${searchBy}`}
+                    mb="md"
+                    icon={<IconSearch size="0.9rem" stroke={1.5} />}
+                    value={search}
+                    onChange={(event) => setSearch(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                            handleSearch();
+                        }
+                    }}
+                />
+                <Paper shadow={"xs"} p="xs" withBorder>Total de Inscrições: {enrollData.length}</Paper>
+                <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
+                {/* <Slider
+                        labelAlwaysOn
+                        labelTransition="skew-down"
+                        labelTransitionDuration={150}
+                        labelTransitionTimingFunction="ease"
+                        showLabelOnHover
+                        defaultValue={10}
+                        marks={marks}
+                        onChange={changeLimit}
+                        min={1}
+                        max={100}
+                    />                 */}
+            </Flex>
+            <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} />
             <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
         </Stack>
     );

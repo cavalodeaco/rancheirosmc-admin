@@ -120,7 +120,7 @@ export function Menu({ setIsEnroll, setIsUser }: MenuProps) {
   ));
 
   return (
-    <Navbar height={"95vh"} width={{ sm: 300 }} p="md">
+    <Navbar height={"90vh"} width={{ sm: 300 }} p="md">
       <Navbar.Section grow>
         {links}
       </Navbar.Section>

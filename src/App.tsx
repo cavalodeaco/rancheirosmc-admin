@@ -1,4 +1,3 @@
-import React from "react";
 import { MantineProvider } from "@mantine/core";
 import { theme } from "./theme";
 import { useThemeDetector } from "./utils/useThemeDetector";
