@@ -82,29 +82,34 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
         setTotalEnrollData(enrollData.length);
     }, [enrollData]);
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.currentTarget;
-        setSearch(value);
-        const sorted = sortData(enrollData, { search: value, searchBy: searchBy });
+    function handleSearch() {
+        console.log("handleButtonSearch", search, searchBy)
+        const sorted = sortData(enrollData, { search: search, searchBy: searchBy });
+        console.log("sorted", sorted.length);
         setSortedData(sorted);
-        setTableEnrollData(sorted.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
-    };
+        setActiveEnrollPage(1);
+        setTableEnrollData(sorted.slice(0, limitPage));
+    }
 
     return (
         <Stack>
-            <ScrollArea>
-                <Title>Inscrições</Title>
-                <Flex gap={"md"}>
-                    <TextInput 
-                        placeholder={`Buscar por ${searchBy}`}
-                        mb="md"
-                        icon={<IconSearch size="0.9rem" stroke={1.5} />}
-                        value={search}
-                        onChange={handleSearchChange}
-                    />
-                    <Paper shadow={"xs"} p="xs" withBorder>Total de Inscrições: {enrollData.length}</Paper>
-                    <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>    
-                    {/* <Slider
+            <Title>Inscrições</Title>
+            <Flex gap={"md"}>
+                <TextInput
+                    placeholder={`Buscar por ${searchBy}`}
+                    mb="md"
+                    icon={<IconSearch size="0.9rem" stroke={1.5} />}
+                    value={search}
+                    onChange={(event) => setSearch(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                            handleSearch();
+                        }
+                    }}
+                />
+                <Paper shadow={"xs"} p="xs" withBorder>Total de Inscrições: {enrollData.length}</Paper>
+                <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
+                {/* <Slider
                         labelAlwaysOn
                         labelTransition="skew-down"
                         labelTransitionDuration={150}
@@ -116,10 +121,9 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
                         min={1}
                         max={100}
                     />                 */}
-                </Flex>                
-                <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} />
-                <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
-            </ScrollArea>
+            </Flex>
+            <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} />
+            <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
         </Stack>
     );
 

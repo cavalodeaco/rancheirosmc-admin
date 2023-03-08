@@ -1,4 +1,4 @@
-import { Flex, Pagination, Paper, ScrollArea, Stack, TextInput, Title } from "@mantine/core";
+import { Button, Flex, Pagination, Paper, ScrollArea, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { User } from "../../FetchData";
@@ -8,10 +8,10 @@ interface UserManagerProps {
     userData: User[];
 }
 
-const searchableFields = ["name", "driver_license_UF", "driver_license", "email", "phone", "enroll.city", "enroll.motorcycle_model", "enroll.motorcycle_use", "enroll.enroll_status", "enroll.motorcycle_brand", "enroll.updated_by", "enroll.enroll_date", "enroll.updated_at"];
+const searchableFields = ["name", "driver_license_UF", "driver_license", "email", "phone", "updated_at", "updated_by", "created_at"];
 
 function filterData(data: User[], search: string, searchBy: string = 'todos') {
-    console.log("filterData", search);
+    console.log("filterData: ", search);
     const query = search.toLowerCase().trim();
     return data.filter((item) => {
         if (query === "") {
@@ -81,29 +81,35 @@ export function UserManager({ userData }: UserManagerProps) {
         setTotalUserData(userData.length);
     }, [userData]);
 
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.currentTarget;
-        setSearch(value);
-        const sorted = sortData(userData, { search: value, searchBy: searchBy });
+    function handleSearch() {
+        console.log("handleButtonSearch", search, searchBy)
+        const sorted = sortData(userData, { search: search, searchBy: searchBy });
+        console.log("sorted", sorted.length);
         setSortedData(sorted);
-        setTableUserData(sorted.slice((activeUserPage - 1) * limitPage, activeUserPage * limitPage));
-    };
+        setActiveUserPage(1);
+        setTableUserData(sorted.slice(0, limitPage));
+    }
 
     return (
         <Stack>
-            <ScrollArea>
-                <Title>Alunos</Title>
-                <Flex gap={"md"}>
-                    <TextInput
-                        placeholder={`Buscar por ${searchBy}`}
-                        mb="md"
-                        icon={<IconSearch size="0.9rem" stroke={1.5} />}
-                        value={search}
-                        onChange={handleSearchChange}
-                    />
-                    <Paper shadow={"xs"} p="xs" withBorder>Total de alunos: {userData.length}</Paper>
-                    <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
-                    {/* <Slider
+            <Title>Alunos</Title>
+            <Flex gap={"md"}>
+                <TextInput
+                    placeholder={`Buscar por ${searchBy}`}
+                    mb="md"
+                    icon={<IconSearch size="0.9rem" stroke={1.5} />}
+                    value={search}
+                    onChange={(event) => setSearch(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                            handleSearch();
+                        }
+                    }}
+                />
+                <Button onClick={handleSearch}>Filtrar</Button>
+                <Paper shadow={"xs"} p="xs" withBorder>Total de alunos: {userData.length}</Paper>
+                <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
+                {/* <Slider
                         labelAlwaysOn
                         labelTransition="skew-down"
                         labelTransitionDuration={150}
@@ -115,10 +121,9 @@ export function UserManager({ userData }: UserManagerProps) {
                         min={1}
                         max={100}
                     />                 */}
-                </Flex>
-                <UserTable userData={tableUserData} />
-                <Pagination page={activeUserPage} onChange={handlePagination} total={Math.ceil(userData?.length / limitPage)} />
-            </ScrollArea>
+            </Flex>
+            <UserTable userData={tableUserData} />
+            <Pagination id="user-pagination" page={activeUserPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
         </Stack>
     );
 

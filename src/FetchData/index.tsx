@@ -26,15 +26,16 @@ interface EnrollResponse {
 }
 
 export interface User {
-    driver_license_UF: string;
-    createdAt: string;
-    phone: string;
     name: string;
-    driver_license: string;
-    PK: string;
-    enroll: Enroll[];
     email: string;
-    updatedAt: string;
+    phone: string;
+    driver_license: string;
+    driver_license_UF: string;
+    enroll: Enroll[];
+    created_at: string;
+    updated_at: string;
+    updated_by: string;
+    PK: string;
     done: boolean;
 }
 
@@ -51,7 +52,6 @@ export function FetchData() {
     const [userData, setUserData] = useState<User[]>([]);
     const [enrollPage, setEnrollPage] = useState(""); // manages 
     const [userPage, setUserPage] = useState(""); // manages 
-
 
     async function getEnrollData() {
         console.log("Request data");
@@ -153,6 +153,7 @@ export function FetchData() {
                     }
                     return enroll[0]; // needs to be only one
                 });
+                user.PK = `${user.driver_license}/${user.driver_license_UF}`;
                 return user;
             });
 
