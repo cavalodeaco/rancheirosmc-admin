@@ -1,4 +1,4 @@
-import { Flex, Pagination, Paper, ScrollArea, Slider, Stack, TextInput, Title } from "@mantine/core";
+import { Button, Flex, Pagination, Paper, ScrollArea, Slider, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Class } from "../../FetchData";
@@ -112,6 +112,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
                         }
                     }}
                 />
+                <Button onClick={handleSearch}>Filtrar</Button>
                 <Paper shadow={"xs"} p="xs" withBorder>Total de turmas: {classData.length}</Paper>
                 <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
                 {/* <Slider

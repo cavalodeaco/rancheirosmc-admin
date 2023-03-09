@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { createStyles, Navbar, Group, Code, Center, Space, Title, Header } from '@mantine/core';
+import { createStyles, Navbar, Space, Title } from '@mantine/core';
 import {
   IconHelmet,
   IconHome,
