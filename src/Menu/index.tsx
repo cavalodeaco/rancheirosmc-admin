@@ -1,66 +1,86 @@
-import { useState } from 'react';
-import { createStyles, Navbar, Space, Title } from '@mantine/core';
+import { useState } from "react";
+import { createStyles, Navbar, Space, Title } from "@mantine/core";
 import {
   IconHelmet,
   IconHome,
   IconLogout,
   IconMotorbike,
   IconUser,
-} from '@tabler/icons';
-import { Admin } from '../Main';
+} from "@tabler/icons";
+import { Admin } from "../Main";
 
 const useStyles = createStyles((theme, _params, getRef) => {
-  const icon = getRef('icon');
+  const icon = getRef("icon");
   return {
-
     header: {
       paddingBottom: theme.spacing.md,
       marginBottom: theme.spacing.md * 1.5,
-      borderBottom: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
-        }`,
+      borderBottom: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[2]
+      }`,
     },
 
     footer: {
       paddingTop: theme.spacing.md,
       marginTop: theme.spacing.md,
-      borderTop: `1px solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
-        }`,
+      borderTop: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[2]
+      }`,
     },
 
     link: {
       ...theme.fn.focusStyles(),
-      display: 'flex',
-      alignItems: 'center',
-      textDecoration: 'none',
+      display: "flex",
+      alignItems: "center",
+      textDecoration: "none",
       fontSize: theme.fontSizes.sm,
-      color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[7],
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[1]
+          : theme.colors.gray[7],
       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
       borderRadius: theme.radius.sm,
       fontWeight: 500,
 
-      '&:hover': {
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-        color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+      "&:hover": {
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[6]
+            : theme.colors.gray[0],
+        color: theme.colorScheme === "dark" ? theme.white : theme.black,
 
         [`& .${icon}`]: {
-          color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+          color: theme.colorScheme === "dark" ? theme.white : theme.black,
         },
       },
     },
 
     linkIcon: {
       ref: icon,
-      color: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[6],
+      color:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[2]
+          : theme.colors.gray[6],
       marginRight: theme.spacing.sm,
     },
 
     linkActive: {
-      '&, &:hover': {
-        backgroundColor: theme.fn.variant({ variant: 'light', color: theme.primaryColor })
-          .background,
-        color: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color,
+      "&, &:hover": {
+        backgroundColor: theme.fn.variant({
+          variant: "light",
+          color: theme.primaryColor,
+        }).background,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
+          .color,
         [`& .${icon}`]: {
-          color: theme.fn.variant({ variant: 'light', color: theme.primaryColor }).color,
+          color: theme.fn.variant({
+            variant: "light",
+            color: theme.primaryColor,
+          }).color,
         },
       },
     },
@@ -72,55 +92,73 @@ interface MenuProps {
   setIsUser: Function | any;
   setIsClass: Function | any;
   admin: Admin | undefined;
+  opened: boolean;
 }
 
-
-export function Menu({ setIsEnroll, setIsUser, setIsClass, admin }: MenuProps) {
+export function Menu({ setIsEnroll, setIsUser, setIsClass, admin, opened }: MenuProps) {
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState('Métricas');
+  const [active, setActive] = useState("Métricas");
 
   const data = [
     {
-      link: '', label: 'Métricas', icon: IconHome, action: () => {
-        if (active !== "Métricas") { // if not in the same page
+      link: "",
+      label: "Métricas",
+      icon: IconHome,
+      action: () => {
+        if (active !== "Métricas") {
+          // if not in the same page
           setIsEnroll(false);
           setIsUser(false);
           setIsClass(false);
         }
-      }
+      },
     },
     {
-      link: '', label: 'Inscrições', icon: IconMotorbike, action: async () => {
-        if (active !== "Inscrições") { // if not in the same page
+      link: "",
+      label: "Inscrições",
+      icon: IconMotorbike,
+      action: async () => {
+        if (active !== "Inscrições") {
+          // if not in the same page
           setIsEnroll(true);
           setIsUser(false);
           setIsClass(false);
         }
-      }
+      },
     },
     {
-      link: '', label: 'Alunos', icon: IconUser, action: async () => {
-        if (active !== "Alunos") { // if not in the same page
+      link: "",
+      label: "Alunos",
+      icon: IconUser,
+      action: async () => {
+        if (active !== "Alunos") {
+          // if not in the same page
           setIsEnroll(false);
           setIsUser(true);
           setIsClass(false);
         }
-      }
+      },
     },
     {
-      link: '', label: 'Turmas', icon: IconHelmet, action: async () => {
-        if (active !== "Turmas") { // if not in the same page
+      link: "",
+      label: "Turmas",
+      icon: IconHelmet,
+      action: async () => {
+        if (active !== "Turmas") {
+          // if not in the same page
           setIsEnroll(false);
           setIsUser(false);
           setIsClass(true);
         }
-      }
-    }
+      },
+    },
   ];
 
   const links = data.map((item) => (
     <a
-      className={cx(classes.link, { [classes.linkActive]: item.label === active })}
+      className={cx(classes.link, {
+        [classes.linkActive]: item.label === active,
+      })}
       href={item.link}
       key={item.label}
       onClick={async (event) => {
@@ -136,22 +174,30 @@ export function Menu({ setIsEnroll, setIsUser, setIsClass, admin }: MenuProps) {
   ));
 
   return (
-    <Navbar height={"90vh"} width={{ sm: 300 }} p="md">
-      <Navbar.Section grow>
-        {links}
-      </Navbar.Section>
+    <Navbar
+      height={"90vh"}
+      hiddenBreakpoint="sm"
+      hidden={!opened}
+      width={{ sm: 200, lg: 300 }}
+      p="md"
+    >
+      <Navbar.Section grow>{links}</Navbar.Section>
 
       <Navbar.Section className={classes.footer}>
-        <a href="#" className={classes.link} onClick={(event) => {
-          localStorage.clear();
-          window.location.href = "/";
-        }}>
+        <a
+          href="#"
+          className={classes.link}
+          onClick={(event) => {
+            localStorage.clear();
+            window.location.href = "/";
+          }}
+        >
           <Title size={12}>{admin?.name || "--"}</Title>
           <IconLogout />
           <Space w="xs" />
           <Title size={18}>Logout</Title>
         </a>
       </Navbar.Section>
-    </Navbar >
+    </Navbar>
   );
 }
