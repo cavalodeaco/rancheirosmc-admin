@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createStyles, Navbar, Group, Code, Center, Space, Title, Header } from '@mantine/core';
 import {
+  IconHelmet,
   IconHome,
   IconLogout,
   IconMotorbike,
@@ -69,11 +70,12 @@ const useStyles = createStyles((theme, _params, getRef) => {
 interface MenuProps {
   setIsEnroll: Function | any;
   setIsUser: Function | any;
+  setIsClass: Function | any;
   admin: Admin | undefined;
 }
 
 
-export function Menu({ setIsEnroll, setIsUser, admin }: MenuProps) {
+export function Menu({ setIsEnroll, setIsUser, setIsClass, admin }: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState('Métricas');
 
@@ -83,6 +85,7 @@ export function Menu({ setIsEnroll, setIsUser, admin }: MenuProps) {
         if (active !== "Métricas") { // if not in the same page
           setIsEnroll(false);
           setIsUser(false);
+          setIsClass(false);
         }
       }
     },
@@ -91,6 +94,7 @@ export function Menu({ setIsEnroll, setIsUser, admin }: MenuProps) {
         if (active !== "Inscrições") { // if not in the same page
           setIsEnroll(true);
           setIsUser(false);
+          setIsClass(false);
         }
       }
     },
@@ -99,6 +103,16 @@ export function Menu({ setIsEnroll, setIsUser, admin }: MenuProps) {
         if (active !== "Alunos") { // if not in the same page
           setIsEnroll(false);
           setIsUser(true);
+          setIsClass(false);
+        }
+      }
+    },
+    {
+      link: '', label: 'Turmas', icon: IconHelmet, action: async () => {
+        if (active !== "Turmas") { // if not in the same page
+          setIsEnroll(false);
+          setIsUser(false);
+          setIsClass(true);
         }
       }
     }

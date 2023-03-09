@@ -44,11 +44,28 @@ interface UserResponse {
     page: any;
 }
 
+export interface Class {
+    updated_at: string;
+    city: string;
+    name: string;
+    location: string;
+    active: string;
+    updated_by: string;
+    date: string;
+    created_at: string;
+}
+
+interface ClassResponse {
+    Items: Class[];
+    page: any;
+}
+
 export function FetchData() {
     const [tokens, setTokens] = useLocalStorage<Tokens>({
         key: "tokens",
     });
     const [enrollData, setEnrollData] = useState<Enroll[]>([]);
+    const [classData, setClassData] = useState<Class[]>([]);
     const [userData, setUserData] = useState<User[]>([]);
     const [enrollPage, setEnrollPage] = useState(""); // manages 
     const [userPage, setUserPage] = useState(""); // manages 
@@ -101,6 +118,26 @@ export function FetchData() {
         return undefined;
     }
 
+    async function getClassData() {
+        console.log("Request data");
+        if (tokens) { // only proceed if tokens are available
+            const headers = {
+                "limit": "200",
+                // add tokens from localstorage        
+                "access_token": `${tokens.access_token}`,
+                "id_token": `${tokens.id_token}`
+            };
+            const classes: ClassResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/class`, {
+                method: "GET",
+                headers: userPage ? { ...headers, "page": JSON.stringify(userPage) } : headers
+            }) // add body
+                .then((response) => response.json())
+                .then((data) => data.message);
+            return classes;
+        }
+        return undefined;
+    }
+
     useEffect(() => {
         const fetchData = async () => {
             // enroll data
@@ -131,6 +168,19 @@ export function FetchData() {
             } while (flag);
             console.log("User data fetched");
 
+            console.log("Fetching class data");
+            flag = false;
+            let dataClass: Class[] = [];
+            do {
+                let classes: ClassResponse | undefined = await getClassData();
+                if (classes) {
+                    dataClass = [...classData, ...classes.Items];
+                    setUserPage(classes.page || ""); // manages next data
+                }
+                flag = classes?.page;
+            } while (flag);
+            console.log("Class data fetched");
+
             // Process data
             // Find the user of each enroll
             dataEnroll = dataEnroll.map((enroll) => {
@@ -160,12 +210,13 @@ export function FetchData() {
             // Save data
             setEnrollData(dataEnroll); // table data
             setUserData(dataUser); // table data
+            setClassData(dataClass); // table data
         };
         fetchData();
     }, [tokens]); // execute only if tokens change    
 
     return (
-        <Main enrollData={enrollData} userData={userData} />
+        <Main enrollData={enrollData} userData={userData} classData={classData}/>
     )
 
 }

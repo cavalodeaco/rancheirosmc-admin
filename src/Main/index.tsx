@@ -7,10 +7,11 @@ import { EnrollManager } from "../Enroll/Manager";
 import { UserManager } from "../User/Manager";
 import TextPPV from "../TextPPV/TextPPV";
 import ppvicon from '../img/iconppv.svg';
-import { Enroll, User } from "../FetchData";
+import { Class, Enroll, User } from "../FetchData";
 import { useLocalStorage } from "@mantine/hooks";
 import jwtDecode from "jwt-decode";
 import Tokens from "../AuthenticationForm/Tokens";
+import { ClassManager } from "../Class/Manager";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef('icon');
@@ -28,6 +29,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 interface MainProps {
   enrollData: Enroll[];
   userData: User[];
+  classData: Class[];
 }
 
 export interface Admin {
@@ -43,10 +45,11 @@ export interface Admin {
   "custom:viewer": string;
 }
 
-export default function Main({ enrollData, userData }: MainProps) {
+export default function Main({ enrollData, userData, classData }: MainProps) {
   const { classes, cx } = useStyles();
   const [isEnroll, setIsEnroll] = useState(false);
   const [isUser, setIsUser] = useState(false);
+  const [isClass, setIsClass] = useState(false);
   const [admin, setAdmin] = useState<Admin>();
 
   const [tokens, setTokens] = useLocalStorage<Tokens>({
@@ -78,11 +81,12 @@ export default function Main({ enrollData, userData }: MainProps) {
           </Group>
         </Header>}
       navbar={
-        <Menu setIsEnroll={setIsEnroll} setIsUser={setIsUser} admin={admin}/>
+        <Menu setIsEnroll={setIsEnroll} setIsUser={setIsUser} setIsClass={setIsClass} admin={admin}/>
       }
     >
       {isEnroll && <EnrollManager enrollData={enrollData} admin={admin}/>}
       {isUser && <UserManager userData={userData}  admin={admin}/>}
+      {isClass && <ClassManager classData={classData} admin={admin}/>}
     </AppShell>
   );
 }
