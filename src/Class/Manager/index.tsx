@@ -59,6 +59,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
     const [search, setSearch] = useState('');
     const [sortedData, setSortedData] = useState(classData);
     const [totalClassData, setTotalClassData] = useState(0);
+    const [isCreation, setIsCreation] = useState(false);
     const marks = [
         { value: 25, label: "25%" },
         { value: 50, label: "50%" },
@@ -96,26 +97,38 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
         setTableClassData(sorted.slice(0, limitPage));
     }
 
+    function handleCreateClass () {
+        console.log("handleCreateClass");
+        const manager = admin?.["custom:manager"];
+        if (manager == "true") {
+            setIsCreation(true);
+        } else {
+            setIsCreation(false);
+        }
+    }
+
     return (
         <Stack>
             <Title>Turmas</Title>
-            <Flex gap={"md"}>
-                <TextInput
-                    placeholder={`Buscar por ${searchBy}`}
-                    mb="md"
-                    icon={<IconSearch size="0.9rem" stroke={1.5} />}
-                    value={search}
-                    onChange={(event) => setSearch(event.currentTarget.value)}
-                    onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                            handleSearch();
-                        }
-                    }}
-                />
-                <Button onClick={handleSearch}>Filtrar</Button>
-                <Paper shadow={"xs"} p="xs" withBorder>Total de turmas: {classData.length}</Paper>
-                <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
-                {/* <Slider
+            {!isCreation ? <>
+                <Flex gap={"md"}>
+                    <Button onClick={handleCreateClass}>Criar turma</Button>
+                    <Paper shadow={"xs"} p="xs" withBorder>Total de turmas: {classData.length}</Paper>
+                    <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
+                    <TextInput
+                        placeholder={`Buscar por ${searchBy}`}
+                        mb="md"
+                        icon={<IconSearch size="0.9rem" stroke={1.5} />}
+                        value={search}
+                        onChange={(event) => setSearch(event.currentTarget.value)}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                                handleSearch();
+                            }
+                        }}
+                    />
+                    <Button onClick={handleSearch}>Filtrar</Button>
+                    {/* <Slider
                         labelAlwaysOn
                         labelTransition="skew-down"
                         labelTransitionDuration={150}
@@ -127,9 +140,15 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
                         min={1}
                         max={100}
                     />                 */}
-            </Flex>
-            <ClassTable classData={tableClassData} setSearchBy={setSearchBy} />
-            <Pagination page={activeClassPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
+                </Flex>
+                <ClassTable classData={tableClassData} setSearchBy={setSearchBy} />
+                <Pagination page={activeClassPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
+            </>
+                : <>
+                    <Flex gap={"md"}>
+                        <Button onClick={() => { setIsCreation(false) }}>Voltar</Button>
+                    </Flex>
+                </>}
         </Stack>
     );
 
