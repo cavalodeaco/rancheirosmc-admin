@@ -1,8 +1,10 @@
 import { Alert, Button, createStyles, Stepper, UnstyledButton } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
+import { useLocalStorage } from "@mantine/hooks";
 import { IconAlertCircle, IconCircleCheck } from "@tabler/icons";
 import { useState } from "react";
 import { z } from "zod";
+import Tokens from "../../AuthenticationForm/Tokens";
 import Create from "../Create";
 
 const useStyles = createStyles((mantineTheme) => ({
@@ -42,6 +44,9 @@ const pageSchema = z.object({
 
 export function CreateForm() {
   const { classes } = useStyles();
+  const [tokens, setTokens] = useLocalStorage<Tokens>({
+    key: "tokens",
+  });
   const [alert, setAlert] = useState(false);
   const [result, setResult] = useState(0);
 
@@ -64,7 +69,10 @@ export function CreateForm() {
       );
       const config = {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "id_token": `${tokens.id_token}`
+        },
         body: data,
       };
       try {
