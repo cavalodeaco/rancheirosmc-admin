@@ -71,6 +71,8 @@ export function CreateForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // add tokens from localstorage   
+          "access_token": `${tokens.access_token}`,
           "id_token": `${tokens.id_token}`
         },
         body: data,
