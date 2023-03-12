@@ -18,6 +18,7 @@ export interface Enroll {
     motorcycle_brand: string;
     enroll_date: string;
     user: User;
+    class: string;
 }
 
 interface EnrollResponse {

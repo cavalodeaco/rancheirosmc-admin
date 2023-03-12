@@ -42,11 +42,11 @@ const pageSchema = z.object({
         "^(https:\\/\\/goo\\.gl\\/maps\\/)([a-zA-Z0-9]{6})$"
       );
       return regex.test(value);
-    }, { message: "Localização inválida" }),
+    }, { message: "Localização inválida, utilizar https://goo.gl/maps/XXXXXX" }),
     date: z.string().refine((value) => {
       const date = new Date(value);
       return date instanceof Date && !isNaN(date.getTime());
-    }, { message: "Data inválida" }),
+    }, { message: "Data inválida, utilizar DD/MM/AAAA" }),
   city: z.enum(["curitiba", "maringá", "londrina", "cambira"]),
   }),
 });
