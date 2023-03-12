@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton } from '@mantine/core';
 import { Class } from '../../FetchData';
-import { IconCircleCheck, IconCircleMinus } from '@tabler/icons';
+import { IconCircleCheck, IconCircleMinus, IconMap2 } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -57,10 +57,10 @@ export function ClassTable({ classData, setSearchBy }: ClassTableProps) {
         <td>{item.active === "true" ? <IconCircleCheck/> : <IconCircleMinus />}</td>
         <td>{item.name}</td>
         <td>{item.city}</td>
-        <td>{item.date.substring(0,9)}</td>
-        <td>{item.location}</td>
+        <td>{item.date.substring(0,10)}</td>
+        <td><a href={item.location} target='_blank' rel='noreferrer'><IconMap2/></a></td>
         <td>{item.updated_by}</td>
-        <td>{item.updated_at.substring(0,9)}</td>
+        <td>{item.updated_at.substring(0,10)}</td>
       </tr>
     );
   });

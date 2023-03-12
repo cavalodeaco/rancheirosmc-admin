@@ -36,8 +36,18 @@ const useStyles = createStyles((mantineTheme) => ({
 
 const pageSchema = z.object({
   class: z.object({
-    location: z.string().min(1, { message: "O campo localização é obrigatório" }),
-    date: z.string().min(1, { message: "O campo data é obrigatório" }),
+    // validate location using regex to identify the pattern https://goo.gl/maps/XXXXXX
+    location: z.string().refine((value) => {
+      const regex = new RegExp(
+        "^(https:\\/\\/goo\\.gl\\/maps\\/)([a-zA-Z0-9]{6})$"
+      );
+      return regex.test(value);
+    }, { message: "Localização inválida" }),
+    date: z.string().refine((value) => {
+      const date = new Date(value);
+      return date instanceof Date && !isNaN(date.getTime());
+    }, { message: "Data inválida" }),
+  city: z.enum(["curitiba", "maringá", "londrina", "cambira"]),
   }),
 });
 
