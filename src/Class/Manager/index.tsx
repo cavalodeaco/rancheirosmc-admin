@@ -3,6 +3,7 @@ import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Class } from "../../FetchData";
 import { Admin } from "../../Main";
+import { CreateForm } from "../CreateForm";
 import { ClassTable } from "../Table";
 
 interface ClassManagerProps {
@@ -113,8 +114,6 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
             {!isCreation ? <>
                 <Flex gap={"md"}>
                     <Button onClick={handleCreateClass}>Criar turma</Button>
-                    <Paper shadow={"xs"} p="xs" withBorder>Total de turmas: {classData.length}</Paper>
-                    <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
                     <TextInput
                         placeholder={`Buscar por ${searchBy}`}
                         mb="md"
@@ -128,6 +127,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
                         }}
                     />
                     <Button onClick={handleSearch}>Filtrar</Button>
+                    <Paper shadow={"xs"} p="xs" withBorder>{sortedData.length}/{classData.length}</Paper>
                     {/* <Slider
                         labelAlwaysOn
                         labelTransition="skew-down"
@@ -147,6 +147,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
                 : <>
                     <Flex gap={"md"}>
                         <Button onClick={() => { setIsCreation(false) }}>Voltar</Button>
+                        <CreateForm/>
                     </Flex>
                 </>}
         </Stack>

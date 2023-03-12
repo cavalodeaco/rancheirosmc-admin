@@ -113,8 +113,7 @@ export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
                     }}
                 />
                 <Button onClick={handleSearch}>Filtrar</Button>
-                <Paper shadow={"xs"} p="xs" withBorder>Total de Inscrições: {enrollData.length}</Paper>
-                <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
+                <Paper shadow={"xs"} p="xs" withBorder>{sortedData.length}/{enrollData.length}</Paper>
                 {/* <Slider
                         labelAlwaysOn
                         labelTransition="skew-down"

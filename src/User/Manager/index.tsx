@@ -113,8 +113,7 @@ export function UserManager({ userData, admin }: UserManagerProps) {
                     }}
                 />
                 <Button onClick={handleSearch}>Filtrar</Button>
-                <Paper shadow={"xs"} p="xs" withBorder>Total de alunos: {userData.length}</Paper>
-                <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
+                <Paper shadow={"xs"} p="xs" withBorder>{sortedData.length}/{userData.length}</Paper>
                 {/* <Slider
                         labelAlwaysOn
                         labelTransition="skew-down"
