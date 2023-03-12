@@ -19,6 +19,7 @@ export interface Enroll {
     enroll_date: string;
     user: User;
     class: string;
+    id: string;
 }
 
 interface EnrollResponse {
@@ -191,6 +192,7 @@ export function FetchData() {
                 if (user) {
                     enroll.user = user;
                 }
+                enroll.id = `${enroll.city}/${enroll.enroll_date}`;
                 return enroll;
             });
             // Find enrolls of each user

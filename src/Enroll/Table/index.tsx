@@ -38,21 +38,21 @@ const regex = /\d+/g;
 export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState(['1']);
-  const toggleRow = (enroll_date: string) =>
+  const toggleRow = (id: string) =>
     setSelection((current) =>
-      current.includes(enroll_date) ? current.filter((item) => item !== enroll_date) : [...current, enroll_date]
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id]
     );
   const toggleAll = () =>
-    setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.enroll_date)));
+    setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.id)));
 
   const rows = enrollData.map((item) => {
-    const selected = selection.includes(item.enroll_date);
+    const selected = selection.includes(item.id);
     return (
-      <tr key={item.enroll_date} className={cx({ [classes.rowSelected]: selected })}>
+      <tr key={item.id} className={cx({ [classes.rowSelected]: selected })}>
         <td>
           <Checkbox
-            checked={selection.includes(item.enroll_date)}
-            onChange={() => toggleRow(item.enroll_date)}
+            checked={selection.includes(item.id)}
+            onChange={() => toggleRow(item.id)}
             transitionDuration={0}
           />
         </td>
