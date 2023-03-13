@@ -51,6 +51,10 @@ function sortData(
     return filterData(data, payload.search, payload.searchBy);
 }
 
+interface ActionList {
+    [key: string]: Function;
+}
+
 export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
@@ -59,6 +63,27 @@ export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
     const [search, setSearch] = useState('');
     const [sortedData, setSortedData] = useState(enrollData);
     const [totalEnrollData, setTotalEnrollData] = useState(0);
+    const [action, setAction] = useState<string | null>("actions");
+    const [actionList, setActionList] = useState<ActionList>(
+        {
+            "call": function () {
+                console.log("call");
+                setAction(null);
+            },
+            "certified": function () {
+                console.log("certified");
+                setAction(null);
+            },
+            "missed": function () {
+                console.log("missed");
+                setAction(null);
+            },
+            "dropout": function () {
+                console.log("dropout");
+                setAction(null);
+            }
+        }
+    );
     const marks = [
         { value: 25, label: "25%" },
         { value: 50, label: "50%" },
@@ -96,6 +121,13 @@ export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
         setTableEnrollData(sorted.slice(0, limitPage));
     }
 
+    function handleAction(value: string) {
+        console.log("handleAction", value);
+        if (value) {
+            actionList[value]();
+        }
+    }
+
     return (
         <Stack>
             <Title>Inscrições</Title>
@@ -103,14 +135,14 @@ export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
                 <Select
                     mt="md"
                     data={[
-                        { value: "actions", label: "Ações" },
                         { value: "call", label: "Chamar para turma" },
                         { value: "certified", label: "Indicar presença" },
                         { value: "missed", label: "Indicar falta" },
                         { value: "dropout", label: "Indicar desistência" },
                     ]}
-                    defaultChecked={true}
-                    defaultValue="actions"
+                    value={action}
+                    placeholder="Ações de inscrição"
+                    onChange={handleAction}
                 />
                 <TextInput
                     placeholder={`Buscar por ${searchBy}`}

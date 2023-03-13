@@ -12,7 +12,7 @@ const pageSchema = z.object({
     // validate location using regex to identify the pattern https://goo.gl/maps/XXXXXX
     location: z.string().refine((value) => {
       const regex = new RegExp(
-        "^(https:\\/\\/goo\\.gl\\/maps\\/)([a-zA-Z0-9]{6})$"
+        "^(https:\\/\\/goo\\.gl\\/maps\\/)([a-zA-Z0-9])$"
       );
       return regex.test(value);
     }, { message: "Localização inválida, utilizar https://goo.gl/maps/XXXXXX" }),
@@ -20,7 +20,7 @@ const pageSchema = z.object({
       const date = new Date(value);
       return date instanceof Date && !isNaN(date.getTime());
     }, { message: "Data inválida, utilizar DD/MM/AAAA" }),
-  city: z.enum(["curitiba", "maringá", "londrina", "cambira"]),
+  city: z.enum(["curitiba", "maringa", "londrina", "cambira"]),
   }),
 });
 
