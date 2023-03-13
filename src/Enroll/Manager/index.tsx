@@ -135,15 +135,14 @@ export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
                 <Select
                     mt="md"
                     data={[
-                        { value: "call", label: "Chamar para turma" },
-                        { value: "certified", label: "Indicar presença" },
-                        { value: "missed", label: "Indicar falta" },
-                        { value: "dropout", label: "Indicar desistência" },
+                        { value: "call", label: "Chamar para turma", disabled:admin?.["custom:manager"] !== "true" },
+                        { value: "certified", label: "Indicar presença", disabled:admin?.["custom:manager"] !== "true" },
+                        { value: "missed", label: "Indicar falta", disabled:admin?.["custom:manager"] !== "true" },
+                        { value: "dropout", label: "Indicar desistência", disabled:admin?.["custom:manager"] !== "true" },
                     ]}
                     value={action}
                     placeholder="Ações de inscrição"
                     onChange={handleAction}
-                    disabled={admin?.["custom:manager"] !== "true"}
                 />
                 <TextInput
                     placeholder={`Buscar por ${searchBy}`}
