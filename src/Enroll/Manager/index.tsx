@@ -143,6 +143,7 @@ export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
                     value={action}
                     placeholder="Ações de inscrição"
                     onChange={handleAction}
+                    disabled={admin?.["custom:manager"] !== "true"}
                 />
                 <TextInput
                     placeholder={`Buscar por ${searchBy}`}

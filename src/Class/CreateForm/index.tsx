@@ -12,7 +12,7 @@ const pageSchema = z.object({
     // validate location using regex to identify the pattern https://goo.gl/maps/XXXXXX
     location: z.string().refine((value) => {
       const regex = new RegExp(
-        "^(https:\\/\\/goo\\.gl\\/maps\\/)([a-zA-Z0-9])$"
+        "^(https:\\/\\/goo\\.gl\\/maps\\/)"
       );
       return regex.test(value);
     }, { message: "Localização inválida, utilizar https://goo.gl/maps/XXXXXX" }),
@@ -62,8 +62,11 @@ export function CreateForm() {
           config
         );
         const { message } = await response.json();
+        console.log("response", response.status, message)
         if (response.status === 201 && message === "created") {
           setResult(2);
+        } else if (response.status === 409 && message === "Class already exist!") {
+          setResult(3);
         } else {
           setResult(1);
         }
@@ -94,6 +97,12 @@ export function CreateForm() {
             icon={<IconCircleCheck size={16} />}
             title="Turma cadastrada!"
             color="teal.6"
+            children={undefined}
+          />,
+          <Alert
+            icon={<IconCircleCheck size={16} />}
+            title="Turma já existe!"
+            color="red.6"
             children={undefined}
           />,
         ][result]
