@@ -1,4 +1,4 @@
-import { Button, Flex, Pagination, Paper, ScrollArea, Slider, Stack, TextInput, Title } from "@mantine/core";
+import { Button, Flex, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
@@ -100,6 +100,18 @@ export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
         <Stack>
             <Title>Inscrições</Title>
             <Flex gap={"md"}>
+                <Select
+                    mt="md"
+                    data={[
+                        { value: "actions", label: "Ações" },
+                        { value: "call", label: "Chamar para turma" },
+                        { value: "certified", label: "Indicar presença" },
+                        { value: "missed", label: "Indicar falta" },
+                        { value: "dropout", label: "Indicar desistência" },
+                    ]}
+                    defaultChecked={true}
+                    defaultValue="actions"
+                />
                 <TextInput
                     placeholder={`Buscar por ${searchBy}`}
                     mb="md"
