@@ -1,4 +1,4 @@
-import { Alert, Button, createStyles, Stepper, UnstyledButton } from "@mantine/core";
+import { Alert, Button, Group, UnstyledButton } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconAlertCircle, IconCircleCheck } from "@tabler/icons";
@@ -6,33 +6,6 @@ import { useState } from "react";
 import { z } from "zod";
 import Tokens from "../../AuthenticationForm/Tokens";
 import Create from "../Create";
-
-const useStyles = createStyles((mantineTheme) => ({
-  form: {
-    backgroundColor: mantineTheme.white,
-    padding: mantineTheme.spacing.xl,
-    borderRadius: mantineTheme.radius.md,
-    boxShadow: mantineTheme.shadows.lg,
-  },
-
-  input: {
-    backgroundColor: mantineTheme.white,
-    borderColor: mantineTheme.colors.gray[4],
-    color: mantineTheme.black,
-
-    "&::placeholder": {
-      color: mantineTheme.colors.gray[5],
-    },
-  },
-
-  inputLabel: {
-    color: mantineTheme.black,
-  },
-
-  control: {
-    backgroundColor: mantineTheme.colors[mantineTheme.primaryColor][6],
-  },
-}));
 
 const pageSchema = z.object({
   class: z.object({
@@ -51,9 +24,7 @@ const pageSchema = z.object({
   }),
 });
 
-
 export function CreateForm() {
-  const { classes } = useStyles();
   const [tokens, setTokens] = useLocalStorage<Tokens>({
     key: "tokens",
   });
@@ -66,24 +37,22 @@ export function CreateForm() {
       class: {
         city: "curitiba",
         location: "",
-        date: ""
-      }
+        date: "",
+      },
     },
   });
 
   const submitForm = async (): Promise<void> => {
     if (!page.validate().hasErrors) {
       setResult(0);
-      const data = JSON.stringify(
-        page.values["class"]
-      );
+      const data = JSON.stringify(page.values["class"]);
       const config = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // add tokens from localstorage   
-          "access_token": `${tokens.access_token}`,
-          "id_token": `${tokens.id_token}`
+          // add tokens from localstorage
+          access_token: `${tokens.access_token}`,
+          id_token: `${tokens.id_token}`,
         },
         body: data,
       };
@@ -107,22 +76,28 @@ export function CreateForm() {
 
   return (
     <div style={{ position: "relative" }}>
-      <Create page={page} useStyles={useStyles} />
-      <Button onClick={submitForm}>Enviar</Button>
-      {[
-        <UnstyledButton />,
-        <Alert
-          icon={<IconAlertCircle size={16} />}
-          title="Não conseguimos fazer o cadastro da turma"
-          color="red.6"
-        >
-          Entre em contato.
-        </Alert>,
-        <Alert
-          icon={<IconCircleCheck size={16} />}
-          title="Turma cadastrada!"
-          color="teal.6" children={undefined} />
-      ][result]}
-    </div >
-  )
+      <Create page={page} />
+      <Group position="apart" mt="xl">
+        <Button onClick={submitForm}>Enviar</Button>
+      </Group>
+      {
+        [
+          <UnstyledButton />,
+          <Alert
+            icon={<IconAlertCircle size={16} />}
+            title="Não conseguimos fazer o cadastro da turma"
+            color="red.6"
+          >
+            Entre em contato.
+          </Alert>,
+          <Alert
+            icon={<IconCircleCheck size={16} />}
+            title="Turma cadastrada!"
+            color="teal.6"
+            children={undefined}
+          />,
+        ][result]
+      }
+    </div>
+  );
 }
