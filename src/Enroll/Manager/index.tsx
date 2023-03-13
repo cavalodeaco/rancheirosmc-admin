@@ -1,12 +1,13 @@
-import { Flex, Pagination, Paper, ScrollArea, Slider, Stack, TextInput, Title } from "@mantine/core";
-import { useLocalStorage } from "@mantine/hooks";
+import { Button, Flex, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
+import { Admin } from "../../Main";
 import { EnrollTable } from "../Table";
 
 interface EnrollManagerProps {
     enrollData: Enroll[];
+    admin: Admin | undefined;
 }
 
 const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at"];
@@ -50,7 +51,11 @@ function sortData(
     return filterData(data, payload.search, payload.searchBy);
 }
 
-export function EnrollManager({ enrollData }: EnrollManagerProps) {
+interface ActionList {
+    [key: string]: Function;
+}
+
+export function EnrollManager({ enrollData, admin }: EnrollManagerProps) {
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
     const [limitPage, setLimitPage] = useState(10);
@@ -58,6 +63,27 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
     const [search, setSearch] = useState('');
     const [sortedData, setSortedData] = useState(enrollData);
     const [totalEnrollData, setTotalEnrollData] = useState(0);
+    const [action, setAction] = useState<string | null>("actions");
+    const [actionList, setActionList] = useState<ActionList>(
+        {
+            "call": function () {
+                console.log("call");
+                setAction(null);
+            },
+            "certified": function () {
+                console.log("certified");
+                setAction(null);
+            },
+            "missed": function () {
+                console.log("missed");
+                setAction(null);
+            },
+            "dropout": function () {
+                console.log("dropout");
+                setAction(null);
+            }
+        }
+    );
     const marks = [
         { value: 25, label: "25%" },
         { value: 50, label: "50%" },
@@ -77,6 +103,10 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
     }
 
     useEffect(() => {
+        console.log("Admin", admin);
+    }, [admin]);
+
+    useEffect(() => {
         setSortedData(enrollData);
         setTableEnrollData(enrollData.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
         setTotalEnrollData(enrollData.length);
@@ -91,10 +121,29 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
         setTableEnrollData(sorted.slice(0, limitPage));
     }
 
+    function handleAction(value: string) {
+        console.log("handleAction", value);
+        if (value) {
+            actionList[value]();
+        }
+    }
+
     return (
         <Stack>
             <Title>Inscrições</Title>
             <Flex gap={"md"}>
+                <Select
+                    mt="md"
+                    data={[
+                        { value: "call", label: "Chamar para turma", disabled:admin?.["custom:manager"] !== "true" },
+                        { value: "certified", label: "Indicar presença", disabled:admin?.["custom:manager"] !== "true" },
+                        { value: "missed", label: "Indicar falta", disabled:admin?.["custom:manager"] !== "true" },
+                        { value: "dropout", label: "Indicar desistência", disabled:admin?.["custom:manager"] !== "true" },
+                    ]}
+                    value={action}
+                    placeholder="Ações de inscrição"
+                    onChange={handleAction}
+                />
                 <TextInput
                     placeholder={`Buscar por ${searchBy}`}
                     mb="md"
@@ -107,8 +156,8 @@ export function EnrollManager({ enrollData }: EnrollManagerProps) {
                         }
                     }}
                 />
-                <Paper shadow={"xs"} p="xs" withBorder>Total de Inscrições: {enrollData.length}</Paper>
-                <Paper shadow={"xs"} p="xs" withBorder>Total após filtro: {sortedData.length}</Paper>
+                <Button onClick={handleSearch}>Filtrar</Button>
+                <Paper shadow={"xs"} p="xs" withBorder>{sortedData.length}/{enrollData.length}</Paper>
                 {/* <Slider
                         labelAlwaysOn
                         labelTransition="skew-down"
