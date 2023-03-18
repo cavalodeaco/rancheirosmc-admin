@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createStyles, Navbar, Space, Title } from "@mantine/core";
+import { createStyles, Flex, Navbar, Space, Title } from "@mantine/core";
 import {
   IconHelmet,
   IconHome,
@@ -12,6 +12,12 @@ import { Admin } from "../Main";
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
   return {
+    container: {
+      justifyContent: "space-between",
+      height: "100%",
+      marginBottom: theme.spacing.xl * 2.5,
+    },
+
     header: {
       paddingBottom: theme.spacing.md,
       marginBottom: theme.spacing.md * 1.5,
@@ -95,7 +101,13 @@ interface MenuProps {
   opened: boolean;
 }
 
-export function Menu({ setIsEnroll, setIsUser, setIsClass, admin, opened }: MenuProps) {
+export function Menu({
+  setIsEnroll,
+  setIsUser,
+  setIsClass,
+  admin,
+  opened,
+}: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Métricas");
 
@@ -181,23 +193,25 @@ export function Menu({ setIsEnroll, setIsUser, setIsClass, admin, opened }: Menu
       width={{ sm: 200, lg: 300 }}
       p="md"
     >
-      <Navbar.Section grow>{links}</Navbar.Section>
+      <Flex direction="column" className={classes.container}>
+        <Navbar.Section>{links}</Navbar.Section>
 
-      <Navbar.Section className={classes.footer}>
-        <a
-          href="#"
-          className={classes.link}
-          onClick={(event) => {
-            localStorage.clear();
-            window.location.href = "/";
-          }}
-        >
-          <Title size={12}>{admin?.name || "--"}</Title>
-          <IconLogout />
-          <Space w="xs" />
-          <Title size={18}>Logout</Title>
-        </a>
-      </Navbar.Section>
+        <Navbar.Section className={classes.footer}>
+          <a
+            href="#"
+            className={classes.link}
+            onClick={(event) => {
+              localStorage.clear();
+              window.location.href = "/";
+            }}
+          >
+            <Title size={12}>{admin?.name || "--"}</Title>
+            <IconLogout />
+            <Space w="xs" />
+            <Title size={18}>Logout</Title>
+          </a>
+        </Navbar.Section>
+      </Flex>
     </Navbar>
   );
 }
