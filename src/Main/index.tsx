@@ -110,7 +110,7 @@ export default function Main({ enrollData, userData, classData }: MainProps) {
         />
       }
     >
-      {isEnroll && <EnrollManager enrollData={enrollData} admin={admin} />}
+      {isEnroll && <EnrollManager enrollData={enrollData} admin={admin} classList={classData.map((item) => item.name)} />}
       {isUser && <UserManager userData={userData} admin={admin} />}
       {isClass && <ClassManager classData={classData} admin={admin} />}
     </AppShell>

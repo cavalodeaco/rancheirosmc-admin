@@ -31,27 +31,27 @@ const useStyles = createStyles((theme) => ({
 interface EnrollTableProps {
   enrollData: Enroll[];
   setSearchBy: Function;
+  setSelectedEnroll: Function;
 }
 
 const regex = /\d+/g;
 
-export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
+export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
   const toggleRow = (id: string) => {
     if (selection.includes(id)) {
       setSelection((current) => current.filter((item) => item !== id));
+      setSelectedEnroll((current:Enroll[]) => current.filter((item) => item.id !== id));
     } else {
       setSelection((current) => [...current, id]);
+      setSelectedEnroll((current:Enroll[]) => [...current, enrollData.find((item) => item.id === id)]);
     }
   }
   const toggleAll = () => {
     setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.id)));
+    setSelectedEnroll((current:Enroll[]) => (current.length === enrollData.length ? [] : enrollData));
   };
-
-  useEffect(() => {
-    console.log("selection", selection);
-  }, [selection]);
 
   const rows = enrollData.map((item) => {
     const selected = selection.includes(item.id);
