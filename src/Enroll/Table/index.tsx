@@ -87,12 +87,11 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
         <td>{item.enroll_date.substring(0, 10)}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
-        <td>{item.user.phone.match(regex)?.join('')}</td>
-        {/* <td>
-          <a href={`https://web.whatsapp.com/send/?phone=55${item.user.phone.match(regex)?.join('')}&text&type=phone_number&app_absent=0`} target='_blank'>
-            <IconBrandWhatsapp />
-          </a>
-        </td> */}
+        <td align='center'>{item?.enroll_status==="called" 
+            ? <a href={`https://web.whatsapp.com/send/?phone=55${item.user.phone.match(regex)?.join('')}&text&type=phone_number&app_absent=0`} target='_blank'>
+                <IconBrandWhatsapp />
+              </a> 
+          : item.user.phone.match(regex)?.join('')}</td>
         {/* <td>{item.motorcycle_brand}</td> */}
         <td>{item.class == 'none' ? '' : item.class}</td>
         <td>{item.updated_by}</td>
