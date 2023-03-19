@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, createStyles, Flex, Group, Modal, Pagination, Paper, ScrollArea, Select, Slider, Space, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
+import { Alert, Badge, Button, createStyles, Flex, Group, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
 import { IconAlertCircle, IconCircleCheck, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
@@ -283,12 +283,10 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
 
     return (
         <>
-            <Flex direction={"column"} gap={0}>
+            <Flex direction={"column"} gap={"md"}>
                 <Title>Inscrições</Title>
-                <Space h="xl" />
                 <TextInput
                     placeholder={`Buscar por ${searchBy}`}
-                    mb="md"
                     icon={<IconSearch size="0.9rem" stroke={1.5} />}
                     value={search}
                     onChange={(event) => setSearch(event.currentTarget.value)}
@@ -397,7 +395,6 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         />
                         : null
                 }
-                <Space h="md" />
                 <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} />
                 <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
             </Flex>
