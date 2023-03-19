@@ -286,6 +286,42 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
 
     return (
         <>
+            <Transition
+                mounted={opened}
+                transition="fade"
+                duration={400}
+                timingFunction="ease"
+            >
+                {(styles) => (
+                <div style={styles}>
+                    <Modal opened={opened} onClose={close} fullScreen={isMobile} title="Legenda de status">
+                        <List 
+                            center 
+                            spacing="xs"
+                            size="sm">
+                            <List.Item icon={<IconHourglassEmpty />}>
+                                Em fila de espera
+                            </List.Item>
+                            <List.Item icon={<IconBrandHipchat color='#00abfb'/>}>
+                                Convidado para uma turma
+                            </List.Item>
+                            <List.Item icon={<IconCheckbox color='#ffec00'/>}>
+                                Confirmou convite para a turma
+                            </List.Item>
+                            <List.Item icon={<IconCertificate color='#7bc62d'/>}>
+                                Participou do curso
+                            </List.Item>
+                            <List.Item icon={<IconBackspace color='#ffbf00'/>}>
+                                Desistiu da vaga na turma
+                            </List.Item>
+                            <List.Item icon={<IconCircleMinus color='#ff4500'/>}>
+                                Faltou no curso
+                            </List.Item>
+                        </List>
+                    </Modal>
+                </div>
+                )}
+            </Transition>
             <Flex direction={"column"} gap={"md"}>
                 <Title>Inscrições</Title>
                 <TextInput
@@ -361,42 +397,6 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         placeholder="Ações de inscrição"
                         onChange={handleAction}
                     />
-                    <Transition
-                        mounted={opened}
-                        transition="fade"
-                        duration={400}
-                        timingFunction="ease"
-                    >
-                        {(styles) => (
-                        <div style={styles}>
-                            <Modal opened={opened} onClose={close} fullScreen={isMobile} title="Legenda de status">
-                                <List 
-                                    center 
-                                    spacing="xs"
-                                    size="sm">
-                                    <List.Item icon={<IconHourglassEmpty />}>
-                                        Em fila de espera
-                                    </List.Item>
-                                    <List.Item icon={<IconBrandHipchat color='#00abfb'/>}>
-                                        Convidado para uma turma
-                                    </List.Item>
-                                    <List.Item icon={<IconCheckbox color='#ffec00'/>}>
-                                        Confirmou convite para a turma
-                                    </List.Item>
-                                    <List.Item icon={<IconCertificate color='#7bc62d'/>}>
-                                        Participou do curso
-                                    </List.Item>
-                                    <List.Item icon={<IconBackspace color='#ffbf00'/>}>
-                                        Desistiu da vaga na turma
-                                    </List.Item>
-                                    <List.Item icon={<IconCircleMinus color='#ff4500'/>}>
-                                        Faltou no curso
-                                    </List.Item>
-                                </List>
-                            </Modal>
-                        </div>
-                        )}
-                    </Transition>
                     <ActionIcon size={"sm"} radius="xl" variant="outline" onClick={open}>
                         <QuestionMark size="0.875rem" />
                     </ActionIcon>
