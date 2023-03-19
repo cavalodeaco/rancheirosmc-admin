@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select } from '@mantine/core';
+import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box } from '@mantine/core';
 import { Enroll } from '../../FetchData';
 import { IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
 
@@ -12,6 +12,9 @@ const useStyles = createStyles((theme) => ({
   },
   th: {
     padding: '0 !important',
+  },
+  box: {
+    border: '1px solid #eaeaea',
   },
   // icon: {
   //   width: rem(21),
@@ -39,6 +42,7 @@ const regex = /\d+/g;
 export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
+  const [selectedSearch, setSelectedSearch] = useState<string>('todos');
   const toggleRow = (id: string) => {
     if (selection.includes(id)) {
       setSelection((current) => current.filter((item) => item !== id));
@@ -100,6 +104,16 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
     );
   });
 
+  function handleSearchBy (search:string) {
+    if (selectedSearch === search) {
+      setSearchBy('todos');
+      setSelectedSearch('todos');
+    } else {
+      setSearchBy(search);
+      setSelectedSearch(search);
+    }
+  }
+
 
   return (
     <ScrollArea>
@@ -114,16 +128,16 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
                 transitionDuration={0}
               />
             </th>
-            <th><UnstyledButton onClick={() => setSearchBy('enroll_status')}><Title size={15}>Status</Title></UnstyledButton></th>
-            <th><UnstyledButton onClick={() => setSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></th>
-            <th><UnstyledButton onClick={() => setSearchBy('enroll_date')}><Title size={15}>Data da inscrição</Title></UnstyledButton></th>
-            <th><UnstyledButton onClick={() => setSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></th>
-            <th><UnstyledButton onClick={() => setSearchBy('user.driver_license')}><Title size={15}>CNH</Title></UnstyledButton></th>
+            <th><Box className={selectedSearch === "enroll_status" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_status')}><Title size={15}>Status</Title></UnstyledButton></Box></th>
+            <th><Box className={selectedSearch === "city" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></Box></th>
+            <th><Box className={selectedSearch === "enroll_date" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_date')}><Title size={15}>Data da inscrição</Title></UnstyledButton></Box></th>
+            <th><Box className={selectedSearch === "user.name" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></Box></th>
+            <th><Box className={selectedSearch === "user.driver_license" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('user.driver_license')}><Title size={15}>CNH</Title></UnstyledButton></Box></th>
             <th><Title size={15}>Contato</Title></th>
-            <th><UnstyledButton onClick={() => setSearchBy('class')}><Title size={15}>Turma</Title></UnstyledButton></th>
-            {/* <th><UnstyledButton onClick={() => setSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
-            <th><UnstyledButton onClick={() => setSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></th>
-            {/* <th><UnstyledButton onClick={() => setSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
+            <th><Box className={selectedSearch === "class" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('class')}><Title size={15}>Turma</Title></UnstyledButton></Box></th>
+            {/* <th><UnstyledButton onClick={() => handleSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
+            <th><Box className={selectedSearch === "updated_by" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></Box></th>
+            {/* <th><UnstyledButton onClick={() => handleSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
           </tr>
         </thead>
         <tbody>{rows}</tbody>
