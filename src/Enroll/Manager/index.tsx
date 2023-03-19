@@ -88,62 +88,65 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     const [selectedClass, setSelectedClass] = useState<string | null>(null);
     const actionList =
         {
-            "call": async function () {
-                if (selectedClass) {
-                    const data = {
-                        class_name: selectedClass,
-                        enrolls: selectedEnroll.map((item) => ({
-                            enroll_date: item.enroll_date,
-                            city: item.city,
-                        })),
-                    };
-                    const config = {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            // add tokens from localstorage
-                            access_token: `${tokens.access_token}`,
-                            id_token: `${tokens.id_token}`,
-                        },
-                        body: JSON.stringify(data),
-                    };
-                    try {
-                        const response = await fetch(
-                            `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/call` as string,
-                            config
-                        );
-                        const { message, enrolls } = await response.json();
-                        const update = async () => {
-                            setEnrollData(enrollData.map((item) => {
-                                for (const enroll of enrolls) {
-                                    if (item.city === enroll.city && item.enroll_date === enroll.enroll_date) {
-                                        item.enroll_status = enroll.enroll_status;
-                                        item.updated_by = enroll.updated_by;
-                                        item.updated_at = enroll.updated_at;
-                                        item.class = enroll.class;
-                                        return item;
-                                    }
+            "update_class_and_status": async function (url: string, msg_success: string, msg_warning: string, msg_error: string) {
+                const data = {
+                    class_name: selectedClass,
+                    enrolls: selectedEnroll.map((item) => ({
+                        enroll_date: item.enroll_date,
+                        city: item.city,
+                    })),
+                };
+                const config = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        // add tokens from localstorage
+                        access_token: `${tokens.access_token}`,
+                        id_token: `${tokens.id_token}`,
+                    },
+                    body: JSON.stringify(data),
+                };
+                try {
+                    const response = await fetch(
+                        `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/${url}` as string,
+                        config
+                    );
+                    const { message, enrolls } = await response.json();
+                    const update = async () => {
+                        setEnrollData(enrollData.map((item) => {
+                            for (const enroll of enrolls) {
+                                if (item.city === enroll.city && item.enroll_date === enroll.enroll_date) {
+                                    item.enroll_status = enroll.enroll_status;
+                                    item.updated_by = enroll.updated_by;
+                                    item.updated_at = enroll.updated_at;
+                                    item.class = enroll.class;
+                                    return item;
                                 }
-                                return item;
-                            }));
-                        }
-                        update();
-                        if (response.status === 200 && message !== "partial") {
-                            setAlert({ type: "success", title: "Inscrição(ões) chamada(s) para turma!" } as Alert);
-                        } else if (response.status === 206 && message === "partial") {
-                            setAlert({ type: "warning", title: "Inscrição(ões) parcialmente chamada(s) para turma!" } as Alert);
-                        }
-                    } catch (error) {
-                        setAlert({ type: "error", title: "Falha ao chamar alunos para turma!" } as Alert);
+                            }
+                            return item;
+                        }));
                     }
-                } else {
-                    setAlert({ type: "warning", title: "Selecione uma turma para realizar chamada!" } as Alert);
+                    update();
+                    if (response.status === 200 && message !== "partial") {
+                        setAlert({ type: "success", title: msg_success } as Alert);
+                    } else if (response.status === 206 && message === "partial") {
+                        setAlert({ type: "warning", title: msg_warning } as Alert);
+                    }
+                } catch (error) {
+                    setAlert({ type: "error", title: msg_error } as Alert);
                 }
 
                 // TODO: create wame para com mensagens para o próprio usuário com os links de chats para cada aluno selecionado
                 setAction(null);
             },
-            "confirmed": async function () {
+            "call": async function () {
+                if (selectedClass) {
+                    actionList["update_class_and_status"]("call", "Chamada realizada com sucesso!", "Chamada realizada com sucesso, porém alguns alunos não foram chamados!", "Erro ao realizar chamada!");
+                } else {
+                    setAlert({ type: "warning", title: "Selecione uma turma para realizar chamada!" } as Alert);
+                }
+            },
+            "update_status": async function (url: string, msg_success: string, msg_warning: string, msg_error: string) {
                 const data = {
                     enrolls: selectedEnroll.map((item) => ({
                         enroll_date: item.enroll_date,
@@ -162,11 +165,11 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 };
                 try {
                     const response = await fetch(
-                        `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/confirm` as string,
+                        `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/${url}` as string,
                         config
                     );
                     const { message, enrolls } = await response.json();
-                    const update = async () => {
+                    const updateStatus = async (enrolls: any) => {
                         setEnrollData(enrollData.map((item) => {
                             for (const enroll of enrolls) {
                                 if (item.city === enroll.city && item.enroll_date === enroll.enroll_date) {
@@ -179,28 +182,33 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             return item;
                         }));
                     }
-                    update();
+
+                    updateStatus(enrolls);
                     if (response.status === 200 && message !== "partial") {
-                        setAlert({ type: "success", title: "Inscrição(ões) confirmada(s) para sua(s) turma(s)!" } as Alert);
+                        setAlert({ type: "success", title: msg_success } as Alert);
                     } else if (response.status === 206 && message === "partial") {
-                        setAlert({ type: "warning", title: "Inscrição(ões) parcialmente confirmada(s)!" } as Alert);
+                        setAlert({ type: "warning", title: msg_warning } as Alert);
                     }
                 } catch (error) {
-                    setAlert({ type: "error", title: "Falha ao confirmar inscrições!" } as Alert);
+                    setAlert({ type: "error", title: msg_error } as Alert);
                 }
                 setAction(null);
             },
+            "confirmed": async function () {
+                console.log("confirmed");
+                actionList["update_status"]("confirm", "Inscrição(ões) confirmada(s) para sua(s) turma(s)!", "Inscrição(ões) parcialmente confirmada(s)!", "Falha ao confirmar inscrição(ões)!");
+            },
             "certified": function () {
                 console.log("certified");
-                setAction(null);
+                actionList["update_status"]("certify", "Inscrição(ões) certificada(s) em sua(s) turma(s)!", "Inscrição(ões) parcialmente certificada(s)!", "Falha ao certificar inscrição(ões)!");
             },
             "missed": function () {
                 console.log("missed");
-                setAction(null);
+                actionList["update_status"]("miss", "Aplicada(s) falta(s) na(s) inscrição(ões)!", "Falta(s) parcialmente aplicada(s)!", "Falha ao aplicar falta(s)!");
             },
             "dropout": function () {
                 console.log("dropout");
-                setAction(null);
+                actionList["update_class_and_status"]("drop", "Aplicada(s) desistência(s) na(s) inscrição(ões)!", "Desistência(s) parcialmente aplicada(s)!", "Falha ao ao aplicar desistência(s)!");
             }
         } as ActionList;
     const marks = [

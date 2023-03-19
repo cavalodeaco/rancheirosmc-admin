@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select } from '@mantine/core';
 import { Enroll } from '../../FetchData';
-import { IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
+import { IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -58,7 +58,8 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
     "called": <IconBrandHipchat color='#00abfb'/>,
     "confirmed": <IconCheckbox color='#ffec00'/>,
     "certified": <IconCertificate color='#7bc62d'/>,
-    "dropout": <IconCircleMinus color='#ff4500'/>,
+    "dropped": <IconBackspace color='#ffbf00'/>,
+    "missed": <IconCircleMinus color='#ff4500'/>,
   }
 
   const rows = enrollData.map((item) => {
