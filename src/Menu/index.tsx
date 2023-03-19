@@ -15,7 +15,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
     container: {
       justifyContent: "space-between",
       height: "100%",
-      paddingBottom: theme.spacing.xl * 2.5,
+      paddingBottom: theme.spacing.xl * 3,
     },
 
     header: {
@@ -187,7 +187,7 @@ export function Menu({
 
   return (
     <Navbar
-      height={"90vh"}
+      height={"calc(100vh - 60px)"}
       hiddenBreakpoint="sm"
       hidden={!opened}
       width={{ sm: 200, lg: 300 }}

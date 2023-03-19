@@ -22,7 +22,7 @@ function App() {
       withNormalizeCSS
     >
       <CustomFonts/>
-      {!tokens ? <AuthenticationForm /> : <FetchData />}
+      {tokens ? <AuthenticationForm /> : <FetchData />}
     </MantineProvider>
   );
 }
