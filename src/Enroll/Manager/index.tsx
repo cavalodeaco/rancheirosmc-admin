@@ -1,4 +1,4 @@
-import { Alert, Button, createStyles, Flex, Group, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
+import { Alert, Badge, Button, createStyles, Flex, Group, Modal, Pagination, Paper, ScrollArea, Select, Slider, Space, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
 import { IconAlertCircle, IconCircleCheck, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
@@ -8,6 +8,10 @@ import Tokens from "../../AuthenticationForm/Tokens";
 import { useLocalStorage } from "@mantine/hooks";
 
 const useStyles = createStyles((theme) => ({
+    stretch: {
+        flexGrow: 1,
+    },
+
     actions: {
         justifyContent: "space-between",
     },
@@ -279,45 +283,32 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
 
     return (
         <>
-            <Stack>
+            <Flex direction={"column"} gap={0}>
                 <Title>Inscrições</Title>
-                <Flex gap={"xs"} className={classes.actions}>
-                    <Flex gap={"md"}>
-                        <Select
-                            data={[
-                                { value: "call", label: "Chamar para turma", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "confirmed", label: "Confirmar para turma", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "certified", label: "Indicar presença", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "missed", label: "Indicar falta", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "dropout", label: "Indicar desistência", disabled: admin?.["custom:manager"] !== "true" },
-                            ]}
-                            value={action}
-                            placeholder="Ações de inscrição"
-                            onChange={handleAction}
-                        />
-                        <Select
-                            placeholder="Turma"
-                            data={classList}
-                            clearable
-                            onChange={setSelectedClass}
-                        />
-                    </Flex>
-                    <Flex gap={"md"}>
-                        <TextInput
-                            placeholder={`Buscar por ${searchBy}`}
-                            mb="md"
-                            icon={<IconSearch size="0.9rem" stroke={1.5} />}
-                            value={search}
-                            onChange={(event) => setSearch(event.currentTarget.value)}
-                            onKeyDown={(event) => {
-                                if (event.key === "Enter") {
-                                    handleSearch();
-                                }
-                            }}
-                        />
-                        <Button onClick={handleSearch}>Filtrar</Button>
-                        <Paper shadow={"xs"} p="xs" withBorder>{sortedData.length}/{enrollData.length}</Paper>
-                        {/* <Slider
+                <Space h="xl" />
+                <TextInput
+                    placeholder={`Buscar por ${searchBy}`}
+                    mb="md"
+                    icon={<IconSearch size="0.9rem" stroke={1.5} />}
+                    value={search}
+                    onChange={(event) => setSearch(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                            handleSearch();
+                        }
+                    }}
+                    rightSection={
+                        <Badge color="gray" size="xs">
+                            {sortedData.length} de {enrollData.length}
+                        </Badge>
+                    }
+                    rightSectionWidth={"5rem"}
+                />
+                {/* <Paper shadow={"xs"} p="xs" withBorder>
+                        {sortedData.length}/{enrollData.length}
+                    </Paper> */}
+
+                {/* <Slider
                             labelAlwaysOn
                             labelTransition="skew-down"
                             labelTransitionDuration={150}
@@ -329,7 +320,46 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             min={1}
                             max={100}
                         />                 */}
-                    </Flex>
+                <Flex gap={"xs"} className={classes.actions}>
+                    <Select
+                        placeholder="Turma"
+                        data={classList}
+                        clearable
+                        className={classes.stretch}
+                        onChange={setSelectedClass}
+                    />
+                    <Select
+                        data={[
+                            {
+                                value: "call",
+                                label: "Chamar para turma",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "confirmed",
+                                label: "Confirmar para turma",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "certified",
+                                label: "Indicar presença",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "missed",
+                                label: "Indicar falta",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "dropout",
+                                label: "Indicar desistência",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                        ]}
+                        value={action}
+                        placeholder="Ações de inscrição"
+                        onChange={handleAction}
+                    />
                 </Flex>
                 {
                     alert?.type === "error" ?
@@ -367,9 +397,10 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         />
                         : null
                 }
+                <Space h="md" />
                 <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} />
                 <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
-            </Stack>
+            </Flex>
         </>
     );
 
