@@ -31,27 +31,27 @@ const useStyles = createStyles((theme) => ({
 interface EnrollTableProps {
   enrollData: Enroll[];
   setSearchBy: Function;
+  setSelectedEnroll: Function;
 }
 
 const regex = /\d+/g;
 
-export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
+export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
   const toggleRow = (id: string) => {
     if (selection.includes(id)) {
       setSelection((current) => current.filter((item) => item !== id));
+      setSelectedEnroll((current:Enroll[]) => current.filter((item) => item.id !== id));
     } else {
       setSelection((current) => [...current, id]);
+      setSelectedEnroll((current:Enroll[]) => [...current, enrollData.find((item) => item.id === id)]);
     }
   }
   const toggleAll = () => {
     setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.id)));
+    setSelectedEnroll((current:Enroll[]) => (current.length === enrollData.length ? [] : enrollData));
   };
-
-  useEffect(() => {
-    console.log("selection", selection);
-  }, [selection]);
 
   const rows = enrollData.map((item) => {
     const selected = selection.includes(item.id);
@@ -74,7 +74,7 @@ export function EnrollTable({ enrollData, setSearchBy }: EnrollTableProps) {
         </td> */}
         <td>{item.enroll_status === "waiting" ? <IconHourglassEmpty /> : ((item.enroll_status === "called") ? <IconBrandHipchat /> : item.enroll_status)}</td>
         <td>{item.city}</td>
-        <td>{item.enroll_date.substring(0, 9)}</td>
+        <td>{item.enroll_date.substring(0, 10)}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td>{item.user.phone.match(regex)?.join('')}</td>

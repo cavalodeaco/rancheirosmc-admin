@@ -106,9 +106,9 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
     );
   }
 
-  useEffect(() => {
-    console.log("Admin", admin);
-  }, [admin]);
+  // useEffect(() => {
+  //   console.log("Admin", admin);
+  // }, [admin]);
 
   useEffect(() => {
     setSortedData(classData);
