@@ -29,7 +29,7 @@ interface Alert {
     title: string;
 }
 
-const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at", "class"];
+const searchableFields = ["enroll_status", "city", "enroll_date", "user.name", "user.driver_license", "user.driver_license_UF", "user.phone", "class", "updated_by"]; // "motorcycle_model", "motorcycle_use", "motorcycle_brand","updated_at", 
 
 function filterData(data: Enroll[], search: string, searchBy: string = 'todos') {
     console.log("filterData", search);
