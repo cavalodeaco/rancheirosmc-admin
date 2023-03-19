@@ -98,7 +98,6 @@ export function UserManager({ userData, admin }: UserManagerProps) {
 
     return (
         <Stack>
-            <Title>Alunos</Title>
             <Flex gap={"md"}>
                 <TextInput
                     placeholder={`Buscar por ${searchBy}`}
