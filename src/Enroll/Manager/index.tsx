@@ -1,5 +1,5 @@
 import { ActionIcon, Alert, Badge, Button, Code, createStyles, Flex, Group, List, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
-import { IconAlertCircle, IconBrandHipchat, IconCertificate, IconCheckbox, IconCircleCheck, IconHourglassEmpty, IconSearch } from "@tabler/icons";
+import { IconAlertCircle, IconBackspace, IconBrandHipchat, IconCertificate, IconCheckbox, IconCircleCheck, IconCircleMinus, IconHourglassEmpty, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
 import { Admin } from "../../Main";
@@ -370,19 +370,28 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         {(styles) => (
                         <div style={styles}>
                             <Modal opened={opened} onClose={close} fullScreen={isMobile} title="Legenda de status">
-                                <List center>
-                                <List.Item icon={<IconHourglassEmpty />}>
-                                    Em fila de espera
-                                </List.Item>
-                                <List.Item icon={<IconBrandHipchat color='#00abfb'/>}>
-                                    Convidado para uma turma
-                                </List.Item>
-                                <List.Item icon={<IconCheckbox color='#ffec00'/>}>
-                                    Confirmou convite para a turma
-                                </List.Item>
-                                <List.Item icon={<IconCertificate color='#7bc62d'/>}>
-                                    Confirmou convite para a turma
-                                </List.Item>
+                                <List 
+                                    center 
+                                    spacing="xs"
+                                    size="sm">
+                                    <List.Item icon={<IconHourglassEmpty />}>
+                                        Em fila de espera
+                                    </List.Item>
+                                    <List.Item icon={<IconBrandHipchat color='#00abfb'/>}>
+                                        Convidado para uma turma
+                                    </List.Item>
+                                    <List.Item icon={<IconCheckbox color='#ffec00'/>}>
+                                        Confirmou convite para a turma
+                                    </List.Item>
+                                    <List.Item icon={<IconCertificate color='#7bc62d'/>}>
+                                        Participou do curso
+                                    </List.Item>
+                                    <List.Item icon={<IconBackspace color='#ffbf00'/>}>
+                                        Desistiu da vaga na turma
+                                    </List.Item>
+                                    <List.Item icon={<IconCircleMinus color='#ff4500'/>}>
+                                        Faltou no curso
+                                    </List.Item>
                                 </List>
                             </Modal>
                         </div>
