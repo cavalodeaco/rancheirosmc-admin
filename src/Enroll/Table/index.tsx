@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select } from '@mantine/core';
 import { Enroll } from '../../FetchData';
-import { IconBrandHipchat, IconBrandWhatsapp, IconHourglassEmpty } from '@tabler/icons';
+import { IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -42,16 +42,24 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
   const toggleRow = (id: string) => {
     if (selection.includes(id)) {
       setSelection((current) => current.filter((item) => item !== id));
-      setSelectedEnroll((current:Enroll[]) => current.filter((item) => item.id !== id));
+      setSelectedEnroll((current: Enroll[]) => current.filter((item) => item.id !== id));
     } else {
       setSelection((current) => [...current, id]);
-      setSelectedEnroll((current:Enroll[]) => [...current, enrollData.find((item) => item.id === id)]);
+      setSelectedEnroll((current: Enroll[]) => [...current, enrollData.find((item) => item.id === id)]);
     }
   }
   const toggleAll = () => {
     setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.id)));
-    setSelectedEnroll((current:Enroll[]) => (current.length === enrollData.length ? [] : enrollData));
+    setSelectedEnroll((current: Enroll[]) => (current.length === enrollData.length ? [] : enrollData));
   };
+
+  const status:any = {
+    "waiting": <IconHourglassEmpty />,
+    "called": <IconBrandHipchat color='#00abfb'/>,
+    "confirmed": <IconCheckbox color='#ffec00'/>,
+    "certified": <IconCertificate color='#7bc62d'/>,
+    "dropout": <IconCircleMinus color='#ff4500'/>,
+  }
 
   const rows = enrollData.map((item) => {
     const selected = selection.includes(item.id);
@@ -72,7 +80,8 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
             </Text>
           </Group>
         </td> */}
-        <td>{item.enroll_status === "waiting" ? <IconHourglassEmpty /> : ((item.enroll_status === "called") ? <IconBrandHipchat /> : item.enroll_status)}</td>
+
+        <td>{status[item?.enroll_status]}</td>
         <td>{item.city}</td>
         <td>{item.enroll_date.substring(0, 10)}</td>
         <td>{item.user.name}</td>
@@ -93,32 +102,32 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
 
 
   return (
-      <ScrollArea>
-        <Table sx={{ minWidth: 800 }} verticalSpacing="sm">
-          <thead>
-            <tr>
-              <th style={{ width: 40 }}>
-                <Checkbox
-                  onChange={toggleAll}
-                  checked={selection.length === enrollData.length}
-                  indeterminate={selection.length > 0 && selection.length !== enrollData.length}
-                  transitionDuration={0}
-                />
-              </th>
-              <th><UnstyledButton onClick={() => setSearchBy('enroll_status')}><Title size={15}>Status</Title></UnstyledButton></th>
-              <th><UnstyledButton onClick={() => setSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></th>
-              <th><UnstyledButton onClick={() => setSearchBy('enroll_date')}><Title size={15}>Data da inscrição</Title></UnstyledButton></th>
-              <th><UnstyledButton onClick={() => setSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></th>
-              <th><UnstyledButton onClick={() => setSearchBy('user.driver_license')}><Title size={15}>CNH</Title></UnstyledButton></th>
-              <th><Title size={15}>Contato</Title></th>
-              <th><UnstyledButton onClick={() => setSearchBy('class')}><Title size={15}>Turma</Title></UnstyledButton></th>
-              {/* <th><UnstyledButton onClick={() => setSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
-              <th><UnstyledButton onClick={() => setSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></th>
-              {/* <th><UnstyledButton onClick={() => setSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </Table>
-      </ScrollArea>
+    <ScrollArea>
+      <Table sx={{ minWidth: 800 }} verticalSpacing="sm">
+        <thead>
+          <tr>
+            <th style={{ width: 40 }}>
+              <Checkbox
+                onChange={toggleAll}
+                checked={selection.length === enrollData.length}
+                indeterminate={selection.length > 0 && selection.length !== enrollData.length}
+                transitionDuration={0}
+              />
+            </th>
+            <th><UnstyledButton onClick={() => setSearchBy('enroll_status')}><Title size={15}>Status</Title></UnstyledButton></th>
+            <th><UnstyledButton onClick={() => setSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></th>
+            <th><UnstyledButton onClick={() => setSearchBy('enroll_date')}><Title size={15}>Data da inscrição</Title></UnstyledButton></th>
+            <th><UnstyledButton onClick={() => setSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></th>
+            <th><UnstyledButton onClick={() => setSearchBy('user.driver_license')}><Title size={15}>CNH</Title></UnstyledButton></th>
+            <th><Title size={15}>Contato</Title></th>
+            <th><UnstyledButton onClick={() => setSearchBy('class')}><Title size={15}>Turma</Title></UnstyledButton></th>
+            {/* <th><UnstyledButton onClick={() => setSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
+            <th><UnstyledButton onClick={() => setSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></th>
+            {/* <th><UnstyledButton onClick={() => setSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+    </ScrollArea>
   );
 }
