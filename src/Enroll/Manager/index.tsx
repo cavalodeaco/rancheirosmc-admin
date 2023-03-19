@@ -84,9 +84,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     const actionList =
         {
             "call": async function () {
-                console.log("call");
                 if (selectedClass) {
-                    console.log("call", selectedClass);
                     const data = {
                         class_name: selectedClass,
                         enrolls: selectedEnroll.map((item) => ({
@@ -94,7 +92,6 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             city: item.city,
                         })),
                     };
-                    console.log(data);
                     const config = {
                         method: "POST",
                         headers: {
@@ -173,12 +170,12 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
         setTableEnrollData(sortedData.slice((page - 1) * limitPage, page * limitPage));
     }
 
-    useEffect(() => {
-        console.log("Admin", admin);
-    }, [admin]);
+    // useEffect(() => {
+    //     console.log("Admin", admin);
+    // }, [admin]);
 
     useEffect(() => {
-        console.log("mainEnrollData", mainEnrollData);
+        // console.log("mainEnrollData", mainEnrollData);
         setEnrollData(mainEnrollData);
     }, [mainEnrollData]);
 
