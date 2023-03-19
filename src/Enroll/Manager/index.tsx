@@ -28,7 +28,7 @@ interface Alert {
     title: string;
 }
 
-const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at"];
+const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at", "class"];
 
 function filterData(data: Enroll[], search: string, searchBy: string = 'todos') {
     console.log("filterData", search);
@@ -287,7 +287,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 <Title>Inscrições</Title>
                 <Space h="xl" />
                 <TextInput
-                    placeholder={`Buscar por ${searchBy}`}
+                    placeholder={`Pesquisar`}
                     mb="md"
                     icon={<IconSearch size="0.9rem" stroke={1.5} />}
                     value={search}
