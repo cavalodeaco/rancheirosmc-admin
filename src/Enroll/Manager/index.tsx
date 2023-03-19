@@ -127,6 +127,9 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         }));
                     }
                     update();
+                    if (process.env.ENV !== "production") {
+                        console.log("response", response);
+                    }
                     if (response.status === 200 && message !== "partial") {
                         setAlert({ type: "success", title: msg_success } as Alert);
                     } else if (response.status === 206 && message === "partial") {
@@ -140,6 +143,9 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 setAction(null);
             },
             "call": async function () {
+                if (process.env.ENV !== "production") {
+                    console.log("call");
+                }
                 if (selectedClass) {
                     actionList["update_class_and_status"]("call", "Chamada realizada com sucesso!", "Chamada realizada com sucesso, porém alguns alunos não foram chamados!", "Erro ao realizar chamada!");
                 } else {
@@ -195,19 +201,27 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 setAction(null);
             },
             "confirmed": async function () {
-                console.log("confirmed");
+                if (process.env.ENV !== "production") {
+                    console.log("confirmed");
+                }
                 actionList["update_status"]("confirm", "Inscrição(ões) confirmada(s) para sua(s) turma(s)!", "Inscrição(ões) parcialmente confirmada(s)!", "Falha ao confirmar inscrição(ões)!");
             },
             "certified": function () {
-                console.log("certified");
+                if (process.env.ENV !== "production") {
+                    console.log("certified");
+                }
                 actionList["update_status"]("certify", "Inscrição(ões) certificada(s) em sua(s) turma(s)!", "Inscrição(ões) parcialmente certificada(s)!", "Falha ao certificar inscrição(ões)!");
             },
             "missed": function () {
-                console.log("missed");
+                if (process.env.ENV !== "production") {
+                    console.log("missed");
+                }
                 actionList["update_status"]("miss", "Aplicada(s) falta(s) na(s) inscrição(ões)!", "Falta(s) parcialmente aplicada(s)!", "Falha ao aplicar falta(s)!");
             },
             "dropout": function () {
-                console.log("dropout");
+                if (process.env.ENV !== "production") {
+                    console.log("dropout");
+                }
                 actionList["update_class_and_status"]("drop", "Aplicada(s) desistência(s) na(s) inscrição(ões)!", "Desistência(s) parcialmente aplicada(s)!", "Falha ao ao aplicar desistência(s)!");
             }
         } as ActionList;
