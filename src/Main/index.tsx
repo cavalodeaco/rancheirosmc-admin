@@ -107,6 +107,7 @@ export default function Main({ enrollData, userData, classData }: MainProps) {
           setIsClass={setIsClass}
           admin={admin}
           opened={opened}
+          setOpened={setOpened}
         />
       }
     >

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createStyles, Navbar, Space, Title } from "@mantine/core";
+import { createStyles, Flex, Navbar, Space, Title } from "@mantine/core";
 import {
   IconHelmet,
   IconHome,
@@ -10,8 +10,14 @@ import {
 import { Admin } from "../Main";
 
 const useStyles = createStyles((theme, _params, getRef) => {
-  const icon = getRef("icon");
+  const icon: string = getRef("icon");
   return {
+    container: {
+      justifyContent: "space-between",
+      height: "100%",
+      paddingBottom: theme.spacing.xl * 3,
+    },
+
     header: {
       paddingBottom: theme.spacing.md,
       marginBottom: theme.spacing.md * 1.5,
@@ -93,9 +99,17 @@ interface MenuProps {
   setIsClass: Function | any;
   admin: Admin | undefined;
   opened: boolean;
+  setOpened: Function;
 }
 
-export function Menu({ setIsEnroll, setIsUser, setIsClass, admin, opened }: MenuProps) {
+export function Menu({
+  setIsEnroll,
+  setIsUser,
+  setIsClass,
+  admin,
+  opened,
+  setOpened,
+}: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Métricas");
 
@@ -165,6 +179,7 @@ export function Menu({ setIsEnroll, setIsUser, setIsClass, admin, opened }: Menu
         event.preventDefault();
         await item.action();
         setActive(item.label);
+        setOpened(false);
       }}
     >
       <item.icon />
@@ -175,29 +190,31 @@ export function Menu({ setIsEnroll, setIsUser, setIsClass, admin, opened }: Menu
 
   return (
     <Navbar
-      height={"90vh"}
+      height={"calc(100vh - 60px)"}
       hiddenBreakpoint="sm"
       hidden={!opened}
       width={{ sm: 200, lg: 300 }}
       p="md"
     >
-      <Navbar.Section grow>{links}</Navbar.Section>
+      <Flex direction="column" className={classes.container}>
+        <Navbar.Section>{links}</Navbar.Section>
 
-      <Navbar.Section className={classes.footer}>
-        <a
-          href="#"
-          className={classes.link}
-          onClick={(event) => {
-            localStorage.clear();
-            window.location.href = "/";
-          }}
-        >
-          <Title size={12}>{admin?.name || "--"}</Title>
-          <IconLogout />
-          <Space w="xs" />
-          <Title size={18}>Logout</Title>
-        </a>
-      </Navbar.Section>
+        <Navbar.Section className={classes.footer}>
+          <a
+            href="/"
+            className={classes.link}
+            onClick={() => {
+              localStorage.clear();
+              // window.location.href = "/";
+            }}
+          >
+            <Title size={12}>{admin?.name || "--"}</Title>
+            <IconLogout />
+            <Space w="xs" />
+            <Title size={18}>Logout</Title>
+          </a>
+        </Navbar.Section>
+      </Flex>
     </Navbar>
   );
 }
