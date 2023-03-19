@@ -15,7 +15,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
     container: {
       justifyContent: "space-between",
       height: "100%",
-      marginBottom: theme.spacing.xl * 2.5,
+      paddingBottom: theme.spacing.xl * 2.5,
     },
 
     header: {
