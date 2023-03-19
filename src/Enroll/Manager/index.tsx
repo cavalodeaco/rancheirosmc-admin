@@ -1,11 +1,12 @@
-import { Alert, Badge, Button, createStyles, Flex, Group, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
-import { IconAlertCircle, IconCircleCheck, IconSearch } from "@tabler/icons";
+import { ActionIcon, Alert, Badge, Button, Code, createStyles, Flex, Group, List, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
+import { IconAlertCircle, IconBrandHipchat, IconCertificate, IconCheckbox, IconCircleCheck, IconHourglassEmpty, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
 import { Admin } from "../../Main";
 import { EnrollTable } from "../Table";
 import Tokens from "../../AuthenticationForm/Tokens";
-import { useLocalStorage } from "@mantine/hooks";
+import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
+import { QuestionMark } from "tabler-icons-react";
 
 const useStyles = createStyles((theme) => ({
     stretch: {
@@ -80,6 +81,8 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     const { classes } = useStyles();
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
+    const [opened, { open, close }] = useDisclosure(false);
+    const isMobile = useMediaQuery("(max-width: 50em)");  
     const [selectedEnroll, setSelectedEnroll] = useState<Enroll[]>([]);
     const [limitPage, setLimitPage] = useState(10);
     const [searchBy, setSearchBy] = useState('todos');
@@ -318,7 +321,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             min={1}
                             max={100}
                         />                 */}
-                <Flex gap={"xs"} className={classes.actions}>
+                <Flex gap={"xs"} align="center" className={classes.actions}>
                     <Select
                         placeholder="Turma"
                         data={classList}
@@ -358,6 +361,36 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         placeholder="Ações de inscrição"
                         onChange={handleAction}
                     />
+                    <Transition
+                        mounted={opened}
+                        transition="fade"
+                        duration={400}
+                        timingFunction="ease"
+                    >
+                        {(styles) => (
+                        <div style={styles}>
+                            <Modal opened={opened} onClose={close} fullScreen={isMobile} title="Legenda de status">
+                                <List center>
+                                <List.Item icon={<IconHourglassEmpty />}>
+                                    Em fila de espera
+                                </List.Item>
+                                <List.Item icon={<IconBrandHipchat color='#00abfb'/>}>
+                                    Convidado para uma turma
+                                </List.Item>
+                                <List.Item icon={<IconCheckbox color='#ffec00'/>}>
+                                    Confirmou convite para a turma
+                                </List.Item>
+                                <List.Item icon={<IconCertificate color='#7bc62d'/>}>
+                                    Confirmou convite para a turma
+                                </List.Item>
+                                </List>
+                            </Modal>
+                        </div>
+                        )}
+                    </Transition>
+                    <ActionIcon size={"sm"} radius="xl" variant="outline" onClick={open}>
+                        <QuestionMark size="0.875rem" />
+                    </ActionIcon>
                 </Flex>
                 {
                     alert?.type === "error" ?
