@@ -201,11 +201,11 @@ export function Menu({
 
         <Navbar.Section className={classes.footer}>
           <a
-            href="#"
+            href="/"
             className={classes.link}
-            onClick={(event) => {
+            onClick={() => {
               localStorage.clear();
-              window.location.href = "/";
+              // window.location.href = "/";
             }}
           >
             <Title size={12}>{admin?.name || "--"}</Title>
