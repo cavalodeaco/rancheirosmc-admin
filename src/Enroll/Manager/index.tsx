@@ -1,9 +1,11 @@
 import { Alert, Button, createStyles, Flex, Group, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
-import { IconAlertCircle, IconSearch } from "@tabler/icons";
+import { IconAlertCircle, IconCircleCheck, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
 import { Admin } from "../../Main";
 import { EnrollTable } from "../Table";
+import Tokens from "../../AuthenticationForm/Tokens";
+import { useLocalStorage } from "@mantine/hooks";
 
 const useStyles = createStyles((theme) => ({
     actions: {
@@ -12,7 +14,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface EnrollManagerProps {
-    enrollData: Enroll[];
+    mainEnrollData: Enroll[];
     admin: Admin | undefined;
     classList: string[];
 }
@@ -62,7 +64,10 @@ interface ActionList {
     [key: string]: Function;
 }
 
-export function EnrollManager({ enrollData, admin, classList }: EnrollManagerProps) {
+export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManagerProps) {
+    const [tokens, setTokens] = useLocalStorage<Tokens>({
+        key: "tokens",
+    });
     const { classes } = useStyles();
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
@@ -70,6 +75,7 @@ export function EnrollManager({ enrollData, admin, classList }: EnrollManagerPro
     const [limitPage, setLimitPage] = useState(10);
     const [searchBy, setSearchBy] = useState('todos');
     const [search, setSearch] = useState('');
+    const [enrollData, setEnrollData] = useState<Enroll[]>([]);
     const [sortedData, setSortedData] = useState(enrollData);
     const [totalEnrollData, setTotalEnrollData] = useState(0);
     const [action, setAction] = useState<string | null>("actions");
@@ -77,13 +83,63 @@ export function EnrollManager({ enrollData, admin, classList }: EnrollManagerPro
     const [selectedClass, setSelectedClass] = useState<string | null>(null);
     const actionList =
         {
-            "call": function () {
+            "call": async function () {
                 console.log("call");
                 if (selectedClass) {
                     console.log("call", selectedClass);
+                    const data = {
+                        class_name: selectedClass,
+                        enrolls: selectedEnroll.map((item) => ({
+                            enroll_date: item.enroll_date,
+                            city: item.city,
+                        })),
+                    };
+                    console.log(data);
+                    const config = {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            // add tokens from localstorage
+                            access_token: `${tokens.access_token}`,
+                            id_token: `${tokens.id_token}`,
+                        },
+                        body: JSON.stringify(data),
+                    };
+                    try {
+                        const response = await fetch(
+                            `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/call` as string,
+                            config
+                        );
+                        const { message, enrolls } = await response.json();
+                        const update = async () => {
+                            setEnrollData(enrollData.map((item) => {
+                                for (const enroll of enrolls) {
+                                    if (item.city === enroll.city && item.enroll_date === enroll.enroll_date) {
+                                        item.enroll_status = enroll.enroll_status;
+                                        item.updated_by = enroll.updated_by;
+                                        item.updated_at = enroll.updated_at;
+                                        item.class = enroll.class;
+                                        return item;
+                                    }
+                                }
+                                return item;
+                            }));
+                        }
+                        update();
+                        if (response.status === 200 && message !== "partial") {
+                            setAlert(3);
+                        } else if (response.status === 206 && message === "partial") {
+                            setAlert(4);
+                        }
+                    } catch (error) {
+                        setAlert(5);
+                    }
                 } else {
                     setAlert(2);
                 }
+
+                // TODO: create wame para com mensagens para o próprio usuário com os links de chats para cada aluno selecionado
+                // TODO: tratar 202 como sendo parcial o sucesso, pois alguns alunos podem não terem sido alterados
                 setAction(null);
             },
             "certified": function () {
@@ -122,6 +178,11 @@ export function EnrollManager({ enrollData, admin, classList }: EnrollManagerPro
     }, [admin]);
 
     useEffect(() => {
+        console.log("mainEnrollData", mainEnrollData);
+        setEnrollData(mainEnrollData);
+    }, [mainEnrollData]);
+
+    useEffect(() => {
         setSortedData(enrollData);
         setTableEnrollData(enrollData.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
         setTotalEnrollData(enrollData.length);
@@ -136,11 +197,11 @@ export function EnrollManager({ enrollData, admin, classList }: EnrollManagerPro
         setTableEnrollData(sorted.slice(0, limitPage));
     }
 
-    function handleAction(value: string) {
+    async function handleAction(value: string) {
         console.log("handleAction", value);
         if (value && selectedEnroll.length > 0) {
             setAlert(0);
-            actionList[value]();
+            await actionList[value]();
         } else {
             setAlert(1);
         }
@@ -213,13 +274,25 @@ export function EnrollManager({ enrollData, admin, classList }: EnrollManagerPro
                             title="Selecione uma turma para realizar chamada"
                             color="yellow.6"
                             children={undefined}
-                        />
-                        // <Alert
-                        //     icon={<IconCircleCheck size={16} />}
-                        //     title="Turma cadastrada!"
-                        //     color="teal.6"
-                        //     children={undefined}
-                        // />,
+                        />,
+                        <Alert
+                            icon={<IconCircleCheck size={16} />}
+                            title="Alunos chamados para turma!"
+                            color="teal.6"
+                            children={undefined}
+                        />,
+                        <Alert
+                            icon={<IconAlertCircle size={16} />}
+                            title="Alunos parcialmente chamados para turma!"
+                            color="yellow.6"
+                            children={undefined}
+                        />,
+                        <Alert
+                            icon={<IconAlertCircle size={16} />}
+                            title="Falha ao chamar alunos para turma!"
+                            color="red.6"
+                            children={undefined}
+                        />,
                         // <Alert
                         //     icon={<IconCircleCheck size={16} />}
                         //     title="Turma já existe!"

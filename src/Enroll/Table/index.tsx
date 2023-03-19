@@ -74,7 +74,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
         </td> */}
         <td>{item.enroll_status === "waiting" ? <IconHourglassEmpty /> : ((item.enroll_status === "called") ? <IconBrandHipchat /> : item.enroll_status)}</td>
         <td>{item.city}</td>
-        <td>{item.enroll_date.substring(0, 9)}</td>
+        <td>{item.enroll_date.substring(0, 10)}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td>{item.user.phone.match(regex)?.join('')}</td>
