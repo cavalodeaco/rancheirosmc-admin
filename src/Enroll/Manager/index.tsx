@@ -19,6 +19,11 @@ interface EnrollManagerProps {
     classList: string[];
 }
 
+interface Alert {
+    type: "success" | "error" | "warning" | "info";
+    title: string;
+}
+
 const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at"];
 
 function filterData(data: Enroll[], search: string, searchBy: string = 'todos') {
@@ -79,77 +84,145 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     const [sortedData, setSortedData] = useState(enrollData);
     const [totalEnrollData, setTotalEnrollData] = useState(0);
     const [action, setAction] = useState<string | null>("actions");
-    const [alert, setAlert] = useState(0);
+    const [alert, setAlert] = useState<Alert | null>(null);
     const [selectedClass, setSelectedClass] = useState<string | null>(null);
     const actionList =
         {
-            "call": async function () {
-                if (selectedClass) {
-                    const data = {
-                        class_name: selectedClass,
-                        enrolls: selectedEnroll.map((item) => ({
-                            enroll_date: item.enroll_date,
-                            city: item.city,
-                        })),
-                    };
-                    const config = {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            // add tokens from localstorage
-                            access_token: `${tokens.access_token}`,
-                            id_token: `${tokens.id_token}`,
-                        },
-                        body: JSON.stringify(data),
-                    };
-                    try {
-                        const response = await fetch(
-                            `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/call` as string,
-                            config
-                        );
-                        const { message, enrolls } = await response.json();
-                        const update = async () => {
-                            setEnrollData(enrollData.map((item) => {
-                                for (const enroll of enrolls) {
-                                    if (item.city === enroll.city && item.enroll_date === enroll.enroll_date) {
-                                        item.enroll_status = enroll.enroll_status;
-                                        item.updated_by = enroll.updated_by;
-                                        item.updated_at = enroll.updated_at;
-                                        item.class = enroll.class;
-                                        return item;
-                                    }
+            "update_class_and_status": async function (url: string, msg_success: string, msg_warning: string, msg_error: string) {
+                const data = {
+                    class_name: selectedClass,
+                    enrolls: selectedEnroll.map((item) => ({
+                        enroll_date: item.enroll_date,
+                        city: item.city,
+                    })),
+                };
+                const config = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        // add tokens from localstorage
+                        access_token: `${tokens.access_token}`,
+                        id_token: `${tokens.id_token}`,
+                    },
+                    body: JSON.stringify(data),
+                };
+                try {
+                    const response = await fetch(
+                        `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/${url}` as string,
+                        config
+                    );
+                    const { message, enrolls } = await response.json();
+                    const update = async () => {
+                        setEnrollData(enrollData.map((item) => {
+                            for (const enroll of enrolls) {
+                                if (item.city === enroll.city && item.enroll_date === enroll.enroll_date) {
+                                    item.enroll_status = enroll.enroll_status;
+                                    item.updated_by = enroll.updated_by;
+                                    item.updated_at = enroll.updated_at;
+                                    item.class = enroll.class;
+                                    return item;
                                 }
-                                return item;
-                            }));
-                        }
-                        update();
-                        if (response.status === 200 && message !== "partial") {
-                            setAlert(3);
-                        } else if (response.status === 206 && message === "partial") {
-                            setAlert(4);
-                        }
-                    } catch (error) {
-                        setAlert(5);
+                            }
+                            return item;
+                        }));
                     }
-                } else {
-                    setAlert(2);
+                    update();
+                    if (process.env.ENV !== "production") {
+                        console.log("response", response);
+                    }
+                    if (response.status === 200 && message !== "partial") {
+                        setAlert({ type: "success", title: msg_success } as Alert);
+                    } else if (response.status === 206 && message === "partial") {
+                        setAlert({ type: "warning", title: msg_warning } as Alert);
+                    }
+                } catch (error) {
+                    setAlert({ type: "error", title: msg_error } as Alert);
                 }
 
                 // TODO: create wame para com mensagens para o próprio usuário com os links de chats para cada aluno selecionado
-                // TODO: tratar 202 como sendo parcial o sucesso, pois alguns alunos podem não terem sido alterados
                 setAction(null);
+            },
+            "call": async function () {
+                if (process.env.ENV !== "production") {
+                    console.log("call");
+                }
+                if (selectedClass) {
+                    actionList["update_class_and_status"]("call", "Chamada realizada com sucesso!", "Chamada realizada com sucesso, porém alguns alunos não foram chamados!", "Erro ao realizar chamada!");
+                } else {
+                    setAlert({ type: "warning", title: "Selecione uma turma para realizar chamada!" } as Alert);
+                }
+            },
+            "update_status": async function (url: string, msg_success: string, msg_warning: string, msg_error: string) {
+                const data = {
+                    enrolls: selectedEnroll.map((item) => ({
+                        enroll_date: item.enroll_date,
+                        city: item.city,
+                    })),
+                };
+                const config = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        // add tokens from localstorage
+                        access_token: `${tokens.access_token}`,
+                        id_token: `${tokens.id_token}`,
+                    },
+                    body: JSON.stringify(data),
+                };
+                try {
+                    const response = await fetch(
+                        `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/${url}` as string,
+                        config
+                    );
+                    const { message, enrolls } = await response.json();
+                    const updateStatus = async (enrolls: any) => {
+                        setEnrollData(enrollData.map((item) => {
+                            for (const enroll of enrolls) {
+                                if (item.city === enroll.city && item.enroll_date === enroll.enroll_date) {
+                                    item.enroll_status = enroll.enroll_status;
+                                    item.updated_by = enroll.updated_by;
+                                    item.updated_at = enroll.updated_at;
+                                    return item;
+                                }
+                            }
+                            return item;
+                        }));
+                    }
+
+                    updateStatus(enrolls);
+                    if (response.status === 200 && message !== "partial") {
+                        setAlert({ type: "success", title: msg_success } as Alert);
+                    } else if (response.status === 206 && message === "partial") {
+                        setAlert({ type: "warning", title: msg_warning } as Alert);
+                    }
+                } catch (error) {
+                    setAlert({ type: "error", title: msg_error } as Alert);
+                }
+                setAction(null);
+            },
+            "confirmed": async function () {
+                if (process.env.ENV !== "production") {
+                    console.log("confirmed");
+                }
+                actionList["update_status"]("confirm", "Inscrição(ões) confirmada(s) para sua(s) turma(s)!", "Inscrição(ões) parcialmente confirmada(s)!", "Falha ao confirmar inscrição(ões)!");
             },
             "certified": function () {
-                console.log("certified");
-                setAction(null);
+                if (process.env.ENV !== "production") {
+                    console.log("certified");
+                }
+                actionList["update_status"]("certify", "Inscrição(ões) certificada(s) em sua(s) turma(s)!", "Inscrição(ões) parcialmente certificada(s)!", "Falha ao certificar inscrição(ões)!");
             },
             "missed": function () {
-                console.log("missed");
-                setAction(null);
+                if (process.env.ENV !== "production") {
+                    console.log("missed");
+                }
+                actionList["update_status"]("miss", "Aplicada(s) falta(s) na(s) inscrição(ões)!", "Falta(s) parcialmente aplicada(s)!", "Falha ao aplicar falta(s)!");
             },
             "dropout": function () {
-                console.log("dropout");
-                setAction(null);
+                if (process.env.ENV !== "production") {
+                    console.log("dropout");
+                }
+                actionList["update_class_and_status"]("drop", "Aplicada(s) desistência(s) na(s) inscrição(ões)!", "Desistência(s) parcialmente aplicada(s)!", "Falha ao ao aplicar desistência(s)!");
             }
         } as ActionList;
     const marks = [
@@ -197,10 +270,10 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     async function handleAction(value: string) {
         console.log("handleAction", value);
         if (value && selectedEnroll.length > 0) {
-            setAlert(0);
+            setAlert(null);
             await actionList[value]();
         } else {
-            setAlert(1);
+            setAlert({ type: "warning", title: "Selecione ao menos uma inscrição para executar uma ação!" } as Alert);
         }
     }
 
@@ -213,6 +286,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         <Select
                             data={[
                                 { value: "call", label: "Chamar para turma", disabled: admin?.["custom:manager"] !== "true" },
+                                { value: "confirmed", label: "Confirmar para turma", disabled: admin?.["custom:manager"] !== "true" },
                                 { value: "certified", label: "Indicar presença", disabled: admin?.["custom:manager"] !== "true" },
                                 { value: "missed", label: "Indicar falta", disabled: admin?.["custom:manager"] !== "true" },
                                 { value: "dropout", label: "Indicar desistência", disabled: admin?.["custom:manager"] !== "true" },
@@ -258,45 +332,40 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                     </Flex>
                 </Flex>
                 {
-                    [
-                        <UnstyledButton />,
+                    alert?.type === "error" ?
                         <Alert
                             icon={<IconAlertCircle size={16} />}
-                            title="Selecione alunos para executar uma ação"
+                            title={alert?.title}
                             color="red.6"
                             children={undefined}
-                        />,
-                        <Alert
-                            icon={<IconAlertCircle size={16} />}
-                            title="Selecione uma turma para realizar chamada"
-                            color="yellow.6"
-                            children={undefined}
-                        />,
+                            withCloseButton
+                            onClose={() => { setAlert(null) }}
+                        />
+                        : null
+                }
+                {
+                    alert?.type === "success" ?
                         <Alert
                             icon={<IconCircleCheck size={16} />}
-                            title="Alunos chamados para turma!"
+                            title={alert?.title}
                             color="teal.6"
                             children={undefined}
-                        />,
+                            withCloseButton
+                            onClose={() => { setAlert(null) }}
+                        />
+                        : null
+                }
+                {
+                    alert?.type === "warning" ?
                         <Alert
                             icon={<IconAlertCircle size={16} />}
-                            title="Alunos parcialmente chamados para turma!"
-                            color="yellow.6"
+                            title={alert?.title}
+                            color="IconCircleCheck.6"
                             children={undefined}
-                        />,
-                        <Alert
-                            icon={<IconAlertCircle size={16} />}
-                            title="Falha ao chamar alunos para turma!"
-                            color="red.6"
-                            children={undefined}
-                        />,
-                        // <Alert
-                        //     icon={<IconCircleCheck size={16} />}
-                        //     title="Turma já existe!"
-                        //     color="red.6"
-                        //     children={undefined}
-                        // />,
-                    ][alert]
+                            withCloseButton
+                            onClose={() => { setAlert(null) }}
+                        />
+                        : null
                 }
                 <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} />
                 <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />

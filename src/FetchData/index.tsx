@@ -69,52 +69,63 @@ export function FetchData() {
     const [enrollData, setEnrollData] = useState<Enroll[]>([]);
     const [classData, setClassData] = useState<Class[]>([]);
     const [userData, setUserData] = useState<User[]>([]);
-    const [enrollPage, setEnrollPage] = useState(""); // manages 
-    const [userPage, setUserPage] = useState(""); // manages 
+    const [enrollPage, setEnrollPage] = useState(""); // manages
+    const [userPage, setUserPage] = useState(""); // manages
+
+    async function adminFetch(input: RequestInfo | URL, init?: RequestInit) {
+        const response = await fetch(input, init);
+        if (response.status === 401) {
+            localStorage.clear();
+            //   window.location.href = "/"; // was this really necessary?
+            return;
+        }
+        const data = await response.json();
+        return data.message;
+    }
 
     async function getEnrollData() {
         console.log("Request data");
-        if (tokens) { // only proceed if tokens are available
+        if (tokens) {
+            // only proceed if tokens are available
             const headers = {
-                "limit": "200",
-                // add tokens from localstorage        
-                "access_token": `${tokens.access_token}`,
-                "id_token": `${tokens.id_token}`
+                limit: "200",
+                // add tokens from localstorage
+                access_token: `${tokens.access_token}`,
+                id_token: `${tokens.id_token}`,
             };
-            try {
-                const enrolls: EnrollResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`, {
+            const enrolls: EnrollResponse = await adminFetch(
+                `${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`,
+                {
                     method: "GET",
-                    headers: enrollPage ? { ...headers, "page": JSON.stringify(enrollPage) } : headers
-                }) // add body
-                    .then((response) => response.json())
-                    .then((data) => data.message);
-
-                return enrolls;
-            } catch (error: any) {
-                if (error.status === 401 || error.name == "UnauthorizedError") {
-                    localStorage.clear();
-                    window.location.href = "/";
+                    headers: enrollPage
+                        ? { ...headers, page: JSON.stringify(enrollPage) }
+                        : headers,
                 }
-            }
+            ); // add body
+            return enrolls;
         }
         return undefined;
     }
 
     async function getUserData() {
         console.log("Request data");
-        if (tokens) { // only proceed if tokens are available
+        if (tokens) {
+            // only proceed if tokens are available
             const headers = {
-                "limit": "200",
-                // add tokens from localstorage        
-                "access_token": `${tokens.access_token}`,
-                "id_token": `${tokens.id_token}`
+                limit: "200",
+                // add tokens from localstorage
+                access_token: `${tokens.access_token}`,
+                id_token: `${tokens.id_token}`,
             };
-            const users: UserResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`, {
-                method: "GET",
-                headers: userPage ? { ...headers, "page": JSON.stringify(userPage) } : headers
-            }) // add body
-                .then((response) => response.json())
-                .then((data) => data.message);
+            const users: UserResponse = await adminFetch(
+                `${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`,
+                {
+                    method: "GET",
+                    headers: userPage
+                        ? { ...headers, page: JSON.stringify(userPage) }
+                        : headers,
+                }
+            ); // add body
             return users;
         }
         return undefined;
@@ -122,19 +133,23 @@ export function FetchData() {
 
     async function getClassData() {
         console.log("Request data");
-        if (tokens) { // only proceed if tokens are available
+        if (tokens) {
+            // only proceed if tokens are available
             const headers = {
-                "limit": "200",
-                // add tokens from localstorage        
-                "access_token": `${tokens.access_token}`,
-                "id_token": `${tokens.id_token}`
+                limit: "200",
+                // add tokens from localstorage
+                access_token: `${tokens.access_token}`,
+                id_token: `${tokens.id_token}`,
             };
-            const classes: ClassResponse = await fetch(`${process.env.REACT_APP_BACKEND_ADDRESS}/class`, {
-                method: "GET",
-                headers: userPage ? { ...headers, "page": JSON.stringify(userPage) } : headers
-            }) // add body
-                .then((response) => response.json())
-                .then((data) => data.message);
+            const classes: ClassResponse = await adminFetch(
+                `${process.env.REACT_APP_BACKEND_ADDRESS}/class`,
+                {
+                    method: "GET",
+                    headers: userPage
+                        ? { ...headers, page: JSON.stringify(userPage) }
+                        : headers,
+                }
+            ); // add body
             return classes;
         }
         return undefined;
@@ -155,7 +170,6 @@ export function FetchData() {
                 flag = enrolls?.page;
             } while (flag);
             console.log("Enroll data fetched");
-
 
             console.log("Fetching user data");
             flag = false;
@@ -186,8 +200,10 @@ export function FetchData() {
             // Process data
             // Find the user of each enroll
             dataEnroll = dataEnroll.map((enroll) => {
-                const user = dataUser.find((user) =>
-                    user.driver_license === enroll.user.driver_license && user.driver_license_UF === enroll.user.driver_license_UF
+                const user = dataUser.find(
+                    (user) =>
+                        user.driver_license === enroll.user.driver_license &&
+                        user.driver_license_UF === enroll.user.driver_license_UF
                 );
                 if (user) {
                     enroll.user = user;
@@ -198,8 +214,10 @@ export function FetchData() {
             // Find enrolls of each user
             dataUser = dataUser.map((user) => {
                 user.enroll = user.enroll.map((user_enroll) => {
-                    const enroll = dataEnroll.filter((enroll) =>
-                        enroll.enroll_date === user_enroll.enroll_date && enroll.city === user_enroll.city
+                    const enroll = dataEnroll.filter(
+                        (enroll) =>
+                            enroll.enroll_date === user_enroll.enroll_date &&
+                            enroll.city === user_enroll.city
                     );
                     if (enroll.length > 1) {
                         console.log("####-----> More than one enroll found!! ");
@@ -216,10 +234,13 @@ export function FetchData() {
             setClassData(dataClass); // table data
         };
         fetchData();
-    }, [tokens]); // execute only if tokens change    
+    }, [tokens]); // execute only if tokens change
 
     return (
-        <Main enrollData={enrollData} userData={userData} classData={classData}/>
-    )
-
+        <Main
+            enrollData={enrollData}
+            userData={userData}
+            classData={classData}
+        />
+    );
 }
