@@ -10,7 +10,7 @@ import {
 import { Admin } from "../Main";
 
 const useStyles = createStyles((theme, _params, getRef) => {
-  const icon = getRef("icon");
+  const icon: string = getRef("icon");
   return {
     container: {
       justifyContent: "space-between",
@@ -99,6 +99,7 @@ interface MenuProps {
   setIsClass: Function | any;
   admin: Admin | undefined;
   opened: boolean;
+  setOpened: Function;
 }
 
 export function Menu({
@@ -107,6 +108,7 @@ export function Menu({
   setIsClass,
   admin,
   opened,
+  setOpened,
 }: MenuProps) {
   const { classes, cx } = useStyles();
   const [active, setActive] = useState("Métricas");
@@ -177,6 +179,7 @@ export function Menu({
         event.preventDefault();
         await item.action();
         setActive(item.label);
+        setOpened(false);
       }}
     >
       <item.icon />
