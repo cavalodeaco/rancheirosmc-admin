@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   AppShell,
+  Box,
   Burger,
   Center,
   createStyles,
@@ -61,6 +62,7 @@ export default function Main({ enrollData, userData, classData }: MainProps) {
   const [isUser, setIsUser] = useState(false);
   const [isClass, setIsClass] = useState(false);
   const [admin, setAdmin] = useState<Admin>();
+  const [active, setActive] = useState("Métricas");
 
   const [tokens, setTokens] = useLocalStorage<Tokens>({
     key: "tokens",
@@ -81,23 +83,31 @@ export default function Main({ enrollData, userData, classData }: MainProps) {
       asideOffsetBreakpoint="sm"
       header={
         <Header height={60} p="xs">
-          <Group className={classes.header} position="center">
-            <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+          <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
+            <Group className={classes.header} position="apart">  
+              <Title order={3} transform="uppercase" italic>
+                <Center>
+                  <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
+                  <Space w="xs" />
+                  Pilotando Para <TextPPV text="Vida" />
+                </Center>
+              </Title>
+              <Title order={3} transform="uppercase" italic>{active}</Title>
+              <Box/>
+            </Group>
+          </MediaQuery>
+          <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+            <Group className={classes.header} position="apart">  
+              <img src={ppvicon} alt="Pilotando Para Vida" height={36} />    
+              <Title order={3} transform="uppercase" italic>{active}</Title>
               <Burger
                 opened={opened}
                 onClick={() => setOpened((o) => !o)}
                 size="sm"
                 mr="xl"
               />
-            </MediaQuery>
-            <Title order={3} transform="uppercase" italic>
-              <Center>
-                <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
-                <Space w="xs" />
-                Pilotando Para <TextPPV text="Vida" />
-              </Center>
-            </Title>
-          </Group>
+            </Group>
+          </MediaQuery>
         </Header>
       }
       navbar={
@@ -108,6 +118,8 @@ export default function Main({ enrollData, userData, classData }: MainProps) {
           admin={admin}
           opened={opened}
           setOpened={setOpened}
+          active={active}
+          setActive={setActive}
         />
       }
     >

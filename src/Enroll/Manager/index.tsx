@@ -323,7 +323,6 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 )}
             </Transition>
             <Flex direction={"column"} gap={"md"}>
-                <Title>Inscrições</Title>
                 <TextInput
                     placeholder={`Pesquisar`}
                     icon={<IconSearch size="0.9rem" stroke={1.5} />}
