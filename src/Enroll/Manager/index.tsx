@@ -115,7 +115,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 };
                 try {
                     const response = await fetch(
-                        `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/${url}` as string,
+                        `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
                         config
                     );
                     const { message, enrolls } = await response.json();
@@ -178,7 +178,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 };
                 try {
                     const response = await fetch(
-                        `${process.env.REACT_APP_BACKEND_ADDRESS}/enroll/${url}` as string,
+                        `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
                         config
                     );
                     const { message, enrolls } = await response.json();
