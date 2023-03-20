@@ -148,7 +148,6 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
       </Transition>
 
       <Stack>
-        <Title>Turmas</Title>
         <Flex gap={"md"}>
           <Button
             onClick={open}

@@ -118,6 +118,8 @@ interface MenuProps {
     admin: Admin | undefined;
     opened: boolean;
     setOpened: Function;
+    active: string;
+    setActive: Function;
 }
 
 export function Menu({
@@ -127,9 +129,10 @@ export function Menu({
     admin,
     opened,
     setOpened,
+    active,
+    setActive
 }: MenuProps) {
     const { classes, cx } = useStyles();
-    const [active, setActive] = useState("Métricas");
 
     const data = [
         {
@@ -210,7 +213,7 @@ export function Menu({
         <Navbar
             hiddenBreakpoint="sm"
             hidden={!opened}
-            width={{ sm: 200, lg: 300 }}
+            width={{ sm: 300, lg: 300 }}
             p="md"
         >
             <ScrollArea className={classes.fullHeight}>

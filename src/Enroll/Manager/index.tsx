@@ -1,13 +1,18 @@
-import { Alert, Button, createStyles, Flex, Group, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
-import { IconAlertCircle, IconCircleCheck, IconSearch } from "@tabler/icons";
+import { ActionIcon, Alert, Badge, Button, Code, createStyles, Flex, Group, List, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
+import { IconAlertCircle, IconBackspace, IconBrandHipchat, IconCertificate, IconCheckbox, IconCircleCheck, IconCircleMinus, IconHourglassEmpty, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
 import { Enroll } from "../../FetchData";
 import { Admin } from "../../Main";
 import { EnrollTable } from "../Table";
 import Tokens from "../../AuthenticationForm/Tokens";
-import { useLocalStorage } from "@mantine/hooks";
+import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
+import { QuestionMark } from "tabler-icons-react";
 
 const useStyles = createStyles((theme) => ({
+    stretch: {
+        flexGrow: 1,
+    },
+
     actions: {
         justifyContent: "space-between",
     },
@@ -24,7 +29,7 @@ interface Alert {
     title: string;
 }
 
-const searchableFields = ["city", "motorcycle_model", "motorcycle_use", "enroll_status", "motorcycle_brand", "user.driver_license", "user.driver_license_UF", "user.name", "updated_by", "enroll_date", "updated_at"];
+const searchableFields = ["enroll_status", "city", "enroll_date", "user.name", "user.driver_license", "user.driver_license_UF", "user.phone", "class", "updated_by"]; // "motorcycle_model", "motorcycle_use", "motorcycle_brand","updated_at", 
 
 function filterData(data: Enroll[], search: string, searchBy: string = 'todos') {
     console.log("filterData", search);
@@ -76,6 +81,8 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     const { classes } = useStyles();
     const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
     const [activeEnrollPage, setActiveEnrollPage] = useState(1);
+    const [opened, { open, close }] = useDisclosure(false);
+    const isMobile = useMediaQuery("(max-width: 50em)");  
     const [selectedEnroll, setSelectedEnroll] = useState<Enroll[]>([]);
     const [limitPage, setLimitPage] = useState(10);
     const [searchBy, setSearchBy] = useState('todos');
@@ -279,45 +286,65 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
 
     return (
         <>
-            <Stack>
-                <Title>Inscrições</Title>
-                <Flex gap={"xs"} className={classes.actions}>
-                    <Flex gap={"md"}>
-                        <Select
-                            data={[
-                                { value: "call", label: "Chamar para turma", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "confirmed", label: "Confirmar para turma", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "certified", label: "Indicar presença", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "missed", label: "Indicar falta", disabled: admin?.["custom:manager"] !== "true" },
-                                { value: "dropout", label: "Indicar desistência", disabled: admin?.["custom:manager"] !== "true" },
-                            ]}
-                            value={action}
-                            placeholder="Ações de inscrição"
-                            onChange={handleAction}
-                        />
-                        <Select
-                            placeholder="Turma"
-                            data={classList}
-                            clearable
-                            onChange={setSelectedClass}
-                        />
-                    </Flex>
-                    <Flex gap={"md"}>
-                        <TextInput
-                            placeholder={`Buscar por ${searchBy}`}
-                            mb="md"
-                            icon={<IconSearch size="0.9rem" stroke={1.5} />}
-                            value={search}
-                            onChange={(event) => setSearch(event.currentTarget.value)}
-                            onKeyDown={(event) => {
-                                if (event.key === "Enter") {
-                                    handleSearch();
-                                }
-                            }}
-                        />
-                        <Button onClick={handleSearch}>Filtrar</Button>
-                        <Paper shadow={"xs"} p="xs" withBorder>{sortedData.length}/{enrollData.length}</Paper>
-                        {/* <Slider
+            <Transition
+                mounted={opened}
+                transition="fade"
+                duration={400}
+                timingFunction="ease"
+            >
+                {(styles) => (
+                <div style={styles}>
+                    <Modal opened={opened} onClose={close} fullScreen={isMobile} title="Legenda de status">
+                        <List 
+                            center 
+                            spacing="xs"
+                            size="sm">
+                            <List.Item icon={<IconHourglassEmpty />}>
+                                Em fila de espera
+                            </List.Item>
+                            <List.Item icon={<IconBrandHipchat color='#00abfb'/>}>
+                                Convidado para uma turma
+                            </List.Item>
+                            <List.Item icon={<IconCheckbox color='#ffec00'/>}>
+                                Confirmou convite para a turma
+                            </List.Item>
+                            <List.Item icon={<IconCertificate color='#7bc62d'/>}>
+                                Participou do curso
+                            </List.Item>
+                            <List.Item icon={<IconBackspace color='#ffbf00'/>}>
+                                Desistiu da vaga na turma
+                            </List.Item>
+                            <List.Item icon={<IconCircleMinus color='#ff4500'/>}>
+                                Faltou no curso
+                            </List.Item>
+                        </List>
+                    </Modal>
+                </div>
+                )}
+            </Transition>
+            <Flex direction={"column"} gap={"md"}>
+                <TextInput
+                    placeholder={`Pesquisar`}
+                    icon={<IconSearch size="0.9rem" stroke={1.5} />}
+                    value={search}
+                    onChange={(event) => setSearch(event.currentTarget.value)}
+                    onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                            handleSearch();
+                        }
+                    }}
+                    rightSection={
+                        <Badge color="gray" size="xs">
+                            {sortedData.length} de {enrollData.length}
+                        </Badge>
+                    }
+                    rightSectionWidth={"5rem"}
+                />
+                {/* <Paper shadow={"xs"} p="xs" withBorder>
+                        {sortedData.length}/{enrollData.length}
+                    </Paper> */}
+
+                {/* <Slider
                             labelAlwaysOn
                             labelTransition="skew-down"
                             labelTransitionDuration={150}
@@ -329,7 +356,49 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             min={1}
                             max={100}
                         />                 */}
-                    </Flex>
+                <Flex gap={"xs"} align="center" className={classes.actions}>
+                    <Select
+                        placeholder="Turma"
+                        data={classList}
+                        clearable
+                        className={classes.stretch}
+                        onChange={setSelectedClass}
+                    />
+                    <Select
+                        data={[
+                            {
+                                value: "call",
+                                label: "Chamar para turma",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "confirmed",
+                                label: "Confirmar para turma",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "certified",
+                                label: "Indicar presença",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "missed",
+                                label: "Indicar falta",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                            {
+                                value: "dropout",
+                                label: "Indicar desistência",
+                                disabled: admin?.["custom:manager"] !== "true",
+                            },
+                        ]}
+                        value={action}
+                        placeholder="Ações de inscrição"
+                        onChange={handleAction}
+                    />
+                    <ActionIcon size={"sm"} radius="xl" variant="outline" onClick={open}>
+                        <QuestionMark size="0.875rem" />
+                    </ActionIcon>
                 </Flex>
                 {
                     alert?.type === "error" ?
@@ -369,7 +438,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 }
                 <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} />
                 <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
-            </Stack>
+            </Flex>
         </>
     );
 
