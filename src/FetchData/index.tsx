@@ -276,7 +276,7 @@ export function FetchData() {
             setClassData(dataClass); // table data
         };
         fetchData();
-    }, [tokens, admin]); // execute only if tokens change
+    }, [admin]); // execute only if admin change
 
     return (
         <Main
