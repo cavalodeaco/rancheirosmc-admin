@@ -14,8 +14,7 @@ import {
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
-import { Class } from "../../FetchData";
-import { Admin } from "../../Main";
+import { Admin, Class } from "../../FetchData";
 import { CreateForm } from "../CreateForm";
 import { ClassTable } from "../Table";
 
@@ -151,7 +150,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
         <Flex gap={"md"}>
           <Button
             onClick={open}
-            disabled={admin?.["custom:manager"] !== "true"}
+            disabled={admin?.["custom:manager"]}
           >
             Criar turma
           </Button>

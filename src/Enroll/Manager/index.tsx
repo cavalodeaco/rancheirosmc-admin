@@ -368,27 +368,27 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             {
                                 value: "call",
                                 label: "Chamar para turma",
-                                disabled: admin?.["custom:manager"] !== "true",
+                                disabled: admin?.["custom:manager"],
                             },
                             {
                                 value: "confirmed",
                                 label: "Confirmar para turma",
-                                disabled: admin?.["custom:manager"] !== "true",
+                                disabled: admin?.["custom:manager"],
                             },
                             {
                                 value: "certified",
                                 label: "Indicar presença",
-                                disabled: admin?.["custom:manager"] !== "true",
+                                disabled: admin?.["custom:manager"],
                             },
                             {
                                 value: "missed",
                                 label: "Indicar falta",
-                                disabled: admin?.["custom:manager"] !== "true",
+                                disabled: admin?.["custom:manager"],
                             },
                             {
                                 value: "dropout",
                                 label: "Indicar desistência",
-                                disabled: admin?.["custom:manager"] !== "true",
+                                disabled: admin?.["custom:manager"],
                             },
                         ]}
                         value={action}

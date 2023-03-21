@@ -15,8 +15,8 @@ import {
     IconMotorbike,
     IconUser,
 } from "@tabler/icons";
-import { Admin } from "../Main";
 import { UserCircle } from "tabler-icons-react";
+import { Admin } from "../FetchData";
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon: string = getRef("icon");

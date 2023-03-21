@@ -67,16 +67,16 @@ export interface Admin {
     name: string;
     email: string;
     phone_number: string;
-    "custom:caller": string;
-    "custom:cambira": string;
-    "custom:curitiba": string;
-    "custom:download": string;
-    "custom:londrina": string;
-    "custom:manager": string;
-    "custom:maringa": string;
-    "custom:medianeira": string;
-    "custom:viewer": string;
-    "custom:posclass": string;
+    "custom:caller": boolean;
+    "custom:cambira": boolean;
+    "custom:curitiba": boolean;
+    "custom:download": boolean;
+    "custom:londrina": boolean;
+    "custom:manager": boolean;
+    "custom:maringa": boolean;
+    "custom:medianeira": boolean;
+    "custom:viewer": boolean;
+    "custom:posclass": boolean;
   }
 
 export function FetchData() {
@@ -97,9 +97,7 @@ export function FetchData() {
 
     useEffect(() => {
         // admin null
-        if (!admin) {
-            logout();
-        }
+        console.log("admin", admin);
     }, [admin]);
 
     useEffect(() => {
@@ -114,6 +112,8 @@ export function FetchData() {
         const response = await fetch(input, init);
         if (response.status === 401) {
             logout();
+        } else {
+            console.log("Response", response);
         }
         const data = await response.json();
         return data.message;
@@ -128,6 +128,11 @@ export function FetchData() {
                 // add tokens from localstorage
                 access_token: `${tokens.access_token}`,
                 id_token: `${tokens.id_token}`,
+                filter: admin?.["custom:manager"] ? "all" 
+                            : admin?.["custom:curitiba"] ? "curitiba"
+                            : admin?.["custom:londrina"] || admin?.["custom:maringa"] 
+                                    || admin?.["custom:cambira"] || admin?.["custom:medianeira"] ? "rancho"
+                            : "error",
             };
             const enrolls: EnrollResponse = await adminFetch(
                 `${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`,
@@ -138,6 +143,7 @@ export function FetchData() {
                         : headers,
                 }
             ); // add body
+            // TODO: try error handling
             return enrolls;
         }
         return undefined;
@@ -270,7 +276,7 @@ export function FetchData() {
             setClassData(dataClass); // table data
         };
         fetchData();
-    }, [tokens]); // execute only if tokens change
+    }, [tokens, admin]); // execute only if tokens change
 
     return (
         <Main

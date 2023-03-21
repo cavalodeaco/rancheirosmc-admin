@@ -1,8 +1,7 @@
 import { Button, Flex, Pagination, Paper, ScrollArea, Stack, TextInput, Title } from "@mantine/core";
 import { IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
-import { User } from "../../FetchData";
-import { Admin } from "../../Main";
+import { Admin, User } from "../../FetchData";
 import { UserTable } from "../Table";
 
 interface UserManagerProps {
