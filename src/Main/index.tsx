@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   AppShell,
   Box,
@@ -16,9 +16,8 @@ import { EnrollManager } from "../Enroll/Manager";
 import { UserManager } from "../User/Manager";
 import TextPPV from "../TextPPV/TextPPV";
 import ppvicon from "../img/iconppv.svg";
-import { Class, Enroll, User } from "../FetchData";
+import { Admin, Class, Enroll, User } from "../FetchData";
 import { useLocalStorage } from "@mantine/hooks";
-import jwtDecode from "jwt-decode";
 import Tokens from "../AuthenticationForm/Tokens";
 import { ClassManager } from "../Class/Manager";
 
@@ -41,40 +40,20 @@ interface MainProps {
   enrollData: Enroll[];
   userData: User[];
   classData: Class[];
+  admin: Admin | undefined;
 }
 
-export interface Admin {
-  name: string;
-  email: string;
-  phone_number: string;
-  "custom:cambira": string;
-  "custom:curitiba": string;
-  "custom:londrina": string;
-  "custom:manager": string;
-  "custom:maringa": string;
-  "custom:medianeira": string;
-  "custom:viewer": string;
-}
-
-export default function Main({ enrollData, userData, classData }: MainProps) {
+export default function Main({ enrollData, userData, classData, admin }: MainProps) {
   const { classes, cx } = useStyles();
   const [isEnroll, setIsEnroll] = useState(false);
   const [isUser, setIsUser] = useState(false);
   const [isClass, setIsClass] = useState(false);
-  const [admin, setAdmin] = useState<Admin>();
   const [active, setActive] = useState("Métricas");
 
   const [tokens, setTokens] = useLocalStorage<Tokens>({
     key: "tokens",
   });
 
-  useEffect(() => {
-    // decode id token using jsonwebtoken
-    if (tokens) {
-      const decoded = jwtDecode(tokens.id_token);
-      setAdmin(decoded as Admin);
-    }
-  }, [tokens]);
   const [opened, setOpened] = useState(false);
 
   return (

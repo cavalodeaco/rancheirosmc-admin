@@ -1,4 +1,5 @@
 import { useLocalStorage } from "@mantine/hooks";
+import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
 import Tokens from "../AuthenticationForm/Tokens";
 import Main from "../Main";
@@ -62,6 +63,22 @@ interface ClassResponse {
     page: any;
 }
 
+export interface Admin {
+    name: string;
+    email: string;
+    phone_number: string;
+    "custom:caller": string;
+    "custom:cambira": string;
+    "custom:curitiba": string;
+    "custom:download": string;
+    "custom:londrina": string;
+    "custom:manager": string;
+    "custom:maringa": string;
+    "custom:medianeira": string;
+    "custom:viewer": string;
+    "custom:posclass": string;
+  }
+
 export function FetchData() {
     const [tokens, setTokens] = useLocalStorage<Tokens>({
         key: "tokens",
@@ -71,13 +88,32 @@ export function FetchData() {
     const [userData, setUserData] = useState<User[]>([]);
     const [enrollPage, setEnrollPage] = useState(""); // manages
     const [userPage, setUserPage] = useState(""); // manages
+    const [admin, setAdmin] = useState<Admin>();
+
+    function logout () {
+        localStorage.clear();
+            window.location.href = "/"; // was this really necessary?
+    }
+
+    useEffect(() => {
+        // admin null
+        if (!admin) {
+            logout();
+        }
+    }, [admin]);
+
+    useEffect(() => {
+        // decode id token using jsonwebtoken
+        if (tokens) {
+          const decoded = jwtDecode(tokens.id_token);
+          setAdmin(decoded as Admin);
+        }
+      }, [tokens]);
 
     async function adminFetch(input: RequestInfo | URL, init?: RequestInit) {
         const response = await fetch(input, init);
         if (response.status === 401) {
-            localStorage.clear();
-            //   window.location.href = "/"; // was this really necessary?
-            return;
+            logout();
         }
         const data = await response.json();
         return data.message;
@@ -241,6 +277,7 @@ export function FetchData() {
             enrollData={enrollData}
             userData={userData}
             classData={classData}
+            admin={admin}
         />
     );
 }

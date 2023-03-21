@@ -1,8 +1,7 @@
 import { ActionIcon, Alert, Badge, Button, Code, createStyles, Flex, Group, List, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
 import { IconAlertCircle, IconBackspace, IconBrandHipchat, IconCertificate, IconCheckbox, IconCircleCheck, IconCircleMinus, IconHourglassEmpty, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
-import { Enroll } from "../../FetchData";
-import { Admin } from "../../Main";
+import { Admin, Enroll } from "../../FetchData";
 import { EnrollTable } from "../Table";
 import Tokens from "../../AuthenticationForm/Tokens";
 import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
