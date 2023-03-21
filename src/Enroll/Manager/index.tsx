@@ -43,10 +43,10 @@ function filterData(data: Enroll[], search: string, searchBy: string = 'todos') 
             const [key, rest] = field.split(".");
             if (rest) {
                 console.log("rest", rest, n_item[key][rest].toLowerCase().includes(query));
-                if (n_item[key][rest].toLowerCase().includes(query)) {
+                if (n_item[key][rest]?.toLowerCase().includes(query)) {
                     return true;
                 }
-            } else if (n_item[key].toLowerCase().includes(query)) {
+            } else if (n_item[key]?.toLowerCase().includes(query)) {
                 return true;
             }
             return false;
