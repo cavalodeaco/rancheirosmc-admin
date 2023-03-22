@@ -76,7 +76,7 @@ export function ClassTable({ classData, setSearchBy, admin }: ClassTableProps) {
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item icon={<IconDownload size="1rem" stroke={1.5} />}>Lista de presença</Menu.Item>
+              <Menu.Item icon={<IconDownload size="1rem" stroke={1.5} />}>Lista para presença</Menu.Item>
               <Menu.Item icon={<IconCircleMinus size="1rem" stroke={1.5} />}>Desativar turma</Menu.Item>
             </Menu.Dropdown>
           </Menu>
