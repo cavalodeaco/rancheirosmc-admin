@@ -161,19 +161,19 @@ export function Menu({
                 }
             },
         },
-        {
-            link: "",
-            label: "Alunos",
-            icon: IconUser,
-            action: async () => {
-                if (active !== "Alunos") {
-                    // if not in the same page
-                    setIsEnroll(false);
-                    setIsUser(true);
-                    setIsClass(false);
-                }
-            },
-        },
+        // {
+        //     link: "",
+        //     label: "Alunos",
+        //     icon: IconUser,
+        //     action: async () => {
+        //         if (active !== "Alunos") {
+        //             // if not in the same page
+        //             setIsEnroll(false);
+        //             setIsUser(true);
+        //             setIsClass(false);
+        //         }
+        //     },
+        // },
         {
             link: "",
             label: "Turmas",
