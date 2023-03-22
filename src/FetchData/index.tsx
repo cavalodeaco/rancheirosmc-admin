@@ -96,10 +96,10 @@ export function FetchData() {
             window.location.href = "/"; // was this really necessary?
     }
 
-    useEffect(() => {
-        // admin null
-        console.log("admin", admin);
-    }, [admin]);
+    // useEffect(() => {
+    //     // admin null
+    //     console.log("admin", admin);
+    // }, [admin]);
 
     useEffect(() => {
         // decode id token using jsonwebtoken
@@ -113,7 +113,7 @@ export function FetchData() {
         const response = await fetch(input, init);
         if (response.status === 401) {
             logout();
-        } else {
+        } else if (response.status != 200) {
             console.log("Response", response);
         }
         const data = await response.json();
