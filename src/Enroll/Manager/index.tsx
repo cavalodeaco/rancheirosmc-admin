@@ -368,27 +368,27 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             {
                                 value: "call",
                                 label: "Chamar para turma",
-                                disabled: admin?.["custom:manager"],
+                                disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                             },
                             {
                                 value: "confirmed",
                                 label: "Confirmar para turma",
-                                disabled: admin?.["custom:manager"],
+                                disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                             },
                             {
                                 value: "certified",
                                 label: "Indicar presença",
-                                disabled: admin?.["custom:manager"],
+                                disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
                             },
                             {
                                 value: "missed",
                                 label: "Indicar falta",
-                                disabled: admin?.["custom:manager"],
+                                disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
                             },
                             {
                                 value: "dropout",
                                 label: "Indicar desistência",
-                                disabled: admin?.["custom:manager"],
+                                disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                             },
                         ]}
                         value={action}

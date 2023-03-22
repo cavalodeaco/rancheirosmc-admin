@@ -73,6 +73,7 @@ export interface Admin {
     "custom:download": boolean;
     "custom:londrina": boolean;
     "custom:manager": boolean;
+    "custom:manage_class": boolean;
     "custom:maringa": boolean;
     "custom:medianeira": boolean;
     "custom:viewer": boolean;

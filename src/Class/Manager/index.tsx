@@ -150,7 +150,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
         <Flex gap={"md"}>
           <Button
             onClick={open}
-            disabled={admin?.["custom:manager"]}
+            disabled={admin?.["custom:manager"] || admin?.["custom:manage_class"] ? false : true}
           >
             Criar turma
           </Button>
