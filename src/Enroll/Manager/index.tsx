@@ -41,7 +41,6 @@ function filterData(data: Enroll[], search: string, searchBy: string = 'todos') 
         function search(field: string) {
             const [key, rest] = field.split(".");
             if (rest) {
-                console.log("rest", rest, n_item[key][rest].toLowerCase().includes(query));
                 if (n_item[key][rest]?.toLowerCase().includes(query)) {
                     return true;
                 }
@@ -57,7 +56,7 @@ function filterData(data: Enroll[], search: string, searchBy: string = 'todos') 
             }
             return false;
         } else {
-            search(searchBy);
+            return search(searchBy);
         }
     });
 }
