@@ -104,8 +104,23 @@ export function FetchData() {
     useEffect(() => {
         // decode id token using jsonwebtoken
         if (tokens) {
-          const decoded = jwtDecode(tokens.id_token);
-          setAdmin(decoded as Admin);
+          const decoded:any = jwtDecode(tokens.id_token);
+          setAdmin({
+            name: decoded["name"],
+            email: decoded["email"],
+            phone_number: decoded["phone_number"],
+            "custom:caller": decoded["custom:caller"] === "true",
+            "custom:cambira": decoded["custom:cambira"] === "true",
+            "custom:curitiba": decoded["custom:curitiba"] === "true",
+            "custom:download": decoded["custom:download"] === "true",
+            "custom:londrina": decoded["custom:londrina"] === "true",
+            "custom:manager": decoded["custom:manager"] === "true",
+            "custom:manage_class": decoded["custom:manage_class"] === "true",
+            "custom:maringa": decoded["custom:maringa"] === "true",
+            "custom:medianeira": decoded["custom:medianeira"] === "true",
+            "custom:viewer": decoded["custom:viewer"] === "true",
+            "custom:posclass": decoded["custom:posclass"] === "true",            
+          } as Admin);
         }
       }, [tokens]);
 

@@ -183,7 +183,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
                         max={100}
                     />                 */}
         </Flex>
-        <ClassTable classData={tableClassData} setSearchBy={setSearchBy} />
+        <ClassTable classData={tableClassData} setSearchBy={setSearchBy} admin={admin} />
         <Pagination
           page={activeClassPage}
           onChange={handlePagination}

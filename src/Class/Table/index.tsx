@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton } from '@mantine/core';
-import { Class } from '../../FetchData';
-import { IconCircleCheck, IconCircleMinus, IconMap2 } from '@tabler/icons';
+import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Menu, Group, ActionIcon } from '@mantine/core';
+import { Admin, Class } from '../../FetchData';
+import { IconCircleCheck, IconCircleMinus, IconDisabled, IconDisabled2, IconDisabledOff, IconDots, IconDownload, IconMap2 } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -30,10 +30,11 @@ const useStyles = createStyles((theme) => ({
 
 interface ClassTableProps {
   classData: Class[];
-  setSearchBy: Function
+  setSearchBy: Function;
+  admin: Admin | undefined;
 }
 
-export function ClassTable({ classData, setSearchBy }: ClassTableProps) {
+export function ClassTable({ classData, setSearchBy, admin }: ClassTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState(['1']);
   const toggleRow = (name: string) =>
@@ -47,13 +48,13 @@ export function ClassTable({ classData, setSearchBy }: ClassTableProps) {
     const selected = selection.includes(item.name);
     return (
       <tr key={item.name} className={cx({ [classes.rowSelected]: selected })}>
-        <td>
+        {/* <td>
           <Checkbox
             checked={selection.includes(item.name)}
             onChange={() => toggleRow(item.name)}
             transitionDuration={0}
           />
-        </td>        
+        </td>         */}
         <td>{item.active === "true" ? <IconCircleCheck/> : <IconCircleMinus />}</td>
         <td>{item.name}</td>
         <td>{item.city}</td>
@@ -61,6 +62,27 @@ export function ClassTable({ classData, setSearchBy }: ClassTableProps) {
         <td><a href={item.location} target='_blank' rel='noreferrer'><IconMap2/></a></td>
         <td>{item.updated_by}</td>
         <td>{item.updated_at.substring(0,10)}</td>
+        {admin?.["custom:manager"] || admin?.["custom:download"] ? <td>
+        <Group spacing={0} position="right">
+          <Menu
+            // transitionProps={{ transition: 'pop' }}
+            withArrow
+            position="bottom-end"
+            withinPortal
+          >
+            <Menu.Target>
+              <ActionIcon>
+                <IconDots size="1rem" stroke={1.5} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item icon={<IconDownload size="1rem" stroke={1.5} />}>Lista de presença</Menu.Item>
+              <Menu.Item icon={<IconCircleMinus size="1rem" stroke={1.5} />}>Desativar turma</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+          </Group>
+        </td>
+        : null}
       </tr>
     );
   });
@@ -70,14 +92,14 @@ export function ClassTable({ classData, setSearchBy }: ClassTableProps) {
       <Table sx={{ minWidth: 800 }} verticalSpacing="sm">
         <thead>
           <tr>
-            <th style={{ width: 40 }}>
+            {/* <th style={{ width: 40 }}>
               <Checkbox
                 onChange={toggleAll}
                 checked={selection.length === classData.length}
                 indeterminate={selection.length > 0 && selection.length !== classData.length}
                 transitionDuration={0}
               />
-            </th>
+            </th> */}
             <th><UnstyledButton onClick={() => setSearchBy('active')}><Title size={15}>Ativa</Title></UnstyledButton></th>
             <th><UnstyledButton onClick={() => setSearchBy('name')}><Title size={15}>Nome</Title></UnstyledButton></th>
             <th><UnstyledButton onClick={() => setSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></th>
@@ -85,6 +107,7 @@ export function ClassTable({ classData, setSearchBy }: ClassTableProps) {
             <th><UnstyledButton onClick={() => setSearchBy('location')}><Title size={15}>Localização</Title></UnstyledButton></th>
             <th><UnstyledButton onClick={() => setSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></th>
             <th><UnstyledButton onClick={() => setSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th>
+            {admin?.["custom:manager"] || admin?.["custom:download"] ? <th></th> : null}
           </tr>
         </thead>
         <tbody>{rows}</tbody>
