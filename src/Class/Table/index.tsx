@@ -162,7 +162,7 @@ export function ClassTable({ classData, setSearchBy, admin, setAlert }: ClassTab
         <td><a href={item.location} target='_blank' rel='noreferrer'><IconMap2/></a></td>
         <td>{item.updated_by}</td>
         <td>{item.updated_at.substring(0,10)}</td>
-        {admin?.["custom:manager"] || admin?.["custom:download"] ? <td>
+        <td>
         <Group spacing={0} position="right">
           <Menu
             // transitionProps={{ transition: 'pop' }}
@@ -182,7 +182,6 @@ export function ClassTable({ classData, setSearchBy, admin, setAlert }: ClassTab
           </Menu>
           </Group>
         </td>
-        : null}
       </tr>
     );
   });
@@ -207,7 +206,7 @@ export function ClassTable({ classData, setSearchBy, admin, setAlert }: ClassTab
             <th><UnstyledButton onClick={() => setSearchBy('location')}><Title size={15}>Localização</Title></UnstyledButton></th>
             <th><UnstyledButton onClick={() => setSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></th>
             <th><UnstyledButton onClick={() => setSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th>
-            {admin?.["custom:manager"] || admin?.["custom:download"] ? <th></th> : null}
+            <th></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
