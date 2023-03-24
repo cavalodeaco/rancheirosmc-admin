@@ -144,7 +144,8 @@ export function FetchData() {
                 // add tokens from localstorage
                 access_token: `${tokens.access_token}`,
                 id_token: `${tokens.id_token}`,
-                filter: admin?.["custom:manager"] ? "all" 
+                filter: admin?.["custom:manager"] || (admin?.["custom:londrina"] && admin?.["custom:maringa"] 
+                && admin?.["custom:cambira"] && admin?.["custom:medianeira"] && admin?.["custom:curitiba"])? "all" 
                             : admin?.["custom:curitiba"] ? "curitiba"
                             : admin?.["custom:londrina"] || admin?.["custom:maringa"] 
                                     || admin?.["custom:cambira"] || admin?.["custom:medianeira"] ? "rancho"
