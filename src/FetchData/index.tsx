@@ -1,4 +1,5 @@
 import { useLocalStorage } from "@mantine/hooks";
+import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
 import Tokens from "../AuthenticationForm/Tokens";
 import Main from "../Main";
@@ -62,6 +63,23 @@ interface ClassResponse {
     page: any;
 }
 
+export interface Admin {
+    name: string;
+    email: string;
+    phone_number: string;
+    "custom:caller": boolean;
+    "custom:cambira": boolean;
+    "custom:curitiba": boolean;
+    "custom:download": boolean;
+    "custom:londrina": boolean;
+    "custom:manager": boolean;
+    "custom:manage_class": boolean;
+    "custom:maringa": boolean;
+    "custom:medianeira": boolean;
+    "custom:viewer": boolean;
+    "custom:posclass": boolean;
+  }
+
 export function FetchData() {
     const [tokens, setTokens] = useLocalStorage<Tokens>({
         key: "tokens",
@@ -71,13 +89,47 @@ export function FetchData() {
     const [userData, setUserData] = useState<User[]>([]);
     const [enrollPage, setEnrollPage] = useState(""); // manages
     const [userPage, setUserPage] = useState(""); // manages
+    const [admin, setAdmin] = useState<Admin>();
+
+    function logout () {
+        localStorage.clear();
+            window.location.href = "/"; // was this really necessary?
+    }
+
+    // useEffect(() => {
+    //     // admin null
+    //     console.log("admin", admin);
+    // }, [admin]);
+
+    useEffect(() => {
+        // decode id token using jsonwebtoken
+        if (tokens) {
+          const decoded:any = jwtDecode(tokens.id_token);
+          setAdmin({
+            name: decoded["name"],
+            email: decoded["email"],
+            phone_number: decoded["phone_number"],
+            "custom:caller": decoded["custom:caller"] === "true",
+            "custom:cambira": decoded["custom:cambira"] === "true",
+            "custom:curitiba": decoded["custom:curitiba"] === "true",
+            "custom:download": decoded["custom:download"] === "true",
+            "custom:londrina": decoded["custom:londrina"] === "true",
+            "custom:manager": decoded["custom:manager"] === "true",
+            "custom:manage_class": decoded["custom:manage_class"] === "true",
+            "custom:maringa": decoded["custom:maringa"] === "true",
+            "custom:medianeira": decoded["custom:medianeira"] === "true",
+            "custom:viewer": decoded["custom:viewer"] === "true",
+            "custom:posclass": decoded["custom:posclass"] === "true",            
+          } as Admin);
+        }
+      }, [tokens]);
 
     async function adminFetch(input: RequestInfo | URL, init?: RequestInit) {
         const response = await fetch(input, init);
         if (response.status === 401) {
-            localStorage.clear();
-            //   window.location.href = "/"; // was this really necessary?
-            return;
+            logout();
+        } else if (response.status != 200) {
+            console.log("Response", response);
         }
         const data = await response.json();
         return data.message;
@@ -92,6 +144,11 @@ export function FetchData() {
                 // add tokens from localstorage
                 access_token: `${tokens.access_token}`,
                 id_token: `${tokens.id_token}`,
+                filter: admin?.["custom:manager"] ? "all" 
+                            : admin?.["custom:curitiba"] ? "curitiba"
+                            : admin?.["custom:londrina"] || admin?.["custom:maringa"] 
+                                    || admin?.["custom:cambira"] || admin?.["custom:medianeira"] ? "rancho"
+                            : "error",
             };
             const enrolls: EnrollResponse = await adminFetch(
                 `${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`,
@@ -102,6 +159,7 @@ export function FetchData() {
                         : headers,
                 }
             ); // add body
+            // TODO: try error handling
             return enrolls;
         }
         return undefined;
@@ -234,13 +292,14 @@ export function FetchData() {
             setClassData(dataClass); // table data
         };
         fetchData();
-    }, [tokens]); // execute only if tokens change
+    }, [admin]); // execute only if admin change
 
     return (
         <Main
             enrollData={enrollData}
             userData={userData}
             classData={classData}
+            admin={admin}
         />
     );
 }

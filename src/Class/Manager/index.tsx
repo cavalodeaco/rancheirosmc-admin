@@ -1,23 +1,23 @@
 import {
+  Alert,
+  Badge,
   Button,
+  createStyles,
   Flex,
   Modal,
   Pagination,
-  Paper,
-  ScrollArea,
-  Slider,
   Stack,
   TextInput,
-  Title,
   Transition,
 } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { IconSearch } from "@tabler/icons";
+import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
+import { IconAlertCircle, IconCircleCheck, IconSearch } from "@tabler/icons";
 import { useEffect, useState } from "react";
-import { Class } from "../../FetchData";
-import { Admin } from "../../Main";
+import { Admin, Class } from "../../FetchData";
 import { CreateForm } from "../CreateForm";
 import { ClassTable } from "../Table";
+import { AlertType } from "../../Menu";
+import Tokens from "../../AuthenticationForm/Tokens";
 
 interface ClassManagerProps {
   classData: Class[];
@@ -33,6 +33,16 @@ const searchableFields = [
   "created_at",
   "updated_at",
 ];
+
+const useStyles = createStyles((theme) => ({
+  stretch: {
+    flexGrow: 1,
+  },
+
+  actions: {
+    justifyContent: "space-between",
+  },
+}));
 
 function filterData(data: Class[], search: string, searchBy: string = "todos") {
   console.log("filterData", search);
@@ -77,6 +87,10 @@ function sortData(
 }
 
 export function ClassManager({ classData, admin }: ClassManagerProps) {
+  const [tokens, setTokens] = useLocalStorage<Tokens>({
+    key: "tokens",
+  });
+  const { classes } = useStyles();
   const [tableClassData, setTableClassData] = useState<Class[]>([]);
   const [activeClassPage, setActiveClassPage] = useState(1);
   const [limitPage, setLimitPage] = useState(10);
@@ -84,6 +98,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
   const [search, setSearch] = useState("");
   const [sortedData, setSortedData] = useState(classData);
   const [totalClassData, setTotalClassData] = useState(0);
+  const [alert, setAlert] = useState<AlertType | null>(null);
   const marks = [
     { value: 25, label: "25%" },
     { value: 50, label: "50%" },
@@ -138,26 +153,19 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
         duration={400}
         timingFunction="ease"
       >
-        {(styles) => (
-          <div style={styles}>
-            <Modal opened={opened} onClose={close} fullScreen={isMobile}>
-              <CreateForm />
-            </Modal>
-          </div>
-        )}
+          {(styles) => (
+            <div style={styles}>
+              <Modal opened={opened} onClose={close} fullScreen={isMobile}>
+                <CreateForm />                
+              </Modal>
+            </div>
+          )}
       </Transition>
 
       <Stack>
-        <Flex gap={"md"}>
-          <Button
-            onClick={open}
-            disabled={admin?.["custom:manager"] !== "true"}
-          >
-            Criar turma
-          </Button>
+        <Flex direction={"column"} gap={"md"}>
           <TextInput
-            placeholder={`Buscar por ${searchBy}`}
-            mb="md"
+            placeholder={`Pesquisar`}
             icon={<IconSearch size="0.9rem" stroke={1.5} />}
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
@@ -166,25 +174,68 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
                 handleSearch();
               }
             }}
+            rightSection={
+              <Badge color="gray" size="xs">
+                {sortedData.length} de {classData.length}
+              </Badge>
+            }
+            rightSectionWidth={"5rem"}
           />
-          <Button onClick={handleSearch}>Filtrar</Button>
-          <Paper shadow={"xs"} p="xs" withBorder>
-            {sortedData.length}/{classData.length}
-          </Paper>
-          {/* <Slider
-                        labelAlwaysOn
-                        labelTransition="skew-down"
-                        labelTransitionDuration={150}
-                        labelTransitionTimingFunction="ease"
-                        showLabelOnHover
-                        defaultValue={10}
-                        marks={marks}
-                        onChange={changeLimit}
-                        min={1}
-                        max={100}
-                    />                 */}
+          <Flex gap={"xs"} align="center" className={classes.actions}>
+            <Button
+              onClick={open}
+              disabled={
+                admin?.["custom:manager"] || admin?.["custom:manage_class"]
+                  ? false
+                  : true
+              }
+            >
+              Criar turma
+            </Button>
+          </Flex>
         </Flex>
-        <ClassTable classData={tableClassData} setSearchBy={setSearchBy} />
+        {alert?.type === "error" ? (
+          <Alert
+            icon={<IconAlertCircle size={16} />}
+            title={alert?.title}
+            color="red.6"
+            children={undefined}
+            withCloseButton
+            onClose={() => {
+              setAlert(null);
+            }}
+          />
+        ) : null}
+        {alert?.type === "success" ? (
+          <Alert
+            icon={<IconCircleCheck size={16} />}
+            title={alert?.title}
+            color="teal.6"
+            children={undefined}
+            withCloseButton
+            onClose={() => {
+              setAlert(null);
+            }}
+          />
+        ) : null}
+        {alert?.type === "warning" ? (
+          <Alert
+            icon={<IconAlertCircle size={16} />}
+            title={alert?.title}
+            color="IconCircleCheck.6"
+            children={undefined}
+            withCloseButton
+            onClose={() => {
+              setAlert(null);
+            }}
+          />
+        ) : null}
+        <ClassTable
+          classData={tableClassData}
+          setSearchBy={setSearchBy}
+          admin={admin}
+          setAlert={setAlert}
+        />
         <Pagination
           page={activeClassPage}
           onChange={handlePagination}

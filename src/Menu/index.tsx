@@ -15,8 +15,13 @@ import {
     IconMotorbike,
     IconUser,
 } from "@tabler/icons";
-import { Admin } from "../Main";
 import { UserCircle } from "tabler-icons-react";
+import { Admin } from "../FetchData";
+
+export interface AlertType {
+    type: "success" | "error" | "warning" | "info";
+    title: string;
+}
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon: string = getRef("icon");
@@ -161,19 +166,19 @@ export function Menu({
                 }
             },
         },
-        {
-            link: "",
-            label: "Alunos",
-            icon: IconUser,
-            action: async () => {
-                if (active !== "Alunos") {
-                    // if not in the same page
-                    setIsEnroll(false);
-                    setIsUser(true);
-                    setIsClass(false);
-                }
-            },
-        },
+        // {
+        //     link: "",
+        //     label: "Alunos",
+        //     icon: IconUser,
+        //     action: async () => {
+        //         if (active !== "Alunos") {
+        //             // if not in the same page
+        //             setIsEnroll(false);
+        //             setIsUser(true);
+        //             setIsClass(false);
+        //         }
+        //     },
+        // },
         {
             link: "",
             label: "Turmas",
