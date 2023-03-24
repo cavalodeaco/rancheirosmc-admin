@@ -176,8 +176,8 @@ export function ClassTable({ classData, setSearchBy, admin, setAlert }: ClassTab
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item icon={<IconDownload size="1rem" stroke={1.5} />} onClick={() => {download(item.name)}}>Lista de alunos</Menu.Item>
-              <Menu.Item icon={<IconCircleMinus size="1rem" stroke={1.5} />}>Desativar turma</Menu.Item>
+              <Menu.Item disabled={!(admin?.["custom:manager"] || admin?.["custom:download"])} icon={<IconDownload size="1rem" stroke={1.5} />} onClick={() => {download(item.name)}}>Lista de alunos</Menu.Item>
+              <Menu.Item disabled={!(admin?.["custom:manager"] || admin?.["custom:manage_class"])} icon={<IconCircleMinus size="1rem" stroke={1.5} />}>Desativar turma</Menu.Item>
             </Menu.Dropdown>
           </Menu>
           </Group>
