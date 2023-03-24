@@ -18,6 +18,11 @@ import {
 import { UserCircle } from "tabler-icons-react";
 import { Admin } from "../FetchData";
 
+export interface AlertType {
+    type: "success" | "error" | "warning" | "info";
+    title: string;
+}
+
 const useStyles = createStyles((theme, _params, getRef) => {
     const icon: string = getRef("icon");
     return {

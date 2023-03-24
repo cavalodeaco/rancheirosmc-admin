@@ -6,6 +6,7 @@ import { EnrollTable } from "../Table";
 import Tokens from "../../AuthenticationForm/Tokens";
 import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
 import { QuestionMark } from "tabler-icons-react";
+import { AlertType } from "../../Menu";
 
 const useStyles = createStyles((theme) => ({
     stretch: {
@@ -21,11 +22,6 @@ interface EnrollManagerProps {
     mainEnrollData: Enroll[];
     admin: Admin | undefined;
     classList: string[];
-}
-
-interface Alert {
-    type: "success" | "error" | "warning" | "info";
-    title: string;
 }
 
 const searchableFields = ["enroll_status", "city", "enroll_date", "user.name", "user.driver_license", "user.driver_license_UF", "user.phone", "class", "updated_by"]; // "motorcycle_model", "motorcycle_use", "motorcycle_brand","updated_at", 
@@ -89,7 +85,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     const [sortedData, setSortedData] = useState(enrollData);
     const [totalEnrollData, setTotalEnrollData] = useState(0);
     const [action, setAction] = useState<string | null>("actions");
-    const [alert, setAlert] = useState<Alert | null>(null);
+    const [alert, setAlert] = useState<AlertType | null>(null);
     const [selectedClass, setSelectedClass] = useState<string | null>(null);
     const actionList =
         {
@@ -136,12 +132,12 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         console.log("response", response);
                     }
                     if (response.status === 200 && message !== "partial") {
-                        setAlert({ type: "success", title: msg_success } as Alert);
+                        setAlert({ type: "success", title: msg_success } as AlertType);
                     } else if (response.status === 206 && message === "partial") {
-                        setAlert({ type: "warning", title: msg_warning } as Alert);
+                        setAlert({ type: "warning", title: msg_warning } as AlertType);
                     }
                 } catch (error) {
-                    setAlert({ type: "error", title: msg_error } as Alert);
+                    setAlert({ type: "error", title: msg_error } as AlertType);
                 }
 
                 // TODO: create wame para com mensagens para o próprio usuário com os links de chats para cada aluno selecionado
@@ -154,7 +150,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 if (selectedClass) {
                     actionList["update_class_and_status"]("call", "Chamada realizada com sucesso!", "Chamada realizada com sucesso, porém alguns alunos não foram chamados!", "Erro ao realizar chamada!");
                 } else {
-                    setAlert({ type: "warning", title: "Selecione uma turma para realizar chamada!" } as Alert);
+                    setAlert({ type: "warning", title: "Selecione uma turma para realizar chamada!" } as AlertType);
                 }
             },
             "update_status": async function (url: string, msg_success: string, msg_warning: string, msg_error: string) {
@@ -196,12 +192,12 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
 
                     updateStatus(enrolls);
                     if (response.status === 200 && message !== "partial") {
-                        setAlert({ type: "success", title: msg_success } as Alert);
+                        setAlert({ type: "success", title: msg_success } as AlertType);
                     } else if (response.status === 206 && message === "partial") {
-                        setAlert({ type: "warning", title: msg_warning } as Alert);
+                        setAlert({ type: "warning", title: msg_warning } as AlertType);
                     }
                 } catch (error) {
-                    setAlert({ type: "error", title: msg_error } as Alert);
+                    setAlert({ type: "error", title: msg_error } as AlertType);
                 }
                 setAction(null);
             },
@@ -278,7 +274,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
             setAlert(null);
             await actionList[value]();
         } else {
-            setAlert({ type: "warning", title: "Selecione ao menos uma inscrição para executar uma ação!" } as Alert);
+            setAlert({ type: "warning", title: "Selecione ao menos uma inscrição para executar uma ação!" } as AlertType);
         }
     }
 

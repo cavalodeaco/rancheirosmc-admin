@@ -1,7 +1,12 @@
 import { useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Menu, Group, ActionIcon } from '@mantine/core';
+import { createStyles, Table, ScrollArea, Title, UnstyledButton, Menu, Group, ActionIcon } from '@mantine/core';
 import { Admin, Class } from '../../FetchData';
-import { IconCircleCheck, IconCircleMinus, IconDisabled, IconDisabled2, IconDisabledOff, IconDots, IconDownload, IconMap2 } from '@tabler/icons';
+import { IconCircleCheck, IconCircleMinus, IconDots, IconDownload, IconMap2 } from '@tabler/icons';
+import { useLocalStorage } from '@mantine/hooks';
+import Tokens from '../../AuthenticationForm/Tokens';
+import { AlertType } from '../../Menu';
+import * as XLSX from 'xlsx';
+import FileSaver from 'file-saver';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -32,9 +37,27 @@ interface ClassTableProps {
   classData: Class[];
   setSearchBy: Function;
   admin: Admin | undefined;
+  setAlert: Function;
 }
 
-export function ClassTable({ classData, setSearchBy, admin }: ClassTableProps) {
+interface ClassList {
+  terms: {
+    authorization: boolean;
+    responsibility: boolean;
+    lgpd: boolean;
+  };
+  user: {
+    driver_license: string;
+    driver_license_UF: string;
+    name: string;
+  };
+  enroll_status: string;
+}
+
+export function ClassTable({ classData, setSearchBy, admin, setAlert }: ClassTableProps) {
+  const [tokens, setTokens] = useLocalStorage<Tokens>({
+    key: "tokens",
+  });
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState(['1']);
   const toggleRow = (name: string) =>
@@ -43,6 +66,83 @@ export function ClassTable({ classData, setSearchBy, admin }: ClassTableProps) {
     );
   const toggleAll = () =>
     setSelection((current) => (current.length === classData.length ? [] : classData.map((item) => item.name)));
+
+  function downloadXLSX(xlsx:any, filename:string) {
+    const blob = new Blob([xlsx], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function s2ab(s:any) {
+    const buf = new ArrayBuffer(s.length);
+    const view = new Uint8Array(buf);
+    for (let i = 0; i < s.length; i += 1) {
+      view[i] = s.charCodeAt(i) & 0xff;
+    }
+    return buf;
+  }
+
+  function generateXlsx (class_name:string, data:ClassList[]) {
+    // Map data to spreadsheet rows
+    const rows = data.map(item => ({
+      "Status": item.enroll_status,
+      "Nome": item.user.name,
+      "CNH (UF)": `${item.user.driver_license} (${item.user.driver_license_UF})`,
+      "Imagem": item.terms.authorization ? "Sim" : "Não"
+    }));
+
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
+    const blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+    FileSaver.saveAs(blob, `${class_name}.xlsx`);
+  }
+
+  async function download(name: string) {
+    const config = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // add tokens from localstorage
+        access_token: `${tokens.access_token}`,
+        id_token: `${tokens.id_token}`,
+        filter: `${name}`,
+      },
+    };
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/class/download` as string,
+        config
+      );
+      const { message } = await response.json();
+      if (response.status === 200) {
+        setAlert({
+          type: "success",
+          title: "Arquivo disponível para download!",
+        } as AlertType);
+        try {
+          console.log(message.Items)
+          generateXlsx(name, message.Items);
+        } catch (error) {
+          console.log(error);
+      }
+      }
+    } catch (error) {
+      setAlert({
+        type: "error",
+        title: "Falha ao baixar arquivo!",
+      } as AlertType);
+    }
+  }
 
   const rows = classData.map((item) => {
     const selected = selection.includes(item.name);
@@ -76,7 +176,7 @@ export function ClassTable({ classData, setSearchBy, admin }: ClassTableProps) {
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item icon={<IconDownload size="1rem" stroke={1.5} />}>Lista para presença</Menu.Item>
+              <Menu.Item icon={<IconDownload size="1rem" stroke={1.5} />} onClick={() => {download(item.name)}}>Lista de alunos</Menu.Item>
               <Menu.Item icon={<IconCircleMinus size="1rem" stroke={1.5} />}>Desativar turma</Menu.Item>
             </Menu.Dropdown>
           </Menu>
