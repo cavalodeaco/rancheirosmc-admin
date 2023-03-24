@@ -16,11 +16,14 @@ const pageSchema = z.object({
       );
       return regex.test(value);
     }, { message: "Localização inválida, utilizar https://goo.gl/maps/XXXXXX" }),
+    // validate date using regex to identify the pattern DD/MM/AAAA
     date: z.string().refine((value) => {
-      const date = new Date(value);
-      return date instanceof Date && !isNaN(date.getTime());
+      const regex = new RegExp(
+        "^(0[1-9]|[12][0-9]|3[01])\\/(0[1-9]|1[012])\\/([0-9]{4})$"
+      );
+      return regex.test(value);
     }, { message: "Data inválida, utilizar DD/MM/AAAA" }),
-  city: z.enum(["curitiba", "maringa", "londrina", "cambira"]),
+    city: z.enum(["curitiba", "maringa", "londrina", "cambira"]),
   }),
 });
 
