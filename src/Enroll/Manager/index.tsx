@@ -430,7 +430,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         />
                         : null
                 }
-                <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} />
+                <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} admin={admin}/>
                 <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
             </Flex>
         </>
