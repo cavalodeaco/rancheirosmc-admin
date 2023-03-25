@@ -59,6 +59,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
 
   const status:any = {
     "waiting": <IconHourglassEmpty />,
+    "legacy_waiting": <IconHourglassEmpty />,
     "called": <IconBrandHipchat color='#00abfb'/>,
     "confirmed": <IconCheckbox color='#ffec00'/>,
     "certified": <IconCertificate color='#7bc62d'/>,
