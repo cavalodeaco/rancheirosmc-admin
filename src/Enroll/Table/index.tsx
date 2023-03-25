@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box } from '@mantine/core';
 import { Enroll } from '../../FetchData';
-import { IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
+import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -59,6 +59,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
 
   const status:any = {
     "waiting": <IconHourglassEmpty />,
+    "legacy_waiting": <IconArchive />,
     "called": <IconBrandHipchat color='#00abfb'/>,
     "confirmed": <IconCheckbox color='#ffec00'/>,
     "certified": <IconCertificate color='#7bc62d'/>,
