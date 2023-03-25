@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box } from '@mantine/core';
-import { Enroll } from '../../FetchData';
+import { Admin, Enroll } from '../../FetchData';
 import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
@@ -35,11 +35,12 @@ interface EnrollTableProps {
   enrollData: Enroll[];
   setSearchBy: Function;
   setSelectedEnroll: Function;
+  admin: Admin | undefined;
 }
 
 const regex = /\d+/g;
 
-export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: EnrollTableProps) {
+export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
   const [selectedSearch, setSelectedSearch] = useState<string>('todos');
@@ -89,7 +90,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll }: Enro
 
         <td>{status[item?.enroll_status]}</td>
         <td>{item.city}</td>
-        <td>{item.enroll_date.substring(0, 10)}</td>
+        <td>{admin?.["custom:manager"] ? item.enroll_date : item.enroll_date.substring(0, 10)}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td align='center'>{item?.enroll_status==="called" 
