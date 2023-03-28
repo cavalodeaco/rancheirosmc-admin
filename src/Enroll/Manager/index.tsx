@@ -284,6 +284,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
         if (admin?.["custom:maringa"]) default_city = default_city ? default_city+"+maringa" : "maringa";
         if (admin?.["custom:medianeira"]) default_city = default_city ? default_city+"+medianeira" : "medianeira";
         if (admin?.["custom:curitiba"]) default_city = default_city ? default_city+"+curitiba" : "curitiba";
+        console.log("default_city", default_city);
         // status filter 
         let default_filter = "";
         if (admin?.["custom:posclass"] && !admin?.["custom:manager"]) {
@@ -294,7 +295,10 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
             default_filter = 'waiting+legacy_waiting+dropped';
         }
         // setDefaultSearch(default_filter ? default_city+"+"+default_filter : default_city);
-        setEnrollData(sortData(mainEnrollData, { search: default_filter ? default_city+"+"+default_filter : default_city, searchBy: searchBy }));
+        console.log("default_filter", default_filter);
+        const search_ = default_filter ? default_city+"+"+default_filter : default_city;
+        console.log("search_", search_);
+        setEnrollData(sortData(mainEnrollData, { search: search_, searchBy: searchBy }));
     }, [mainEnrollData,admin]);
 
     useEffect(() => {
