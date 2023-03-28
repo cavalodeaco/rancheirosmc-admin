@@ -1,6 +1,6 @@
 import { ActionIcon, Alert, Badge, Button, Code, createStyles, Flex, Group, List, Modal, Pagination, Paper, ScrollArea, Select, Slider, Stack, TextInput, Title, Transition, UnstyledButton } from "@mantine/core";
-import { IconAlertCircle, IconBackspace, IconBrandHipchat, IconCertificate, IconCheckbox, IconCircleCheck, IconCircleMinus, IconHourglassEmpty, IconSearch } from "@tabler/icons";
-import { useEffect, useState } from "react";
+import { IconAlertCircle, IconArchive, IconBackspace, IconBrandHipchat, IconCertificate, IconCheckbox, IconCircleCheck, IconCircleMinus, IconHourglassEmpty, IconMessageCircleOff, IconSearch } from "@tabler/icons";
+import { forwardRef, useEffect, useState } from "react";
 import { Admin, Enroll } from "../../FetchData";
 import { EnrollTable } from "../Table";
 import Tokens from "../../AuthenticationForm/Tokens";
@@ -28,13 +28,13 @@ const searchableFields = ["enroll_status", "city", "enroll_date", "user.name", "
 
 function filterData(data: Enroll[], search: string, searchBy: string = 'todos') {
     console.log("filterData", search);
-    const query = search.toLowerCase().trim();
+    const queries = search.toLowerCase().split("+"); /// split by + and search for each
     return data.filter((item) => {
-        if (query === "") {
+        if (queries.length === 0) {
             return true;
         }
-        const n_item = item as any;
-        function search(field: string) {
+
+        function search(field: string, query:string, n_item: any) {
             const [key, rest] = field.split(".");
             if (rest) {
                 if (n_item[key][rest]?.toLowerCase().includes(query)) {
@@ -45,14 +45,19 @@ function filterData(data: Enroll[], search: string, searchBy: string = 'todos') 
             }
             return false;
         }
-        if (searchBy === 'todos') {
-            for (const field of searchableFields) {
-                if (search(field))
-                    return true;
+
+        // loop over queries
+        for (const query of queries) {
+            const queryTrim = query.trim();            
+            if (searchBy === 'todos') {
+                for (const field of searchableFields) {
+                    if (search(field, queryTrim, item))
+                        return true;
+                }
+                return false;
+            } else {
+                return search(searchBy, queryTrim, item);
             }
-            return false;
-        } else {
-            return search(searchBy);
         }
     });
 }
@@ -67,6 +72,13 @@ function sortData(
 interface ActionList {
     [key: string]: Function;
 }
+
+interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+    icon: any;
+    label: string;
+    value: string;
+    disabled: boolean;
+  }
 
 export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManagerProps) {
     const [tokens, setTokens] = useLocalStorage<Tokens>({
@@ -224,6 +236,12 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                     console.log("dropout");
                 }
                 actionList["update_class_and_status"]("drop", "Aplicada(s) desistência(s) na(s) inscrição(ões)!", "Desistência(s) parcialmente aplicada(s)!", "Falha ao ao aplicar desistência(s)!");
+            },
+            "ignored": function () {
+                if (process.env.ENV !== "production") {
+                    console.log("ignored");
+                }
+                actionList["update_class_and_status"]("ignore", "Aplicado status de ignorado na(s) inscrição(ões)!", "Ignorado(s) parcialmente aplicado(s)!", "Falha ao ao aplicar status de ignorado!");
             }
         } as ActionList;
     const marks = [
@@ -232,21 +250,24 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
         { value: 75, label: "75%" },
     ];
 
-    function changeLimit(value: number) {
-        console.log("Limit: ", value);
-        // limit % of totalEnrollData
-        setLimitPage(Math.ceil(value * 100 / totalEnrollData));
-        handlePagination(1); // move to first page
-    }
+    // function changeLimit(value: number) {
+    //     console.log("Limit: ", value);
+    //     // limit % of totalEnrollData
+    //     setLimitPage(Math.ceil(value * 100 / totalEnrollData));
+    //     handlePagination(1); // move to first page
+    // }
 
     function handlePagination(page: number) {
         setActiveEnrollPage(page);
         setTableEnrollData(sortedData.slice((page - 1) * limitPage, page * limitPage));
     }
 
-    // useEffect(() => {
-    //     console.log("Admin", admin);
-    // }, [admin]);
+    useEffect(() => {
+        // console.log("Admin", admin);
+        if (admin?.["custom:caller"] || admin?.["custom:manager"]) {
+            setSearch('waiting+legacy_waiting');
+        }
+    }, [admin]);
 
     useEffect(() => {
         // console.log("mainEnrollData", mainEnrollData);
@@ -254,15 +275,12 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     }, [mainEnrollData]);
 
     useEffect(() => {
-        setSortedData(enrollData);
-        setTableEnrollData(enrollData.slice((activeEnrollPage - 1) * limitPage, activeEnrollPage * limitPage));
-        setTotalEnrollData(enrollData.length);
+        handleSearch();
     }, [enrollData]);
 
     function handleSearch() {
-        console.log("handleButtonSearch", search, searchBy)
+        console.log("handleSearch", search, searchBy)
         const sorted = sortData(enrollData, { search: search, searchBy: searchBy });
-        console.log("sorted", sorted.length);
         setSortedData(sorted);
         setActiveEnrollPage(1);
         setTableEnrollData(sorted.slice(0, limitPage));
@@ -278,6 +296,16 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
         }
     }
 
+    const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+        ({ icon, label, ...others }: ItemProps, ref) => (
+          <div ref={ref} {...others}>
+            <Group noWrap>
+              {icon} {label}
+            </Group>
+          </div>
+        )
+      );
+
     return (
         <>
             <Transition
@@ -286,35 +314,43 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                 duration={400}
                 timingFunction="ease"
             >
-                {(styles) => (
-                <div style={styles}>
-                    <Modal opened={opened} onClose={close} fullScreen={isMobile} title="Legenda de status">
-                        <List 
-                            center 
-                            spacing="xs"
-                            size="sm">
-                            <List.Item icon={<IconHourglassEmpty />}>
-                                Em fila de espera
-                            </List.Item>
-                            <List.Item icon={<IconBrandHipchat color='#00abfb'/>}>
-                                Convidado para uma turma
-                            </List.Item>
-                            <List.Item icon={<IconCheckbox color='#ffec00'/>}>
-                                Confirmou convite para a turma
-                            </List.Item>
-                            <List.Item icon={<IconCertificate color='#7bc62d'/>}>
-                                Participou do curso
-                            </List.Item>
-                            <List.Item icon={<IconBackspace color='#ffbf00'/>}>
-                                Desistiu da vaga na turma
-                            </List.Item>
-                            <List.Item icon={<IconCircleMinus color='#ff4500'/>}>
-                                Faltou no curso
-                            </List.Item>
-                        </List>
-                    </Modal>
-                </div>
-                )}
+                {(styles) => {
+                    return (
+                        <div style={styles}>
+                            <Modal opened={opened} onClose={close} fullScreen={isMobile} title="Legenda de status">
+                                <List
+                                    center
+                                    spacing="xs"
+                                    size="sm">
+                                    <List.Item icon={<IconHourglassEmpty />}>
+                                        Em lista de espera (disponível para chamar para uma turma)
+                                    </List.Item>
+                                    <List.Item icon={<IconArchive />}>
+                                        Inscrição do Google Forms (disponível para chamar para uma turma)
+                                    </List.Item>
+                                    <List.Item icon={<IconBrandHipchat color='#00abfb' />}>
+                                        Convidado para uma turma (entrou em contato com o aluno para uma turma específica)
+                                    </List.Item>
+                                    <List.Item icon={<IconBackspace color='#ffbf00' />}>
+                                        Desistiu da vaga na turma (não poderá participar do curso de forma justificada, informado anteriormente a data do curso)
+                                    </List.Item>
+                                    <List.Item icon={<IconCheckbox color='#ffec00' />}>
+                                        Confirmou convite para a turma
+                                    </List.Item>
+                                    <List.Item icon={<IconCertificate color='#7bc62d' />}>
+                                        Participou do curso (aluno recebeu certificado no curso)
+                                    </List.Item>
+                                    <List.Item icon={<IconCircleMinus color='#ff4500' />}>
+                                        Faltou no curso (este aluno não participou e deve se inscrever novamente se quiser realizar o curso em outra turma)
+                                    </List.Item>
+                                    <List.Item icon={<IconMessageCircleOff color='#ff9300' />}>
+                                        Não deu resposta ao convite (este aluno deverá se inscrever novamente se quiser realizar o curso em outra turma)
+                                    </List.Item>
+                                </List>
+                            </Modal>
+                        </div>
+                    );
+                }}
             </Transition>
             <Flex direction={"column"} gap={"md"}>
                 <TextInput
@@ -363,32 +399,44 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                             {
                                 value: "call",
                                 label: "Chamar para turma",
+                                icon: <IconBrandHipchat color='#00abfb' />,
                                 disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                             },
                             {
                                 value: "confirmed",
                                 label: "Confirmar para turma",
+                                icon: <IconCheckbox color='#ffec00' />,
                                 disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                             },
                             {
                                 value: "certified",
                                 label: "Indicar presença",
+                                icon: <IconCertificate color='#7bc62d' />,
                                 disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
                             },
                             {
                                 value: "missed",
                                 label: "Indicar falta",
+                                icon: <IconCircleMinus color='#ff4500' />,
                                 disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
                             },
                             {
                                 value: "dropout",
                                 label: "Indicar desistência",
+                                icon: <IconBackspace color='#ffbf00' />,
+                                disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                            },
+                            {
+                                value: "ignored",
+                                label: "Sem resposta",
+                                icon: <IconMessageCircleOff color='#ff9300' />,
                                 disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                             },
                         ]}
                         value={action}
                         placeholder="Ações de inscrição"
                         onChange={handleAction}
+                        itemComponent={SelectItem}
                     />
                     <ActionIcon size={"sm"} radius="xl" variant="outline" onClick={open}>
                         <QuestionMark size="0.875rem" />

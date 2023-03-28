@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box } from '@mantine/core';
 import { Admin, Enroll } from '../../FetchData';
-import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
+import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty, IconMessageCircleOff } from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -38,6 +38,13 @@ interface EnrollTableProps {
   admin: Admin | undefined;
 }
 
+interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+  icon: any;
+  value: string;
+  disabled: boolean;
+}
+
+
 const regex = /\d+/g;
 
 export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin }: EnrollTableProps) {
@@ -66,6 +73,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
     "certified": <IconCertificate color='#7bc62d'/>,
     "dropped": <IconBackspace color='#ffbf00'/>,
     "missed": <IconCircleMinus color='#ff4500'/>,
+    "ignored": <IconMessageCircleOff color='#ff9300'/>,
   }
 
   const rows = enrollData.map((item) => {
@@ -116,6 +124,13 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
     }
   }
 
+  const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+    ({ icon, ...others }: ItemProps, ref) => (
+      <div ref={ref} {...others}>
+        {icon}
+      </div>
+    )
+  );
 
   return (
     <ScrollArea>
@@ -131,6 +146,49 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
               />
             </th>
             <th><Box className={selectedSearch === "enroll_status" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_status')}><Title size={15}>Status</Title></UnstyledButton></Box></th>
+            {/* <th style={{ width: 80 }}>
+            <Select
+                  data={[
+                      {
+                          value: "call",
+                          icon: <IconBrandHipchat color='#00abfb' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                      {
+                          value: "confirmed",
+                          label: "Confirmar para turma",
+                          icon: <IconCheckbox color='#ffec00' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                      {
+                          value: "certified",
+                          label: "Indicar presença",
+                          icon: <IconCertificate color='#7bc62d' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
+                      },
+                      {
+                          value: "missed",
+                          icon: <IconCircleMinus color='#ff4500' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
+                      },
+                      {
+                          value: "dropout",
+                          icon: <IconBackspace color='#ffbf00' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                      {
+                          value: "ignored",
+                          icon: <IconMessageCircleOff color='#ff9300' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                  ]}
+                  // value={action}
+                  // placeholder="Ações de inscrição"
+                  // onChange={handleAction}
+                  itemComponent={SelectItem}
+                  size="sm"
+              />
+            </th> */}
             <th><Box className={selectedSearch === "city" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></Box></th>
             <th><Box className={selectedSearch === "enroll_date" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_date')}><Title size={15}>Data da inscrição</Title></UnstyledButton></Box></th>
             <th><Box className={selectedSearch === "user.name" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></Box></th>
