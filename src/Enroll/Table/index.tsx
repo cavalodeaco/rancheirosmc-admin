@@ -1,7 +1,8 @@
 import { forwardRef, useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box } from '@mantine/core';
+import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box, Menu, Group, ActionIcon } from '@mantine/core';
 import { Admin, Enroll } from '../../FetchData';
-import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty, IconMessageCircleOff } from '@tabler/icons';
+import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconDots, IconHourglassEmpty, IconMessageCircleOff } from '@tabler/icons';
+import { AlertType } from '../../Menu';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -36,6 +37,8 @@ interface EnrollTableProps {
   setSearchBy: Function;
   setSelectedEnroll: Function;
   admin: Admin | undefined;
+  back2List: Function;
+  setAlert: Function;
 }
 
 interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
@@ -47,7 +50,7 @@ interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
 
 const regex = /\d+/g;
 
-export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin }: EnrollTableProps) {
+export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin, back2List, setAlert }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
   const [selectedSearch, setSelectedSearch] = useState<string>('todos');
@@ -64,6 +67,21 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
     setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.id)));
     setSelectedEnroll((current: Enroll[]) => (current.length === enrollData.length ? [] : enrollData));
   };
+
+  async function back2WaitingList (item_id:string) {
+    console.log(item_id);
+    if (selection.length > 1) {
+      console.log('Selecione somente uma inscrição');
+      setAlert({ type: "error", title: "Selecione somente uma inscrição" } as AlertType);
+      return undefined;
+    } 
+    if (!selection.includes(item_id)) {
+      console.log('Selecione a inscrição que deseja voltar para a lista de espera');
+      setAlert({ type: "warning", title: 'Selecione a inscrição que deseja voltar para a lista de espera' } as AlertType);
+      return undefined;
+    }
+    back2List();
+  }
 
   const status:any = {
     "waiting": <IconHourglassEmpty />,
@@ -110,6 +128,25 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
         <td>{item.class == 'none' ? '' : item.class}</td>
         <td>{item.updated_by}</td>
         {/* <td>{item.updated_at.substring(0,9)}</td> */}
+        <td>
+        <Group spacing={0} position="right">
+          <Menu
+            // transitionProps={{ transition: 'pop' }}
+            withArrow
+            position="bottom-end"
+            withinPortal
+          >
+            <Menu.Target>
+              <ActionIcon>
+                <IconDots size="1rem" stroke={1.5} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item disabled={!(admin?.["custom:manager"] || admin?.["custom:caller"])} icon={<IconHourglassEmpty size="1rem" stroke={1.5} />} onClick={() => {back2WaitingList(item.id)}}>Voltar para lista de espera</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+          </Group>
+        </td>
       </tr>
     );
   });
@@ -198,6 +235,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
             {/* <th><UnstyledButton onClick={() => handleSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
             <th><Box className={selectedSearch === "updated_by" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></Box></th>
             {/* <th><UnstyledButton onClick={() => handleSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
+            <th></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>

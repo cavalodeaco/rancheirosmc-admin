@@ -243,7 +243,13 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                     console.log("ignored");
                 }
                 actionList["update_class_and_status"]("ignore", "Aplicado status de ignorado na(s) inscrição(ões)!", "Ignorado(s) parcialmente aplicado(s)!", "Falha ao ao aplicar status de ignorado!");
-            }
+            },
+            "waiting": async function () {
+                if (process.env.ENV !== "production") {
+                    console.log("waiting");
+                }
+                actionList["update_class_and_status"]("wait", "Inscrição de volta a lista de espera!", "Falha ao voltar inscrição para lista de espera! [obs.: certificados não retornam para lista de espera.]", "Falha ao voltar inscrição para lista de espera! [obs.: certificados não retornam para lista de espera.]");
+            },
         } as ActionList;
     const marks = [
         { value: 25, label: "25%" },
@@ -496,7 +502,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
                         />
                         : null
                 }
-                <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} admin={admin}/>
+                <EnrollTable enrollData={tableEnrollData} setSearchBy={setSearchBy} setSelectedEnroll={setSelectedEnroll} admin={admin} back2List={async () => actionList["waiting"]()} setAlert={setAlert}/>
                 <Pagination page={activeEnrollPage} onChange={handlePagination} total={Math.ceil(sortedData?.length / limitPage)} />
             </Flex>
         </>
