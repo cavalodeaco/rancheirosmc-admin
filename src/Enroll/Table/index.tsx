@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box } from '@mantine/core';
+import { forwardRef, useState } from 'react';
+import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box, Menu, Group, ActionIcon } from '@mantine/core';
 import { Admin, Enroll } from '../../FetchData';
-import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconHourglassEmpty } from '@tabler/icons';
+import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconDots, IconHourglassEmpty, IconMessageCircleOff } from '@tabler/icons';
+import { AlertType } from '../../Menu';
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -36,11 +37,20 @@ interface EnrollTableProps {
   setSearchBy: Function;
   setSelectedEnroll: Function;
   admin: Admin | undefined;
+  back2List: Function;
+  setAlert: Function;
 }
+
+interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+  icon: any;
+  value: string;
+  disabled: boolean;
+}
+
 
 const regex = /\d+/g;
 
-export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin }: EnrollTableProps) {
+export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin, back2List, setAlert }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
   const [selectedSearch, setSelectedSearch] = useState<string>('todos');
@@ -58,6 +68,21 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
     setSelectedEnroll((current: Enroll[]) => (current.length === enrollData.length ? [] : enrollData));
   };
 
+  async function back2WaitingList (item_id:string) {
+    console.log(item_id);
+    if (selection.length > 1) {
+      console.log('Selecione somente uma inscrição');
+      setAlert({ type: "error", title: "Selecione somente uma inscrição" } as AlertType);
+      return undefined;
+    } 
+    if (!selection.includes(item_id)) {
+      console.log('Selecione a inscrição que deseja voltar para a lista de espera');
+      setAlert({ type: "warning", title: 'Selecione a inscrição que deseja voltar para a lista de espera' } as AlertType);
+      return undefined;
+    }
+    back2List();
+  }
+
   const status:any = {
     "waiting": <IconHourglassEmpty />,
     "legacy_waiting": <IconArchive />,
@@ -66,6 +91,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
     "certified": <IconCertificate color='#7bc62d'/>,
     "dropped": <IconBackspace color='#ffbf00'/>,
     "missed": <IconCircleMinus color='#ff4500'/>,
+    "ignored": <IconMessageCircleOff color='#ff9300'/>,
   }
 
   const rows = enrollData.map((item) => {
@@ -102,6 +128,25 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
         <td>{item.class == 'none' ? '' : item.class}</td>
         <td>{item.updated_by}</td>
         {/* <td>{item.updated_at.substring(0,9)}</td> */}
+        <td>
+        <Group spacing={0} position="right">
+          <Menu
+            // transitionProps={{ transition: 'pop' }}
+            withArrow
+            position="bottom-end"
+            withinPortal
+          >
+            <Menu.Target>
+              <ActionIcon>
+                <IconDots size="1rem" stroke={1.5} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item disabled={!(admin?.["custom:manager"] || admin?.["custom:caller"])} icon={<IconHourglassEmpty size="1rem" stroke={1.5} />} onClick={() => {back2WaitingList(item.id)}}>Voltar para lista de espera</Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+          </Group>
+        </td>
       </tr>
     );
   });
@@ -116,6 +161,13 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
     }
   }
 
+  const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+    ({ icon, ...others }: ItemProps, ref) => (
+      <div ref={ref} {...others}>
+        {icon}
+      </div>
+    )
+  );
 
   return (
     <ScrollArea>
@@ -131,6 +183,49 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
               />
             </th>
             <th><Box className={selectedSearch === "enroll_status" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_status')}><Title size={15}>Status</Title></UnstyledButton></Box></th>
+            {/* <th style={{ width: 80 }}>
+            <Select
+                  data={[
+                      {
+                          value: "call",
+                          icon: <IconBrandHipchat color='#00abfb' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                      {
+                          value: "confirmed",
+                          label: "Confirmar para turma",
+                          icon: <IconCheckbox color='#ffec00' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                      {
+                          value: "certified",
+                          label: "Indicar presença",
+                          icon: <IconCertificate color='#7bc62d' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
+                      },
+                      {
+                          value: "missed",
+                          icon: <IconCircleMinus color='#ff4500' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
+                      },
+                      {
+                          value: "dropout",
+                          icon: <IconBackspace color='#ffbf00' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                      {
+                          value: "ignored",
+                          icon: <IconMessageCircleOff color='#ff9300' />,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
+                      },
+                  ]}
+                  // value={action}
+                  // placeholder="Ações de inscrição"
+                  // onChange={handleAction}
+                  itemComponent={SelectItem}
+                  size="sm"
+              />
+            </th> */}
             <th><Box className={selectedSearch === "city" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></Box></th>
             <th><Box className={selectedSearch === "enroll_date" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_date')}><Title size={15}>Data da inscrição</Title></UnstyledButton></Box></th>
             <th><Box className={selectedSearch === "user.name" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></Box></th>
@@ -140,6 +235,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin 
             {/* <th><UnstyledButton onClick={() => handleSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
             <th><Box className={selectedSearch === "updated_by" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></Box></th>
             {/* <th><UnstyledButton onClick={() => handleSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
+            <th></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
