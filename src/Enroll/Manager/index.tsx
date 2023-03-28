@@ -93,6 +93,7 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     const [limitPage, setLimitPage] = useState(10);
     const [searchBy, setSearchBy] = useState('todos');
     const [search, setSearch] = useState('');
+    const [defaultSearch, setDefaultSearch] = useState('');
     const [enrollData, setEnrollData] = useState<Enroll[]>([]);
     const [sortedData, setSortedData] = useState(enrollData);
     const [totalEnrollData, setTotalEnrollData] = useState(0);
@@ -263,9 +264,12 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
     }
 
     useEffect(() => {
-        // console.log("Admin", admin);
-        if (admin?.["custom:caller"] || admin?.["custom:manager"]) {
-            setSearch('waiting+legacy_waiting');
+        if (admin?.["custom:posclass"] && !admin?.["custom:manager"]) {
+            setDefaultSearch('confirmed+certified+missed');
+        } else if (!(admin?.["custom:caller"] || admin?.["custom:manager"])) {
+            setDefaultSearch('waiting+legacy_waiting');
+        } else if (admin?.["custom:caller"] && !admin?.["custom:manager"]) {
+            setSearch('waiting+legacy_waiting+dropped');
         }
     }, [admin]);
 
@@ -280,7 +284,8 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
 
     function handleSearch() {
         console.log("handleSearch", search, searchBy)
-        const sorted = sortData(enrollData, { search: search, searchBy: searchBy });
+        const s_search = search ? (defaultSearch ? `${defaultSearch}+${search}` : search) : defaultSearch;
+        const sorted = sortData(enrollData, { search: s_search, searchBy: searchBy });
         setSortedData(sorted);
         setActiveEnrollPage(1);
         setTableEnrollData(sorted.slice(0, limitPage));
