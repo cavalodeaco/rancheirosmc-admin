@@ -68,14 +68,11 @@ export interface Admin {
     email: string;
     phone_number: string;
     "custom:caller": boolean;
-    "custom:cambira": boolean;
-    "custom:curitiba": boolean;
+    "custom:cities": boolean;
+    "custom:enroll_status": boolean;
     "custom:download": boolean;
-    "custom:londrina": boolean;
     "custom:manager": boolean;
     "custom:manage_class": boolean;
-    "custom:maringa": boolean;
-    "custom:medianeira": boolean;
     "custom:viewer": boolean;
     "custom:posclass": boolean;
   }
@@ -110,14 +107,11 @@ export function FetchData() {
             email: decoded["email"],
             phone_number: decoded["phone_number"],
             "custom:caller": decoded["custom:caller"] === "true",
-            "custom:cambira": decoded["custom:cambira"] === "true",
-            "custom:curitiba": decoded["custom:curitiba"] === "true",
+            "custom:cities": decoded["custom:cities"] === "true",
+            "custom:enroll_status": decoded["custom:enroll_status"] === "true",
             "custom:download": decoded["custom:download"] === "true",
-            "custom:londrina": decoded["custom:londrina"] === "true",
             "custom:manager": decoded["custom:manager"] === "true",
             "custom:manage_class": decoded["custom:manage_class"] === "true",
-            "custom:maringa": decoded["custom:maringa"] === "true",
-            "custom:medianeira": decoded["custom:medianeira"] === "true",
             "custom:viewer": decoded["custom:viewer"] === "true",
             "custom:posclass": decoded["custom:posclass"] === "true",            
           } as Admin);
@@ -143,13 +137,7 @@ export function FetchData() {
                 limit: "200",
                 // add tokens from localstorage
                 access_token: `${tokens.access_token}`,
-                id_token: `${tokens.id_token}`,
-                filter: admin?.["custom:manager"] || (admin?.["custom:londrina"] && admin?.["custom:maringa"] 
-                && admin?.["custom:cambira"] && admin?.["custom:medianeira"] && admin?.["custom:curitiba"])? "all" 
-                            : admin?.["custom:curitiba"] ? "curitiba"
-                            : admin?.["custom:londrina"] || admin?.["custom:maringa"] 
-                                    || admin?.["custom:cambira"] || admin?.["custom:medianeira"] ? "rancho"
-                            : "error",
+                id_token: `${tokens.id_token}`
             };
             const enrolls: EnrollResponse = await adminFetch(
                 `${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`,
