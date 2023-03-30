@@ -269,33 +269,10 @@ export function EnrollManager({ mainEnrollData, admin, classList }: EnrollManage
         setTableEnrollData(sortedData.slice((page - 1) * limitPage, page * limitPage));
     }
 
-    // useEffect(() => {
-    //     // console.log("mainEnrollData", mainEnrollData);
-    //     setEnrollData(mainEnrollData);
-    // }, [mainEnrollData]);
-
     useEffect(() => {
-        // console.log(mainEnrollData.length);
-        // console.log(admin);
-        // TODO: remove default search after backend implementation of filtering data
-        let default_city = "";
-        if (admin?.["custom:cambira"]) default_city = default_city ? default_city+"+cambira" : "cambira";
-        if (admin?.["custom:londrina"]) default_city = default_city ? default_city+"+londrina" : "londrina";
-        if (admin?.["custom:maringa"]) default_city = default_city ? default_city+"+maringa" : "maringa";
-        if (admin?.["custom:medianeira"]) default_city = default_city ? default_city+"+medianeira" : "medianeira";
-        if (admin?.["custom:curitiba"]) default_city = default_city ? default_city+"+curitiba" : "curitiba";
-        // status filter 
-        let default_filter = "";
-        if (admin?.["custom:posclass"] && !admin?.["custom:manager"]) {
-            default_filter = 'confirmed+certified+missed';
-        } else if (!(admin?.["custom:caller"] || admin?.["custom:manager"])) {
-            default_filter = 'waiting+legacy_waiting';
-        } else if (admin?.["custom:caller"] && !admin?.["custom:manager"]) {
-            default_filter = 'waiting+legacy_waiting+dropped';
-        }
-        // setDefaultSearch(default_filter ? default_city+"+"+default_filter : default_city);
-        setEnrollData(sortData(mainEnrollData, { search: default_filter ? default_city+"+"+default_filter : default_city, searchBy: searchBy }));
-    }, [mainEnrollData,admin]);
+        // console.log("mainEnrollData", mainEnrollData);
+        setEnrollData(mainEnrollData);
+    }, [mainEnrollData]);
 
     useEffect(() => {
         handleSearch();
