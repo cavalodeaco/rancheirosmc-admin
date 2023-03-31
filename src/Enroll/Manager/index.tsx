@@ -46,18 +46,26 @@ function filterData(data: Enroll[], search: string, searchBy: string = 'todos') 
             return false;
         }
 
-        // loop over queries
-        for (const query of queries) {
-            const queryTrim = query.trim();            
-            if (searchBy === 'todos') {
-                for (const field of searchableFields) {
+        // loop over queries   
+        if (searchBy === 'todos') {
+            let resp = new Set();
+            for (const field of searchableFields) {
+                for (const query of queries) {
+                    const queryTrim = query.trim(); 
                     if (search(field, queryTrim, item))
-                        return true;
+                        resp.add(query);
                 }
-                return false;
-            } else {
-                return search(searchBy, queryTrim, item);
             }
+            return resp.size === queries.length;
+        } else {
+            let resp = 0;
+            for (const query of queries) {
+                const queryTrim = query.trim(); 
+                if (search(searchBy, queryTrim, item)) {
+                    resp++;
+                }
+            }
+            return resp === queries.length;
         }
     });
 }
