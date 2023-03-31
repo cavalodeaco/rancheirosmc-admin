@@ -210,8 +210,8 @@ export function FetchData() {
             let dataEnroll: Enroll[] = [];
             do {
                 let enrolls: EnrollResponse | undefined = await getEnrollData();
-                if (enrolls) {
-                    dataEnroll = [...dataEnroll, ...enrolls.Items];
+                if (enrolls?.Items) {
+                    dataEnroll = [...dataEnroll, ...enrolls?.Items];
                     setEnrollPage(enrolls.page || ""); // manages next data
                 }
                 flag = enrolls?.page;
@@ -223,8 +223,8 @@ export function FetchData() {
             let dataUser: User[] = [];
             do {
                 let users: UserResponse | undefined = await getUserData();
-                if (users) {
-                    dataUser = [...userData, ...users.Items];
+                if (users?.Items) {
+                    dataUser = [...userData, ...users?.Items];
                     setUserPage(users.page || ""); // manages next data
                 }
                 flag = users?.page;
@@ -236,8 +236,8 @@ export function FetchData() {
             let dataClass: Class[] = [];
             do {
                 let classes: ClassResponse | undefined = await getClassData();
-                if (classes) {
-                    dataClass = [...classData, ...classes.Items];
+                if (classes?.Items) {
+                    dataClass = [...classData, ...classes?.Items];
                     setUserPage(classes.page || ""); // manages next data
                 }
                 flag = classes?.page;
