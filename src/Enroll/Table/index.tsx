@@ -126,6 +126,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin,
           : item.user.phone.match(regex)?.join('')}</td>
         {/* <td>{item.motorcycle_brand}</td> */}
         <td>{item.class == 'none' ? '' : item.class}</td>
+        <td>{item.terms.authorization == true ? "Sim" : "Não"}</td>
         <td>{item.updated_by}</td>
         {/* <td>{item.updated_at.substring(0,9)}</td> */}
         <td>
@@ -232,6 +233,7 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin,
             <th><Box className={selectedSearch === "user.driver_license" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('user.driver_license')}><Title size={15}>CNH</Title></UnstyledButton></Box></th>
             <th><Title size={15}>Contato</Title></th>
             <th><Box className={selectedSearch === "class" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('class')}><Title size={15}>Turma</Title></UnstyledButton></Box></th>
+            <th><Box><Title size={15}>Imagem</Title></Box></th>
             {/* <th><UnstyledButton onClick={() => handleSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
             <th><Box className={selectedSearch === "updated_by" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></Box></th>
             {/* <th><UnstyledButton onClick={() => handleSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
