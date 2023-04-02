@@ -3,6 +3,8 @@ import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
 import Tokens from "../AuthenticationForm/Tokens";
 import Main from "../Main";
+import { Notification } from '@mantine/core';
+import { IconBrandWhatsapp, IconX } from "@tabler/icons";
 
 export interface Enroll {
     updated_at: string;
@@ -87,6 +89,8 @@ export function FetchData() {
     const [enrollPage, setEnrollPage] = useState(""); // manages
     const [userPage, setUserPage] = useState(""); // manages
     const [admin, setAdmin] = useState<Admin>();
+    const [alert, setAlert] = useState(false);
+    const [alertMsg, setAlertMsg] = useState("");
 
     function logout () {
         localStorage.clear();
@@ -122,11 +126,18 @@ export function FetchData() {
         const response = await fetch(input, init);
         if (response.status === 401) {
             logout();
-        } else if (response.status != 200) {
-            console.log("Response", response);
-        }
-        const data = await response.json();
-        return data.message;
+        } else if (response.status === 200) {
+            const data = await response.json();
+            return data.message;
+        } else if (response.status === 500) { // internal server error
+            const data = await response.json();
+            setAlert(true);
+            // 'https://wa.me/?text=${alertMsg}'
+            const date = new Date();
+            const message = `${admin?.name} :: ${date.toLocaleString("pt-BR")}:${date.getMilliseconds()} :: ${data.replace(/ /g, '%20')}`;
+            setAlertMsg(`https://wa.me/?text=${message}`);
+        } 
+        return undefined;
     }
 
     async function getEnrollData() {
@@ -284,11 +295,19 @@ export function FetchData() {
     }, [admin]); // execute only if admin change
 
     return (
-        <Main
-            enrollData={enrollData}
-            userData={userData}
-            classData={classData}
-            admin={admin}
-        />
+        <>
+            { alert ? 
+                <Notification icon={<IconX size="1.1rem" />} color="red" onClose={() => setAlert(false)}>
+                    Envie esta mensagem para o grupo de Suporte do PPV Admin clicando no link <a href={alertMsg} target='_blank'><IconBrandWhatsapp/></a>.
+                </Notification>
+                :
+                <Main
+                    enrollData={enrollData}
+                    userData={userData}
+                    classData={classData}
+                    admin={admin}
+                />
+            }
+        </>
     );
 }
