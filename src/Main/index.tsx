@@ -43,7 +43,12 @@ interface MainProps {
   admin: Admin | undefined;
 }
 
-export default function Main({ enrollData, userData, classData, admin }: MainProps) {
+export default function Main({
+  enrollData,
+  userData,
+  classData,
+  admin,
+}: MainProps) {
   const { classes, cx } = useStyles();
   const [isEnroll, setIsEnroll] = useState(false);
   const [isUser, setIsUser] = useState(false);
@@ -63,7 +68,7 @@ export default function Main({ enrollData, userData, classData, admin }: MainPro
       header={
         <Header height={60} p="xs">
           <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
-            <Group className={classes.header} position="apart">  
+            <Group className={classes.header} position="apart">
               <Title order={3} transform="uppercase" italic>
                 <Center>
                   <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
@@ -71,14 +76,18 @@ export default function Main({ enrollData, userData, classData, admin }: MainPro
                   Pilotando Para <TextPPV text="Vida" />
                 </Center>
               </Title>
-              <Title order={3} transform="uppercase" italic>{active}</Title>
-              <Box/>
+              <Title order={3} transform="uppercase" italic>
+                {active}
+              </Title>
+              <Box />
             </Group>
           </MediaQuery>
           <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-            <Group className={classes.header} position="apart">  
-              <img src={ppvicon} alt="Pilotando Para Vida" height={36} />    
-              <Title order={3} transform="uppercase" italic>{active}</Title>
+            <Group className={classes.header} position="apart">
+              <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
+              <Title order={3} transform="uppercase" italic>
+                {active}
+              </Title>
               <Burger
                 opened={opened}
                 onClick={() => setOpened((o) => !o)}
@@ -102,7 +111,13 @@ export default function Main({ enrollData, userData, classData, admin }: MainPro
         />
       }
     >
-      {isEnroll && <EnrollManager mainEnrollData={enrollData} admin={admin} classList={classData.map((item) => item.name)} />}
+      {isEnroll && (
+        <EnrollManager
+          mainEnrollData={enrollData}
+          admin={admin}
+          classList={classData.map((item) => item.name)}
+        />
+      )}
       {isUser && <UserManager userData={userData} admin={admin} />}
       {isClass && <ClassManager classData={classData} admin={admin} />}
     </AppShell>

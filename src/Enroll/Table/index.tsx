@@ -1,21 +1,44 @@
-import { forwardRef, useState } from 'react';
-import { createStyles, Table, Checkbox, ScrollArea, Title, UnstyledButton, Select, Box, Menu, Group, ActionIcon } from '@mantine/core';
-import { Admin, Enroll } from '../../FetchData';
-import { IconArchive, IconBackspace, IconBrandHipchat, IconBrandWhatsapp, IconCertificate, IconCheckbox, IconCircleMinus, IconDots, IconHourglassEmpty, IconMessageCircleOff } from '@tabler/icons';
-import { AlertType } from '../../Menu';
+import { forwardRef, useState } from "react";
+import {
+  createStyles,
+  Table,
+  Checkbox,
+  ScrollArea,
+  Title,
+  UnstyledButton,
+  Select,
+  Box,
+  Menu,
+  Group,
+  ActionIcon,
+} from "@mantine/core";
+import { Admin, Enroll } from "../../FetchData";
+import {
+  IconArchive,
+  IconBackspace,
+  IconBrandHipchat,
+  IconBrandWhatsapp,
+  IconCertificate,
+  IconCheckbox,
+  IconCircleMinus,
+  IconDots,
+  IconHourglassEmpty,
+  IconMessageCircleOff,
+} from "@tabler/icons";
+import { AlertType } from "../../Menu";
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
     backgroundColor:
-      theme.colorScheme === 'dark'
+      theme.colorScheme === "dark"
         ? theme.fn.rgba(theme.colors[theme.primaryColor][7], 0.2)
         : theme.colors[theme.primaryColor][0],
   },
   th: {
-    padding: '0 !important',
+    padding: "0 !important",
   },
   box: {
-    border: '1px solid #eaeaea',
+    border: "1px solid #eaeaea",
   },
   // icon: {
   //   width: rem(21),
@@ -23,11 +46,14 @@ const useStyles = createStyles((theme) => ({
   //   borderRadius: rem(21),
   // },
   control: {
-    width: '100%',
+    width: "100%",
     padding: `${theme.spacing.xs} ${theme.spacing.md}`,
 
-    '&:hover': {
-      backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+    "&:hover": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[6]
+          : theme.colors.gray[0],
     },
   },
 }));
@@ -41,58 +67,83 @@ interface EnrollTableProps {
   setAlert: Function;
 }
 
-interface ItemProps extends React.ComponentPropsWithoutRef<'div'> {
+interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
   icon: any;
   value: string;
   disabled: boolean;
 }
 
-
 const regex = /\d+/g;
 
-export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin, back2List, setAlert }: EnrollTableProps) {
+export function EnrollTable({
+  enrollData,
+  setSearchBy,
+  setSelectedEnroll,
+  admin,
+  back2List,
+  setAlert,
+}: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
-  const [selectedSearch, setSelectedSearch] = useState<string>('todos');
+  const [selectedSearch, setSelectedSearch] = useState<string>("todos");
   const toggleRow = (id: string) => {
     if (selection.includes(id)) {
       setSelection((current) => current.filter((item) => item !== id));
-      setSelectedEnroll((current: Enroll[]) => current.filter((item) => item.id !== id));
+      setSelectedEnroll((current: Enroll[]) =>
+        current.filter((item) => item.id !== id)
+      );
     } else {
       setSelection((current) => [...current, id]);
-      setSelectedEnroll((current: Enroll[]) => [...current, enrollData.find((item) => item.id === id)]);
+      setSelectedEnroll((current: Enroll[]) => [
+        ...current,
+        enrollData.find((item) => item.id === id),
+      ]);
     }
-  }
+  };
   const toggleAll = () => {
-    setSelection((current) => (current.length === enrollData.length ? [] : enrollData.map((item) => item.id)));
-    setSelectedEnroll((current: Enroll[]) => (current.length === enrollData.length ? [] : enrollData));
+    setSelection((current) =>
+      current.length === enrollData.length
+        ? []
+        : enrollData.map((item) => item.id)
+    );
+    setSelectedEnroll((current: Enroll[]) =>
+      current.length === enrollData.length ? [] : enrollData
+    );
   };
 
-  async function back2WaitingList (item_id:string) {
+  async function back2WaitingList(item_id: string) {
     console.log(item_id);
     if (selection.length > 1) {
-      console.log('Selecione somente uma inscrição');
-      setAlert({ type: "error", title: "Selecione somente uma inscrição" } as AlertType);
+      console.log("Selecione somente uma inscrição");
+      setAlert({
+        type: "error",
+        title: "Selecione somente uma inscrição",
+      } as AlertType);
       return undefined;
-    } 
+    }
     if (!selection.includes(item_id)) {
-      console.log('Selecione a inscrição que deseja voltar para a lista de espera');
-      setAlert({ type: "warning", title: 'Selecione a inscrição que deseja voltar para a lista de espera' } as AlertType);
+      console.log(
+        "Selecione a inscrição que deseja voltar para a lista de espera"
+      );
+      setAlert({
+        type: "warning",
+        title: "Selecione a inscrição que deseja voltar para a lista de espera",
+      } as AlertType);
       return undefined;
     }
     back2List();
   }
 
-  const status:any = {
-    "waiting": <IconHourglassEmpty />,
-    "legacy_waiting": <IconArchive />,
-    "called": <IconBrandHipchat color='#00abfb'/>,
-    "confirmed": <IconCheckbox color='#ffec00'/>,
-    "certified": <IconCertificate color='#7bc62d'/>,
-    "dropped": <IconBackspace color='#ffbf00'/>,
-    "missed": <IconCircleMinus color='#ff4500'/>,
-    "ignored": <IconMessageCircleOff color='#ff9300'/>,
-  }
+  const status: any = {
+    waiting: <IconHourglassEmpty />,
+    legacy_waiting: <IconArchive />,
+    called: <IconBrandHipchat color="#00abfb" />,
+    confirmed: <IconCheckbox color="#ffec00" />,
+    certified: <IconCertificate color="#7bc62d" />,
+    dropped: <IconBackspace color="#ffbf00" />,
+    missed: <IconCircleMinus color="#ff4500" />,
+    ignored: <IconMessageCircleOff color="#ff9300" />,
+  };
 
   const rows = enrollData.map((item) => {
     const selected = selection.includes(item.id);
@@ -116,46 +167,69 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin,
 
         <td>{status[item?.enroll_status]}</td>
         <td>{item.city}</td>
-        <td>{admin?.["custom:manager"] ? item.enroll_date : item.enroll_date.substring(0, 10)}</td>
+        <td>
+          {admin?.["custom:manager"]
+            ? item.enroll_date
+            : item.enroll_date.substring(0, 10)}
+        </td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
-        <td align='center'>{item?.enroll_status==="called" 
-            ? <a href={`https://web.whatsapp.com/send/?phone=55${item.user.phone.match(regex)?.join('')}&text&type=phone_number&app_absent=0`} target='_blank'>
-                <IconBrandWhatsapp />
-              </a> 
-          : item.user.phone.match(regex)?.join('')}</td>
+        <td align="center">
+          {item?.enroll_status === "called" ? (
+            <a
+              href={`https://web.whatsapp.com/send/?phone=55${item.user.phone
+                .match(regex)
+                ?.join("")}&text&type=phone_number&app_absent=0`}
+              target="_blank"
+            >
+              <IconBrandWhatsapp />
+            </a>
+          ) : (
+            item.user.phone.match(regex)?.join("")
+          )}
+        </td>
         {/* <td>{item.motorcycle_brand}</td> */}
-        <td>{item.class == 'none' ? '' : item.class}</td>
+        <td>{item.class == "none" ? "" : item.class}</td>
         <td>{item.terms.authorization == true ? "Sim" : "Não"}</td>
         <td>{item.updated_by}</td>
         {/* <td>{item.updated_at.substring(0,9)}</td> */}
         <td>
-        <Group spacing={0} position="right">
-          <Menu
-            // transitionProps={{ transition: 'pop' }}
-            withArrow
-            position="bottom-end"
-            withinPortal
-          >
-            <Menu.Target>
-              <ActionIcon>
-                <IconDots size="1rem" stroke={1.5} />
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item disabled={!(admin?.["custom:manager"] || admin?.["custom:caller"])} icon={<IconHourglassEmpty size="1rem" stroke={1.5} />} onClick={() => {back2WaitingList(item.id)}}>Voltar para lista de espera</Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          <Group spacing={0} position="right">
+            <Menu
+              // transitionProps={{ transition: 'pop' }}
+              withArrow
+              position="bottom-end"
+              withinPortal
+            >
+              <Menu.Target>
+                <ActionIcon>
+                  <IconDots size="1rem" stroke={1.5} />
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  disabled={
+                    !(admin?.["custom:manager"] || admin?.["custom:caller"])
+                  }
+                  icon={<IconHourglassEmpty size="1rem" stroke={1.5} />}
+                  onClick={() => {
+                    back2WaitingList(item.id);
+                  }}
+                >
+                  Voltar para lista de espera
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </Group>
         </td>
       </tr>
     );
   });
 
-  function handleSearchBy (search:string) {
+  function handleSearchBy(search: string) {
     if (selectedSearch === search) {
-      setSearchBy('todos');
-      setSelectedSearch('todos');
+      setSearchBy("todos");
+      setSelectedSearch("todos");
     } else {
       setSearchBy(search);
       setSelectedSearch(search);
@@ -179,11 +253,23 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin,
               <Checkbox
                 onChange={toggleAll}
                 checked={selection.length === enrollData.length}
-                indeterminate={selection.length > 0 && selection.length !== enrollData.length}
+                indeterminate={
+                  selection.length > 0 && selection.length !== enrollData.length
+                }
                 transitionDuration={0}
               />
             </th>
-            <th><Box className={selectedSearch === "enroll_status" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_status')}><Title size={15}>Status</Title></UnstyledButton></Box></th>
+            <th>
+              <Box
+                className={
+                  selectedSearch === "enroll_status" ? classes.box : ""
+                }
+              >
+                <UnstyledButton onClick={() => handleSearchBy("enroll_status")}>
+                  <Title size={15}>Status</Title>
+                </UnstyledButton>
+              </Box>
+            </th>
             {/* <th style={{ width: 80 }}>
             <Select
                   data={[
@@ -227,15 +313,69 @@ export function EnrollTable({ enrollData, setSearchBy, setSelectedEnroll, admin,
                   size="sm"
               />
             </th> */}
-            <th><Box className={selectedSearch === "city" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('city')}><Title size={15}>Cidade</Title></UnstyledButton></Box></th>
-            <th><Box className={selectedSearch === "enroll_date" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('enroll_date')}><Title size={15}>Data da inscrição</Title></UnstyledButton></Box></th>
-            <th><Box className={selectedSearch === "user.name" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('user.name')}><Title size={15}>Nome</Title></UnstyledButton></Box></th>
-            <th><Box className={selectedSearch === "user.driver_license" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('user.driver_license')}><Title size={15}>CNH</Title></UnstyledButton></Box></th>
-            <th><Title size={15}>Contato</Title></th>
-            <th><Box className={selectedSearch === "class" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('class')}><Title size={15}>Turma</Title></UnstyledButton></Box></th>
-            <th><Box><Title size={15}>Imagem</Title></Box></th>
+            <th>
+              <Box className={selectedSearch === "city" ? classes.box : ""}>
+                <UnstyledButton onClick={() => handleSearchBy("city")}>
+                  <Title size={15}>Cidade</Title>
+                </UnstyledButton>
+              </Box>
+            </th>
+            <th>
+              <Box
+                className={selectedSearch === "enroll_date" ? classes.box : ""}
+              >
+                <UnstyledButton onClick={() => handleSearchBy("enroll_date")}>
+                  <Title size={15}>Data da inscrição</Title>
+                </UnstyledButton>
+              </Box>
+            </th>
+            <th>
+              <Box
+                className={selectedSearch === "user.name" ? classes.box : ""}
+              >
+                <UnstyledButton onClick={() => handleSearchBy("user.name")}>
+                  <Title size={15}>Nome</Title>
+                </UnstyledButton>
+              </Box>
+            </th>
+            <th>
+              <Box
+                className={
+                  selectedSearch === "user.driver_license" ? classes.box : ""
+                }
+              >
+                <UnstyledButton
+                  onClick={() => handleSearchBy("user.driver_license")}
+                >
+                  <Title size={15}>CNH</Title>
+                </UnstyledButton>
+              </Box>
+            </th>
+            <th>
+              <Title size={15}>Contato</Title>
+            </th>
+            <th>
+              <Box className={selectedSearch === "class" ? classes.box : ""}>
+                <UnstyledButton onClick={() => handleSearchBy("class")}>
+                  <Title size={15}>Turma</Title>
+                </UnstyledButton>
+              </Box>
+            </th>
+            <th>
+              <Box>
+                <Title size={15}>Imagem</Title>
+              </Box>
+            </th>
             {/* <th><UnstyledButton onClick={() => handleSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
-            <th><Box className={selectedSearch === "updated_by" ? classes.box : ''}><UnstyledButton onClick={() => handleSearchBy('updated_by')}><Title size={15}>Atualizado por</Title></UnstyledButton></Box></th>
+            <th>
+              <Box
+                className={selectedSearch === "updated_by" ? classes.box : ""}
+              >
+                <UnstyledButton onClick={() => handleSearchBy("updated_by")}>
+                  <Title size={15}>Atualizado por</Title>
+                </UnstyledButton>
+              </Box>
+            </th>
             {/* <th><UnstyledButton onClick={() => handleSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
             <th></th>
           </tr>
