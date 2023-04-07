@@ -65,6 +65,7 @@ interface EnrollTableProps {
   admin: Admin | undefined;
   back2List: Function;
   setAlert: Function;
+  handleSort: Function;
 }
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -82,6 +83,7 @@ export function EnrollTable({
   admin,
   back2List,
   setAlert,
+  handleSort,
 }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
@@ -233,6 +235,7 @@ export function EnrollTable({
     } else {
       setSearchBy(search);
       setSelectedSearch(search);
+      handleSort(search);
     }
   }
 
