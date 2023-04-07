@@ -3,6 +3,7 @@ import { render } from "@testing-library/react";
 import App from "./App";
 
 describe("the App component", () => {
+
   it("sets document title", () => {
     mockMatchMedia();
     render(<App />);

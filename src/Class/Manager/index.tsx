@@ -24,15 +24,7 @@ interface ClassManagerProps {
   admin: Admin | undefined;
 }
 
-const searchableFields = [
-  "city",
-  "name",
-  "location",
-  "date",
-  "updated_by",
-  "created_at",
-  "updated_at",
-];
+const searchableFields = ["city", "name", "location", "date", "updated_by"];
 
 const useStyles = createStyles((theme) => ({
   stretch: {
@@ -46,35 +38,43 @@ const useStyles = createStyles((theme) => ({
 
 function filterData(data: Class[], search: string, searchBy: string = "todos") {
   console.log("filterData", search);
-  const query = search.toLowerCase().trim();
+  const queries = search.toLowerCase().split("+"); /// split by + and search for each
   return data.filter((item) => {
-    if (query === "") {
+    if (queries.length === 0) {
       return true;
     }
-    const n_item = item as any;
-    function search(field: string) {
+
+    function search(field: string, query: string, n_item: any) {
       const [key, rest] = field.split(".");
       if (rest) {
-        console.log(
-          "rest",
-          rest,
-          n_item[key][rest].toLowerCase().includes(query)
-        );
-        if (n_item[key][rest].toLowerCase().includes(query)) {
+        if (n_item[key][rest]?.toLowerCase().includes(query)) {
           return true;
         }
-      } else if (n_item[key].toLowerCase().includes(query)) {
+      } else if (n_item[key]?.toLowerCase().includes(query)) {
         return true;
       }
       return false;
     }
+
+    // loop over queries
     if (searchBy === "todos") {
+      let resp = new Set();
       for (const field of searchableFields) {
-        if (search(field)) return true;
+        for (const query of queries) {
+          const queryTrim = query.trim();
+          if (search(field, queryTrim, item)) resp.add(query);
+        }
       }
-      return false;
+      return resp.size === queries.length;
     } else {
-      search(searchBy);
+      let resp = 0;
+      for (const query of queries) {
+        const queryTrim = query.trim();
+        if (search(searchBy, queryTrim, item)) {
+          resp++;
+        }
+      }
+      return resp === queries.length;
     }
   });
 }
@@ -96,6 +96,7 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
   const [limitPage, setLimitPage] = useState(10);
   const [searchBy, setSearchBy] = useState("todos");
   const [search, setSearch] = useState("");
+  const [defaultSearch, setDefaultSearch] = useState("");
   const [sortedData, setSortedData] = useState(classData);
   const [totalClassData, setTotalClassData] = useState(0);
   const [alert, setAlert] = useState<AlertType | null>(null);
@@ -153,13 +154,13 @@ export function ClassManager({ classData, admin }: ClassManagerProps) {
         duration={400}
         timingFunction="ease"
       >
-          {(styles) => (
-            <div style={styles}>
-              <Modal opened={opened} onClose={close} fullScreen={isMobile}>
-                <CreateForm />                
-              </Modal>
-            </div>
-          )}
+        {(styles) => (
+          <div style={styles}>
+            <Modal opened={opened} onClose={close} fullScreen={isMobile}>
+              <CreateForm />
+            </Modal>
+          </div>
+        )}
       </Transition>
 
       <Stack>
