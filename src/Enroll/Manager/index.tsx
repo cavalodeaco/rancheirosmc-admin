@@ -130,23 +130,13 @@ function sortData(data: Enroll[], sortby: string = "sort_date") {
       }
       return 0;
     } else {
-      if (key === "sort_date") {
-        if (n_a[key] > n_b[key]) {
-          return -1;
-        }
-        if (n_a[key] < n_b[key]) {
-          return 1;
-        }
-        return 0;
-      } else {
-        if (n_a[key] < n_b[key]) {
-          return -1;
-        }
-        if (n_a[key] > n_b[key]) {
-          return 1;
-        }
-        return 0;
+      if (n_a[key] < n_b[key]) {
+        return -1;
       }
+      if (n_a[key] > n_b[key]) {
+        return 1;
+      }
+      return 0;
     }
   });
 }
