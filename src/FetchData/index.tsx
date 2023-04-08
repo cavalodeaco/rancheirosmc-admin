@@ -23,6 +23,7 @@ export interface Enroll {
   user: User;
   class: string;
   id: string;
+  sort_date: string;
 }
 
 interface EnrollResponse {
@@ -270,6 +271,9 @@ export function FetchData() {
           enroll.user = user;
         }
         enroll.id = `${enroll.city}/${enroll.enroll_date}`;
+        // convert enroll_date from DD/MM/YYYY to YYYY-MM-DDF
+        const sp = enroll?.enroll_date.split(",")[0].split(' ')[0].split("/");
+        enroll.sort_date = `${sp[2]}-${sp[1]}-${sp[0]}`;
         return enroll;
       });
       // Find enrolls of each user

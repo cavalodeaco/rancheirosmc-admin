@@ -65,6 +65,7 @@ interface EnrollTableProps {
   admin: Admin | undefined;
   back2List: Function;
   setAlert: Function;
+  handleSort: Function;
 }
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -82,6 +83,7 @@ export function EnrollTable({
   admin,
   back2List,
   setAlert,
+  handleSort,
 }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
@@ -167,11 +169,7 @@ export function EnrollTable({
 
         <td>{status[item?.enroll_status]}</td>
         <td>{item.city}</td>
-        <td>
-          {admin?.["custom:manager"]
-            ? item.enroll_date
-            : item.enroll_date.substring(0, 10)}
-        </td>
+        <td>{admin?.["custom:manager"] ? item.enroll_date : item.sort_date}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td align="center">
@@ -233,6 +231,7 @@ export function EnrollTable({
     } else {
       setSearchBy(search);
       setSelectedSearch(search);
+      handleSort(search);
     }
   }
 
@@ -322,9 +321,9 @@ export function EnrollTable({
             </th>
             <th>
               <Box
-                className={selectedSearch === "enroll_date" ? classes.box : ""}
+                className={selectedSearch === "sort_date" ? classes.box : ""}
               >
-                <UnstyledButton onClick={() => handleSearchBy("enroll_date")}>
+                <UnstyledButton onClick={() => handleSearchBy("sort_date")}>
                   <Title size={15}>Data da inscrição</Title>
                 </UnstyledButton>
               </Box>

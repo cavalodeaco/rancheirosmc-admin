@@ -116,11 +116,39 @@ function filterData(
   });
 }
 
-function sortData(
-  data: Enroll[],
-  payload: { search: string; searchBy: string }
-) {
-  return filterData(data, payload.search, payload.searchBy);
+function sortData(data: Enroll[], sortby: string = "sort_date") {
+  return data.sort((a, b) => {
+    const n_a: any = a;
+    const n_b: any = b;
+    const [key, rest] = sortby.split(".");
+    if (rest) {
+      if (n_a[key][rest] < n_b[key][rest]) {
+        return -1;
+      }
+      if (n_a[key][rest] > n_b[key][rest]) {
+        return 1;
+      }
+      return 0;
+    } else {
+      if (key === "sort_date") {
+        if (n_a[key] > n_b[key]) {
+          return -1;
+        }
+        if (n_a[key] < n_b[key]) {
+          return 1;
+        }
+        return 0;
+      } else {
+        if (n_a[key] < n_b[key]) {
+          return -1;
+        }
+        if (n_a[key] > n_b[key]) {
+          return 1;
+        }
+        return 0;
+      }
+    }
+  });
 }
 
 interface ActionList {
@@ -151,7 +179,6 @@ export function EnrollManager({
   const [limitPage, setLimitPage] = useState(10);
   const [searchBy, setSearchBy] = useState("todos");
   const [search, setSearch] = useState("");
-  const [defaultSearch, setDefaultSearch] = useState("");
   const [enrollData, setEnrollData] = useState<Enroll[]>([]);
   const [sortedData, setSortedData] = useState(enrollData);
   const [totalEnrollData, setTotalEnrollData] = useState(0);
@@ -392,23 +419,30 @@ export function EnrollManager({
   }, [mainEnrollData]);
 
   useEffect(() => {
-    handleSearch();
+    const f = async () => {
+      handleSearch();
+    };
+    f();
   }, [enrollData]);
 
   function handleSearch() {
     console.log("handleSearch", search, searchBy);
-    const s_search = search
-      ? defaultSearch
-        ? `${defaultSearch}+${search}`
-        : search
-      : defaultSearch;
-    const sorted = sortData(enrollData, {
-      search: s_search,
-      searchBy: searchBy,
-    });
+    const sorted = filterData(enrollData, search, searchBy);
     setSortedData(sorted);
     setActiveEnrollPage(1);
     setTableEnrollData(sorted.slice(0, limitPage));
+  }
+
+  function handleSort(sortby: string) {
+    console.log("handleSort", sortby);
+    const sorted = sortData(sortedData, sortby);
+    setSortedData(sorted);
+    setTableEnrollData(
+      sorted.slice(
+        (activeEnrollPage - 1) * limitPage,
+        activeEnrollPage * limitPage
+      )
+    );
   }
 
   async function handleAction(value: string) {
@@ -639,6 +673,7 @@ export function EnrollManager({
           admin={admin}
           back2List={async () => actionList["waiting"]()}
           setAlert={setAlert}
+          handleSort={handleSort}
         />
         <Pagination
           page={activeEnrollPage}
