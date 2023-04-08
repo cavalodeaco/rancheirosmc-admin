@@ -116,7 +116,7 @@ function filterData(
   });
 }
 
-function sortData(data: Enroll[], sortby: string = "enroll_date") {
+function sortData(data: Enroll[], sortby: string = "sort_date") {
   return data.sort((a, b) => {
     const n_a: any = a;
     const n_b: any = b;
