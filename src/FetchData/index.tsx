@@ -24,6 +24,7 @@ export interface Enroll {
   class: string;
   id: string;
   sort_date: string;
+  text_link: string;
 }
 
 interface EnrollResponse {
