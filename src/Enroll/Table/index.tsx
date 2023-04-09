@@ -157,8 +157,8 @@ export function EnrollTable({
     );
     item.text_link = `https://wa.me/55${item.user.phone
     .match(regex)
-    ?.join("")}?text=Olá%20${item.user.name.split("%20")[0]},\%0AAqui%20é%20${
-      admin?.name.split("%20")[0]
+    ?.join("")}?text=Olá%20${item.user.name.split(" ")[0]},\%0AAqui%20é%20${
+      admin?.name.split(" ")[0]
     }%20-%20Lord%20Riders%20Moto%20Clube,%20tudo%20certo?\%0Ahttps://www.lordriders.com\%0A\%0AEstou%20entrando%20em%20contato%20para%20confirmar%20sua%20presença%20em%20nosso%20treinamento%20do%20curso%20Pilotando%20para%20Vida%20(https://ppv.lordriders.com).\%0A\%0AO%20curso%20ocorrerá%20na%20região%20de%20${
       _class?.city
     }%20no%20dia%20${_class?.date}%20no%20seguinte%20local%20${
