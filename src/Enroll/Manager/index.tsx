@@ -34,7 +34,7 @@ import {
   IconSearch,
 } from "@tabler/icons";
 import { forwardRef, useEffect, useState } from "react";
-import { Admin, Enroll } from "../../FetchData";
+import { Admin, Class, Enroll } from "../../FetchData";
 import { EnrollTable } from "../Table";
 import Tokens from "../../AuthenticationForm/Tokens";
 import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
@@ -54,7 +54,7 @@ const useStyles = createStyles((theme) => ({
 interface EnrollManagerProps {
   mainEnrollData: Enroll[];
   admin: Admin | undefined;
-  classList: string[];
+  classData: Class[];
 }
 
 const searchableFields = [
@@ -155,7 +155,7 @@ interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
 export function EnrollManager({
   mainEnrollData,
   admin,
-  classList,
+  classData,
 }: EnrollManagerProps) {
   const [tokens, setTokens] = useLocalStorage<Tokens>({
     key: "tokens",
@@ -549,7 +549,7 @@ export function EnrollManager({
         <Flex gap={"xs"} align="center" className={classes.actions}>
           <Select
             placeholder="Turma"
-            data={classList}
+            data={classData.map((item) => item.name)}
             clearable
             className={classes.stretch}
             onChange={setSelectedClass}
@@ -664,6 +664,7 @@ export function EnrollManager({
           back2List={async () => actionList["waiting"]()}
           setAlert={setAlert}
           handleSort={handleSort}
+          classData={classData}
         />
         <Pagination
           page={activeEnrollPage}

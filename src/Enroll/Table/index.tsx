@@ -12,7 +12,7 @@ import {
   Group,
   ActionIcon,
 } from "@mantine/core";
-import { Admin, Enroll } from "../../FetchData";
+import { Admin, Class, Enroll } from "../../FetchData";
 import {
   IconArchive,
   IconBackspace,
@@ -66,6 +66,7 @@ interface EnrollTableProps {
   back2List: Function;
   setAlert: Function;
   handleSort: Function;
+  classData: Class[];
 }
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -84,6 +85,7 @@ export function EnrollTable({
   back2List,
   setAlert,
   handleSort,
+  classData,
 }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
