@@ -12,7 +12,7 @@ import {
   Group,
   ActionIcon,
 } from "@mantine/core";
-import { Admin, Enroll } from "../../FetchData";
+import { Admin, Class, Enroll } from "../../FetchData";
 import {
   IconArchive,
   IconBackspace,
@@ -26,6 +26,7 @@ import {
   IconMessageCircleOff,
 } from "@tabler/icons";
 import { AlertType } from "../../Menu";
+import { string } from "zod";
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -66,6 +67,7 @@ interface EnrollTableProps {
   back2List: Function;
   setAlert: Function;
   handleSort: Function;
+  classData: Class[];
 }
 
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -84,6 +86,7 @@ export function EnrollTable({
   back2List,
   setAlert,
   handleSort,
+  classData,
 }: EnrollTableProps) {
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
@@ -149,6 +152,16 @@ export function EnrollTable({
 
   const rows = enrollData.map((item) => {
     const selected = selection.includes(item.id);
+    const _class = classData.find(
+      (item_class) => item_class.name === item.class
+    );
+    item.text_link = `https://wa.me/5541997399217?text=Olá%20${item.user.name.split("%20")[0]},\%0AAqui%20é%20${
+      admin?.name.split("%20")[0]
+    }%20-%20Lord%20Riders%20Moto%20Clube,%20tudo%20certo?\%0Ahttps://www.lordriders.com\%0A\%0AEstou%20entrando%20em%20contato%20para%20confirmar%20sua%20presença%20em%20nosso%20treinamento%20do%20curso%20Pilotando%20para%20Vida%20(https://ppv.lordriders.com).\%0A\%0AO%20curso%20ocorrerá%20na%20região%20de%20${
+      _class?.city
+    }%20no%20dia%20${_class?.date}%20no%20seguinte%20local%20${
+      _class?.location
+    }.&type=phone_number&app_absent=0`;
     return (
       <tr key={item.id} className={cx({ [classes.rowSelected]: selected })}>
         <td>
@@ -174,12 +187,7 @@ export function EnrollTable({
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td align="center">
           {item?.enroll_status === "called" ? (
-            <a
-              href={`https://web.whatsapp.com/send/?phone=55${item.user.phone
-                .match(regex)
-                ?.join("")}&text&type=phone_number&app_absent=0`}
-              target="_blank"
-            >
+            <a href={item.text_link} target="_blank" rel="noreferrer">
               <IconBrandWhatsapp />
             </a>
           ) : (

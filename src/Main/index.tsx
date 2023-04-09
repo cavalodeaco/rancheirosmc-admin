@@ -115,7 +115,7 @@ export default function Main({
         <EnrollManager
           mainEnrollData={enrollData}
           admin={admin}
-          classList={classData.map((item) => item.name)}
+          classData={classData}
         />
       )}
       {isUser && <UserManager userData={userData} admin={admin} />}
