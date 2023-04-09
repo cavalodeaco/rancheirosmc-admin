@@ -175,10 +175,11 @@ export function EnrollTable({
         <td align="center">
           {item?.enroll_status === "called" ? (
             <a
-              href={`https://web.whatsapp.com/send/?phone=55${item.user.phone
+              href={`https://wa.me/55${item.user.phone
                 .match(regex)
-                ?.join("")}&text&type=phone_number&app_absent=0`}
+                ?.join("")}&text=Olá%20${item.user.name.split("%20")[0]},\%0AAqui%20é%20${admin?.name.split("%20")[0]}%20-%20Lord%20Riders%20Moto%20Clube,%20tudo%20certo?\%0Ahttps://www.lordriders.com\%0A\%0AEstou%20entrando%20em%20contato%20para%20confirmar%20sua%20presença%20em%20nosso%20treinamento%20do%20curso%20Pilotando%20para%20Vida&type=phone_number&app_absent=0`}
               target="_blank"
+              rel="noreferrer"
             >
               <IconBrandWhatsapp />
             </a>
