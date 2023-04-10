@@ -2,13 +2,17 @@ import {
   ActionIcon,
   Alert,
   Badge,
+  Box,
   Button,
+  CloseButton,
   Code,
   createStyles,
   Flex,
   Group,
   List,
   Modal,
+  MultiSelect,
+  MultiSelectValueProps,
   Pagination,
   Paper,
   ScrollArea,
@@ -145,7 +149,7 @@ interface ActionList {
   [key: string]: Function;
 }
 
-interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
+interface ActionItemProps extends React.ComponentPropsWithoutRef<"div"> {
   icon: any;
   label: string;
   value: string;
@@ -448,8 +452,8 @@ export function EnrollManager({
     }
   }
 
-  const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-    ({ icon, label, ...others }: ItemProps, ref) => (
+  const SelectActionItem = forwardRef<HTMLDivElement, ActionItemProps>(
+    ({ icon, label, ...others }: ActionItemProps, ref) => (
       <div ref={ref} {...others}>
         <Group noWrap>
           {icon} {label}
@@ -457,6 +461,42 @@ export function EnrollManager({
       </div>
     )
   );
+
+  interface StatusFilterItemProps
+    extends React.ComponentPropsWithoutRef<"div"> {
+    icon: any;
+    value: string;
+  }
+
+  const SelectStatusFilterItem = forwardRef<
+    HTMLDivElement,
+    StatusFilterItemProps
+  >(({ icon, ...others }: StatusFilterItemProps, ref) => (
+    <div ref={ref} {...others}>
+      {icon}
+    </div>
+  ));
+
+  const statuses: any = {
+    waiting: <IconHourglassEmpty />,
+    call: <IconBrandHipchat color="#00abfb" />,
+    confirmed: <IconCheckbox color="#ffec00" />,
+    certified: <IconCertificate color="#7bc62d" />,
+    missed: <IconCircleMinus color="#ff4500" />,
+    dropout: <IconBackspace color="#ffbf00" />,
+    ignored: <IconMessageCircleOff color="#ff9300" />,
+  };
+
+  function SelectStatusFilterValue({
+    value,
+    label,
+    onRemove,
+    classNames,
+    ...others
+  }: MultiSelectValueProps & { value: string }) {
+    const icon = statuses[value];
+    return <Box mr={5}>{icon}</Box>;
+  }
 
   return (
     <>
@@ -513,39 +553,63 @@ export function EnrollManager({
         }}
       </Transition>
       <Flex direction={"column"} gap={"md"}>
-        <TextInput
-          placeholder={`Pesquisar`}
-          icon={<IconSearch size="0.9rem" stroke={1.5} />}
-          value={search}
-          onChange={(event) => setSearch(event.currentTarget.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              handleSearch();
+        <Flex gap={"xs"} align="center" className={classes.actions}>
+          <TextInput
+            placeholder={`Pesquisar`}
+            icon={<IconSearch size="0.9rem" stroke={1.5} />}
+            value={search}
+            onChange={(event) => setSearch(event.currentTarget.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleSearch();
+              }
+            }}
+            rightSection={
+              <Badge color="gray" size="xs">
+                {sortedData.length} de {enrollData.length}
+              </Badge>
             }
-          }}
-          rightSection={
-            <Badge color="gray" size="xs">
-              {sortedData.length} de {enrollData.length}
-            </Badge>
-          }
-          rightSectionWidth={"5rem"}
-        />
-        {/* <Paper shadow={"xs"} p="xs" withBorder>
-                        {sortedData.length}/{enrollData.length}
-                    </Paper> */}
-
-        {/* <Slider
-                            labelAlwaysOn
-                            labelTransition="skew-down"
-                            labelTransitionDuration={150}
-                            labelTransitionTimingFunction="ease"
-                            showLabelOnHover
-                            defaultValue={10}
-                            marks={marks}
-                            onChange={changeLimit}
-                            min={1}
-                            max={100}
-                        />                 */}
+            rightSectionWidth={"5rem"}
+          />
+          <MultiSelect
+            placeholder="Status"
+            data={[
+              {
+                value: "waiting",
+                icon: <IconHourglassEmpty />,
+              },
+              {
+                value: "call",
+                icon: <IconBrandHipchat color="#00abfb" />,
+              },
+              {
+                value: "confirmed",
+                icon: <IconCheckbox color="#ffec00" />,
+              },
+              {
+                value: "certified",
+                icon: <IconCertificate color="#7bc62d" />,
+              },
+              {
+                value: "missed",
+                icon: <IconCircleMinus color="#ff4500" />,
+              },
+              {
+                value: "dropout",
+                icon: <IconBackspace color="#ffbf00" />,
+              },
+              {
+                value: "ignored",
+                icon: <IconMessageCircleOff color="#ff9300" />,
+              },
+            ]}
+            itemComponent={SelectStatusFilterItem}
+            valueComponent={SelectStatusFilterValue}
+            clearable
+            className={classes.stretch}
+            // onChange={setSelectedClass}
+          />
+        </Flex>
         <Flex gap={"xs"} align="center" className={classes.actions}>
           <Select
             placeholder="Turma"
@@ -614,7 +678,7 @@ export function EnrollManager({
             value={action}
             placeholder="Ações de inscrição"
             onChange={handleAction}
-            itemComponent={SelectItem}
+            itemComponent={SelectActionItem}
           />
           <ActionIcon size={"sm"} radius="xl" variant="outline" onClick={open}>
             <QuestionMark size="0.875rem" />
