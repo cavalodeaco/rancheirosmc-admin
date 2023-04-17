@@ -571,7 +571,7 @@ export function EnrollManager({
             }
             rightSectionWidth={"5rem"}
           />
-          <MultiSelect
+          {/* <MultiSelect
             placeholder="Status"
             data={[
               {
@@ -608,7 +608,7 @@ export function EnrollManager({
             clearable
             className={classes.stretch}
             // onChange={setSelectedClass}
-          />
+          /> */}
         </Flex>
         <Flex gap={"xs"} align="center" className={classes.actions}>
           <Select
