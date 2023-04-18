@@ -294,6 +294,23 @@ export function FetchData() {
         return user;
       });
 
+      // sort enroll by city and date
+      dataEnroll.sort((a, b) => {
+        if (a.city < b.city) {
+          return -1;
+        }
+        if (a.city > b.city) {
+          return 1;
+        }
+        if (a.sort_date < b.sort_date) {
+          return -1;
+        }
+        if (a.sort_date > b.sort_date) {
+          return 1;
+        }
+        return 0;
+      });
+
       // Save data
       setEnrollData(dataEnroll); // table data
       setUserData(dataUser); // table data
