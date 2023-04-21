@@ -123,7 +123,6 @@ export function FetchData() {
   }, [tokens]);
 
   async function adminFetch(input: RequestInfo | URL, init?: RequestInit) {
-    console.log(init);
     const response = await fetch(input, init);
     if (response.status === 401) {
       logout();
