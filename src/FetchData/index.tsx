@@ -88,8 +88,6 @@ export function FetchData() {
   const [enrollData, setEnrollData] = useState<Enroll[]>([]);
   const [classData, setClassData] = useState<Class[]>([]);
   const [userData, setUserData] = useState<User[]>([]);
-  const [enrollPage, setEnrollPage] = useState(""); // manages
-  const [userPage, setUserPage] = useState(""); // manages
   const [admin, setAdmin] = useState<Admin>();
   const [alert, setAlert] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
@@ -140,12 +138,12 @@ export function FetchData() {
       const message = `${admin?.name} :: ${date.toLocaleString(
         "pt-BR"
       )}:${date.getMilliseconds()} :: ${data.replace(/ /g, "%20")}`;
-      setAlertMsg(`https://wa.me/?text=${message}`);
+      setAlertMsg(message);
     }
     return undefined;
   }
 
-  async function getEnrollData() {
+  async function getEnrollData(page: string) {
     console.log("Request data");
     if (tokens) {
       // only proceed if tokens are available
@@ -159,8 +157,8 @@ export function FetchData() {
         `${process.env.REACT_APP_BACKEND_ADDRESS}/report/enroll`,
         {
           method: "GET",
-          headers: enrollPage
-            ? { ...headers, page: JSON.stringify(enrollPage) }
+          headers: page !== ""
+            ? { ...headers, page: page }
             : headers,
         }
       ); // add body
@@ -170,7 +168,7 @@ export function FetchData() {
     return undefined;
   }
 
-  async function getUserData() {
+  async function getUserData(page: string) {
     console.log("Request data");
     if (tokens) {
       // only proceed if tokens are available
@@ -184,8 +182,8 @@ export function FetchData() {
         `${process.env.REACT_APP_BACKEND_ADDRESS}/report/user`,
         {
           method: "GET",
-          headers: userPage
-            ? { ...headers, page: JSON.stringify(userPage) }
+          headers: page !== ""
+          ? { ...headers, page: page }
             : headers,
         }
       ); // add body
@@ -194,7 +192,7 @@ export function FetchData() {
     return undefined;
   }
 
-  async function getClassData() {
+  async function getClassData(page: string) {
     console.log("Request data");
     if (tokens) {
       // only proceed if tokens are available
@@ -208,8 +206,8 @@ export function FetchData() {
         `${process.env.REACT_APP_BACKEND_ADDRESS}/class`,
         {
           method: "GET",
-          headers: userPage
-            ? { ...headers, page: JSON.stringify(userPage) }
+          headers: page !== ""
+          ? { ...headers, page: page }
             : headers,
         }
       ); // add body
@@ -223,12 +221,13 @@ export function FetchData() {
       // enroll data
       console.log("Fetching enroll data");
       let flag = false;
+      let page = "";
       let dataEnroll: Enroll[] = [];
       do {
-        let enrolls: EnrollResponse | undefined = await getEnrollData();
+        let enrolls: EnrollResponse | undefined = await getEnrollData( flag ? page : "");
         if (enrolls?.Items) {
           dataEnroll = [...dataEnroll, ...enrolls?.Items];
-          setEnrollPage(enrolls.page || ""); // manages next data
+          page = JSON.stringify(enrolls?.page);
         }
         flag = enrolls?.page;
       } while (flag);
@@ -238,10 +237,10 @@ export function FetchData() {
       flag = false;
       let dataUser: User[] = [];
       do {
-        let users: UserResponse | undefined = await getUserData();
+        let users: UserResponse | undefined = await getUserData( flag ? page : "");
         if (users?.Items) {
-          dataUser = [...userData, ...users?.Items];
-          setUserPage(users.page || ""); // manages next data
+          dataUser = [...dataUser, ...users?.Items];
+          page = JSON.stringify(users?.page);
         }
         flag = users?.page;
       } while (flag);
@@ -249,12 +248,12 @@ export function FetchData() {
 
       console.log("Fetching class data");
       flag = false;
-      let dataClass: Class[] = [];
+      let dataClass : Class[] = [];
       do {
-        let classes: ClassResponse | undefined = await getClassData();
+        let classes: ClassResponse | undefined = await getClassData( flag ? page : "");
         if (classes?.Items) {
-          dataClass = [...classData, ...classes?.Items];
-          setUserPage(classes.page || ""); // manages next data
+          dataClass = [...dataClass, ...classes?.Items];
+          page = JSON.stringify(classes?.page);
         }
         flag = classes?.page;
       } while (flag);
@@ -286,7 +285,12 @@ export function FetchData() {
               enroll.city === user_enroll.city
           );
           if (enroll.length > 1) {
-            console.log("####-----> More than one enroll found!! ");
+            const date = new Date();
+            const data = `More than one enroll found!! ${user.driver_license} ${user.driver_license_UF} ${user_enroll.enroll_date} ${user_enroll.city}`;
+            const message = `${admin?.name} :: ${date.toLocaleString(
+              "pt-BR"
+            )}:${date.getMilliseconds()} :: ${data.replace(/ /g, "%20")}`;
+            setAlertMsg(message);
           }
           return enroll[0]; // needs to be only one
         });
@@ -328,8 +332,8 @@ export function FetchData() {
           onClose={() => setAlert(false)}
         >
           Envie esta mensagem para o grupo de Suporte do PPV Admin clicando no
-          link{" "}
-          <a href={alertMsg} target="_blank">
+          link do whatsapp e selecionando o grupo PPV-Admin! {" "}
+          <a href={`https://wa.me/?text=${alertMsg}`} target="_blank" rel="noreferrer">
             <IconBrandWhatsapp />
           </a>
           .
