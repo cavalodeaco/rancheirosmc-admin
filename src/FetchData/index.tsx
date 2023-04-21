@@ -150,7 +150,7 @@ export function FetchData() {
     if (tokens) {
       // only proceed if tokens are available
       const headers = {
-        limit: "200",
+        limit: "50",
         // add tokens from localstorage
         access_token: `${tokens.access_token}`,
         id_token: `${tokens.id_token}`,
@@ -175,7 +175,7 @@ export function FetchData() {
     if (tokens) {
       // only proceed if tokens are available
       const headers = {
-        limit: "200",
+        limit: "50",
         // add tokens from localstorage
         access_token: `${tokens.access_token}`,
         id_token: `${tokens.id_token}`,
@@ -199,7 +199,7 @@ export function FetchData() {
     if (tokens) {
       // only proceed if tokens are available
       const headers = {
-        limit: "200",
+        limit: "50",
         // add tokens from localstorage
         access_token: `${tokens.access_token}`,
         id_token: `${tokens.id_token}`,
