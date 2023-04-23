@@ -579,7 +579,7 @@ export function EnrollManager({
                 label: "Indicar presença",
                 icon: <IconCertificate color="#7bc62d" />,
                 disabled:
-                  admin?.["custom:manager"] || admin?.["custom:posclass"]
+                  admin?.["custom:manager"] || admin?.["custom:caller"]
                     ? false
                     : true,
               },
@@ -588,7 +588,7 @@ export function EnrollManager({
                 label: "Indicar falta",
                 icon: <IconCircleMinus color="#ff4500" />,
                 disabled:
-                  admin?.["custom:manager"] || admin?.["custom:posclass"]
+                  admin?.["custom:manager"] || admin?.["custom:caller"]
                     ? false
                     : true,
               },
