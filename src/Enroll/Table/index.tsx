@@ -297,12 +297,12 @@ export function EnrollTable({
                           value: "certified",
                           label: "Indicar presença",
                           icon: <IconCertificate color='#7bc62d' />,
-                          disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                       },
                       {
                           value: "missed",
                           icon: <IconCircleMinus color='#ff4500' />,
-                          disabled: admin?.["custom:manager"] || admin?.["custom:posclass"] ? false : true,
+                          disabled: admin?.["custom:manager"] || admin?.["custom:caller"] ? false : true,
                       },
                       {
                           value: "dropout",
