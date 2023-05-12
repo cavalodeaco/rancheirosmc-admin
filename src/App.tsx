@@ -8,7 +8,7 @@ import { CustomFonts } from "./CustomFonts";
 import { FetchData } from "./FetchData";
 
 function App() {
-  document.title = "PPV Admin";
+  document.title = "Rancheiros Admin";
   const isDarkTheme = useThemeDetector();
 
   const [tokens] = useLocalStorage<Tokens>({
