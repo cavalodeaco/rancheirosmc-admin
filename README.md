@@ -1,10 +1,10 @@
-# ppv-admin
+# Rancheiros Administrative
 
 ## Development instructions
 
-### Start local ppv-api
+### Start local rancheiros-api
 
-Follow the instructions inside the project: https://github.com/cavalodeaco/ppv-api/tree/main/node-js
+Follow the instructions inside the project: https://github.com/cavalodeaco/rancheiros-api/tree/main/node-js
 
 ### Environment variables
 

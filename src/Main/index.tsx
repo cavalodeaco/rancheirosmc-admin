@@ -14,8 +14,7 @@ import {
 import { Menu } from "../Menu";
 import { EnrollManager } from "../Enroll/Manager";
 import { UserManager } from "../User/Manager";
-import TextPPV from "../TextPPV/TextPPV";
-import ppvicon from "../img/iconppv.svg";
+import icon from "../img/logo.webp";
 import { Admin, Class, Enroll, User } from "../FetchData";
 import { useLocalStorage } from "@mantine/hooks";
 import Tokens from "../AuthenticationForm/Tokens";
@@ -50,10 +49,10 @@ export default function Main({
   admin,
 }: MainProps) {
   const { classes, cx } = useStyles();
-  const [isEnroll, setIsEnroll] = useState(false);
+  const [isEnroll, setIsEnroll] = useState(true);
   const [isUser, setIsUser] = useState(false);
   const [isClass, setIsClass] = useState(false);
-  const [active, setActive] = useState("Métricas");
+  const [active, setActive] = useState("Inscrições");
 
   const [tokens, setTokens] = useLocalStorage<Tokens>({
     key: "tokens",
@@ -71,9 +70,9 @@ export default function Main({
             <Group className={classes.header} position="apart">
               <Title order={3} transform="uppercase" italic>
                 <Center>
-                  <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
+                  <img src={icon} alt="Pilotando Para Vida" height={36} />
                   <Space w="xs" />
-                  Pilotando Para <TextPPV text="Vida" />
+                  Rancheiros Admin
                 </Center>
               </Title>
               <Title order={3} transform="uppercase" italic>
@@ -84,7 +83,7 @@ export default function Main({
           </MediaQuery>
           <MediaQuery largerThan="sm" styles={{ display: "none" }}>
             <Group className={classes.header} position="apart">
-              <img src={ppvicon} alt="Pilotando Para Vida" height={36} />
+              <img src={icon} alt="Rancheiros - Admin" height={36} />
               <Title order={3} transform="uppercase" italic>
                 {active}
               </Title>

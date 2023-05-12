@@ -72,7 +72,13 @@ interface ClassList {
     driver_license: string;
     driver_license_UF: string;
     name: string;
+    phone: string;
+    email: string;
   };
+  enroll_date: string;
+  city: string;
+  motorcycle_model: string;
+  motorcycle_use: string;
   enroll_status: string;
 }
 
@@ -126,12 +132,29 @@ export function ClassTable({
 
   function generateXlsx(class_name: string, data: ClassList[]) {
     // Map data to spreadsheet rows
-    const rows = data.map((item) => ({
-      Status: item.enroll_status,
-      Nome: item.user.name,
-      "CNH (UF)": `${item.user.driver_license} (${item.user.driver_license_UF})`,
-      Imagem: item.terms.authorization ? "Sim" : "Não",
-    }));
+    let rows = undefined;
+    if (admin?.["custom:manager"]) {
+      rows = data.map((item) => ({
+        Data: item.enroll_date,
+        Cidade: item.city,
+        Nome: item.user.name,
+        Contato: item.user.phone,
+        Email: item.user.email,
+        "CNH (UF)": `${item.user.driver_license} (${item.user.driver_license_UF})`,
+        "Uso motocicleta": item.motorcycle_use,
+        "Modelo motocicleta": item.motorcycle_model,
+        "Termo Imagem": item.terms.authorization ? "Sim" : "Não",
+        "Termo resposabilidade": item.terms.responsibility ? "Sim" : "Não",
+        "Termo LGPD": item.terms.lgpd ? "Sim" : "Não",
+      }));
+    } else {
+      rows = data.map((item) => ({
+        Status: item.enroll_status,
+        Nome: item.user.name,
+        "CNH (UF)": `${item.user.driver_license} (${item.user.driver_license_UF})`,
+        Imagem: item.terms.authorization ? "Sim" : "Não",
+      }));
+    }
 
     // Create workbook and worksheet
     const workbook = XLSX.utils.book_new();
