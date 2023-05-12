@@ -331,8 +331,8 @@ export function FetchData() {
           color="red"
           onClose={() => setAlert(false)}
         >
-          Envie esta mensagem para o grupo de Suporte do PPV Admin clicando no
-          link do whatsapp e selecionando o grupo PPV-Admin! {" "}
+          Envie esta mensagem para o grupo de Suporte do Rancheiros Admin clicando no
+          link do whatsapp e selecionando o grupo Rancheiros-Admin! {" "}
           <a href={`https://wa.me/?text=${alertMsg}`} target="_blank" rel="noreferrer">
             <IconBrandWhatsapp />
           </a>
