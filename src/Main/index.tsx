@@ -49,7 +49,7 @@ export default function Main({
   admin,
 }: MainProps) {
   const { classes, cx } = useStyles();
-  const [isEnroll, setIsEnroll] = useState(false);
+  const [isEnroll, setIsEnroll] = useState(true);
   const [isUser, setIsUser] = useState(false);
   const [isClass, setIsClass] = useState(false);
   const [active, setActive] = useState("Inscrições");
