@@ -137,19 +137,19 @@ export function Menu({
   const { classes, cx } = useStyles();
 
   const data = [
-    {
-      link: "",
-      label: "Métricas",
-      icon: IconHome,
-      action: () => {
-        if (active !== "Métricas") {
-          // if not in the same page
-          setIsEnroll(false);
-          setIsUser(false);
-          setIsClass(false);
-        }
-      },
-    },
+    // {
+    //   link: "",
+    //   label: "Métricas",
+    //   icon: IconHome,
+    //   action: () => {
+    //     if (active !== "Métricas") {
+    //       // if not in the same page
+    //       setIsEnroll(false);
+    //       setIsUser(false);
+    //       setIsClass(false);
+    //     }
+    //   },
+    // },
     {
       link: "",
       label: "Inscrições",

@@ -18,7 +18,7 @@ import { AlertCircle } from "tabler-icons-react";
 import { useState } from "react";
 import { useLocalStorage } from "@mantine/hooks";
 import Tokens from "./Tokens";
-import logo from '../img/logoppv.svg';
+import logo from '../img/logo.webp';
 
 interface LoginFormValues {
   email: string;
@@ -47,7 +47,7 @@ export default function AuthenticationForm(props: PaperProps) {
         /^\S+@\S+$/.test(val) ? null : "Informe seu endereço de e-mail",
       password: (val) =>
         val.length <= 6
-          ? "Sua chave de acesso possui pelo menos 6 caracteres"
+          ? "Sua chave de acesso possui mais de 6 caracteres"
           : null,
     },
   });
@@ -114,7 +114,7 @@ export default function AuthenticationForm(props: PaperProps) {
             <img src={logo} alt="Pilotando Para Vida" height={200} />
           </Box>
           <Divider
-            label="Acesso restrito - Admin PPV"
+            label="Acesso restrito - Rancheiros Admin"
             labelPosition="center"
             my="lg"
           />
