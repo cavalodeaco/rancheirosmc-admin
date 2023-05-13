@@ -155,9 +155,9 @@ export function EnrollTable({
     const _class = classData.find(
       (item_class) => item_class.name === item.class
     );
-    item.text_link = `https://wa.me/55${item?.user?.phone
-    .match(regex)
-    ?.join("")}?text=Olá%20${item?.user?.name.split(" ")[0]},\%0AAqui%20é%20${
+    item.text_link = `?text=Olá%20${
+      item?.user?.name.split(" ")[0]
+    },\%0AAqui%20é%20${
       admin?.name.split(" ")[0]
     }%20-%20Rancheiros%20Moto%20Clube,%20tudo%20certo?\%0Ahttps://www.rancheirosmc.com.br\%0A\%0AEstou%20entrando%20em%20contato%20para%20confirmar%20sua%20presença%20em%20nosso%20treinamento%20do%20curso%20Manobras%20para%20Vida%20.\%0A\%0AO%20curso%20ocorrerá%20na%20região%20de%20${
       _class?.city
@@ -173,34 +173,31 @@ export function EnrollTable({
             transitionDuration={0}
           />
         </td>
-        {/* <td>
-          <Group spacing="sm">
-            <Avatar size={26} src={item.avatar} radius={26} />
-            <Text size="sm" weight={500}>
-              {item.name}
-            </Text>
-          </Group>
-        </td> */}
-
         <td>{status[item?.enroll_status]}</td>
         <td>{item.city}</td>
         <td>{admin?.["custom:manager"] ? item.enroll_date : item.sort_date}</td>
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td align="center">
-          {item?.enroll_status === "called" ? (
-            <a href={item.text_link} target="_blank" rel="noreferrer">
-              <IconBrandWhatsapp />
-            </a>
-          ) : (
-            item.user.phone.match(regex)?.join("")
-          )}
+          <a
+            href={
+              (/Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(
+                navigator.userAgent
+              )
+                ? "whatsapp://wa.me/55"
+                : "https://wa.me/55") +
+              item?.user?.phone.match(regex)?.join("") +
+              (item?.enroll_status === "called" ? item.text_link : "")
+            }
+            target="_blank"
+            rel="noreferrer"
+          >
+            <IconBrandWhatsapp />
+          </a>
         </td>
-        {/* <td>{item.motorcycle_brand}</td> */}
         <td>{item.class == "none" ? "" : item.class}</td>
         <td>{item.terms.authorization == true ? "Sim" : "Não"}</td>
         <td>{item.updated_by}</td>
-        {/* <td>{item.updated_at.substring(0,9)}</td> */}
         <td>
           <Group spacing={0} position="right">
             <Menu
