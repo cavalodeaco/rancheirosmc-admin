@@ -477,34 +477,34 @@ export function EnrollManager({
               >
                 <List center spacing="xs" size="sm">
                   <List.Item icon={<IconHourglassEmpty />}>
-                    Em lista de espera (disponível para chamar para uma turma)
+                    Em lista de espera (disponível para chamar para uma turma) [waiting]
                   </List.Item>
                   <List.Item icon={<IconArchive />}>
                     Inscrição do Google Forms (disponível para chamar para uma
-                    turma)
+                    turma) [legacy_waiting]
                   </List.Item>
                   <List.Item icon={<IconBrandHipchat color="#00abfb" />}>
                     Convidado para uma turma (entrou em contato com o aluno para
-                    uma turma específica)
+                    uma turma específica) [called]
                   </List.Item>
                   <List.Item icon={<IconBackspace color="#ffbf00" />}>
                     Desistiu da vaga na turma (não poderá participar do curso de
-                    forma justificada, informado anteriormente a data do curso)
+                    forma justificada, informado anteriormente a data do curso) [dropped]
                   </List.Item>
                   <List.Item icon={<IconCheckbox color="#ffec00" />}>
-                    Confirmou convite para a turma
+                    Confirmou convite para a turma [confirmed]
                   </List.Item>
                   <List.Item icon={<IconCertificate color="#7bc62d" />}>
-                    Participou do curso (aluno recebeu certificado no curso)
+                    Participou do curso (aluno recebeu certificado no curso) [certified]
                   </List.Item>
                   <List.Item icon={<IconCircleMinus color="#ff4500" />}>
                     Faltou no curso (este aluno não participou e deve se
                     inscrever novamente se quiser realizar o curso em outra
-                    turma)
+                    turma) [missed]
                   </List.Item>
                   <List.Item icon={<IconMessageCircleOff color="#ff9300" />}>
                     Não deu resposta ao convite (este aluno deverá se inscrever
-                    novamente se quiser realizar o curso em outra turma)
+                    novamente se quiser realizar o curso em outra turma) [ignored]
                   </List.Item>
                 </List>
               </Modal>
