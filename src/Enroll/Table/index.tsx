@@ -173,15 +173,6 @@ export function EnrollTable({
             transitionDuration={0}
           />
         </td>
-        {/* <td>
-          <Group spacing="sm">
-            <Avatar size={26} src={item.avatar} radius={26} />
-            <Text size="sm" weight={500}>
-              {item.name}
-            </Text>
-          </Group>
-        </td> */}
-
         <td>{status[item?.enroll_status]}</td>
         <td>{item.city}</td>
         <td>{admin?.["custom:manager"] ? item.enroll_date : item.sort_date}</td>
