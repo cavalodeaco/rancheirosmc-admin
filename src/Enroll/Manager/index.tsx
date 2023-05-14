@@ -233,10 +233,7 @@ export function EnrollManager({
           );
           setMessageStatus(messages);
         };
-        update(); // trick async
-
-        // show success and fails
-        actionStatusHandler.open();
+        update(); // trick async        
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
@@ -439,6 +436,8 @@ export function EnrollManager({
     if (value && selectedEnroll.length > 0) {
       setAlert(null);
       setAction(value);
+      // show success and fails
+      actionStatusHandler.open();
       await actionList[value]();
     } else {
       setAlert({
