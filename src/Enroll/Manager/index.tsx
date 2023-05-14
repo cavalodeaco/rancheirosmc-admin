@@ -9,6 +9,7 @@ import {
   Group,
   List,
   Modal,
+  Text,
   Pagination,
   Paper,
   ScrollArea,
@@ -167,8 +168,10 @@ export function EnrollManager({
   const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
   const [activeEnrollPage, setActiveEnrollPage] = useState(1);
   const [help, { open: open_help, close: close_help }] = useDisclosure(false);
-  const [actionStatus, { open: open_status, close: close_status }] =
-    useDisclosure(false);
+  const [actionStatus, actionStatusHandler] = useDisclosure(false, {
+    onOpen: () => console.log("Opened"),
+    onClose: () => setAction(null),
+  });
   const [messageStatus, setMessageStatus] = useState<MessageStatus[]>([]);
   const isMobile = useMediaQuery("(max-width: 50em)");
   const [selectedEnroll, setSelectedEnroll] = useState<Enroll[]>([]);
@@ -233,13 +236,13 @@ export function EnrollManager({
         update(); // trick async
 
         // show success and fails
-        open_status();
+        actionStatusHandler.open();
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
 
       // TODO: create wame para com mensagens para o próprio usuário com os links de chats para cada aluno selecionado
-      setAction(null);
+      // setAction(null);
     },
     call: async function () {
       if (process.env.ENV !== "production") {
@@ -310,7 +313,7 @@ export function EnrollManager({
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
-      setAction(null);
+      // setAction(null);
     },
     confirmed: async function () {
       if (process.env.ENV !== "production") {
@@ -435,6 +438,7 @@ export function EnrollManager({
     console.log("handleAction", value);
     if (value && selectedEnroll.length > 0) {
       setAlert(null);
+      setAction(value);
       await actionList[value]();
     } else {
       setAlert({
@@ -467,22 +471,19 @@ export function EnrollManager({
             <div style={styles}>
               <Modal
                 opened={actionStatus}
-                onClose={close_status}
+                onClose={actionStatusHandler.close}
                 fullScreen={isMobile}
-                title="Legenda de status"
+                title={`Status de atualização: ${action}`}
               >
-                <List
-                  center
-                  spacing="xs"
-                  size="sm"
-                >
+                <List center spacing="xs" size="sm">
                   {messageStatus.map((item) => {
                     return (
                       <List.Item
+                        key={item.id}
                         icon={
                           item?.status === "fail" ? (
-                            <ThemeIcon color="blue" size={24} radius="xl">
-                              <IconCircleDashed size="1rem" />
+                            <ThemeIcon color="red" size={24} radius="xl">
+                              <IconCircleMinus size="1rem" />
                             </ThemeIcon>
                           ) : (
                             <ThemeIcon color="teal" size={24} radius="xl">
@@ -491,7 +492,16 @@ export function EnrollManager({
                           )
                         }
                       >
-                        {item?.enroll?.user?.name}
+                        <Text fz="sm" fw={500}>
+                          {item?.enroll?.user?.name}
+                        </Text>
+                        {item?.status === "fail" ? (
+                          <Text fz="xs" c="dimmed">
+                            {item?.message}
+                          </Text>
+                        ) : (
+                          <></>
+                        )}
                       </List.Item>
                     );
                   })}

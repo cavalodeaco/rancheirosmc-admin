@@ -3,6 +3,7 @@ import { IconCircleCheck, IconCircleDashed } from '@tabler/icons';
 import { Enroll } from '../../FetchData';
 
 export interface MessageStatus {
+    id: string;
     status: string;
     message: string;
     enroll: Enroll;
