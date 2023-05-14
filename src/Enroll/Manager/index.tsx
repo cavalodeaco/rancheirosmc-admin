@@ -16,6 +16,7 @@ import {
   Slider,
   Stack,
   TextInput,
+  ThemeIcon,
   Title,
   Transition,
   UnstyledButton,
@@ -28,6 +29,7 @@ import {
   IconCertificate,
   IconCheckbox,
   IconCircleCheck,
+  IconCircleDashed,
   IconCircleMinus,
   IconHourglassEmpty,
   IconMessageCircleOff,
@@ -40,6 +42,7 @@ import Tokens from "../../AuthenticationForm/Tokens";
 import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
 import { QuestionMark } from "tabler-icons-react";
 import { AlertType } from "../../Menu";
+import { MessageStatus } from "../Status";
 
 const useStyles = createStyles((theme) => ({
   stretch: {
@@ -163,7 +166,10 @@ export function EnrollManager({
   const { classes } = useStyles();
   const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
   const [activeEnrollPage, setActiveEnrollPage] = useState(1);
-  const [opened, { open, close }] = useDisclosure(false);
+  const [help, { open: open_help, close: close_help }] = useDisclosure(false);
+  const [actionStatus, { open: open_status, close: close_status }] =
+    useDisclosure(false);
+  const [messageStatus, setMessageStatus] = useState<MessageStatus[]>([]);
   const isMobile = useMediaQuery("(max-width: 50em)");
   const [selectedEnroll, setSelectedEnroll] = useState<Enroll[]>([]);
   const [limitPage, setLimitPage] = useState(10);
@@ -176,17 +182,14 @@ export function EnrollManager({
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const actionList = {
-    update_class_and_status: async function (
-      url: string,
-      msg_success: string,
-      msg_warning: string,
-      msg_error: string
-    ) {
+    run: async function (url: string, msg_error: string) {
       const data = {
         class_name: selectedClass,
         enrolls: selectedEnroll.map((item) => ({
           enroll_date: item.enroll_date,
           city: item.city,
+          id: item.id,
+          name: item.user.name,
         })),
       };
       const config = {
@@ -204,35 +207,33 @@ export function EnrollManager({
           `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
           config
         );
-        const { message, enrolls } = await response.json();
+        const messages: MessageStatus[] = await response.json();
+        console.log(messages);
+
         const update = async () => {
           setEnrollData(
             enrollData.map((item) => {
-              for (const enroll of enrolls) {
+              for (const message of messages) {
                 if (
-                  item.city === enroll.city &&
-                  item.enroll_date === enroll.enroll_date
+                  item.city === message?.enroll?.city &&
+                  item.enroll_date === message?.enroll?.enroll_date
                 ) {
-                  item.enroll_status = enroll.enroll_status;
-                  item.updated_by = enroll.updated_by;
-                  item.updated_at = enroll.updated_at;
-                  item.class = enroll.class;
+                  item.enroll_status = message?.enroll?.enroll_status;
+                  item.updated_by = message?.enroll?.updated_by;
+                  item.updated_at = message?.enroll?.updated_at;
+                  item.class = message?.enroll?.class;
                   return item;
                 }
               }
               return item;
             })
           );
+          setMessageStatus(messages);
         };
-        update();
-        if (process.env.ENV !== "production") {
-          console.log("response", response);
-        }
-        if (response.status === 200 && message !== "partial") {
-          setAlert({ type: "success", title: msg_success } as AlertType);
-        } else if (response.status === 206 && message === "partial") {
-          setAlert({ type: "warning", title: msg_warning } as AlertType);
-        }
+        update(); // trick async
+
+        // show success and fails
+        open_status();
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
@@ -245,12 +246,7 @@ export function EnrollManager({
         console.log("call");
       }
       if (selectedClass) {
-        actionList["update_class_and_status"](
-          "call",
-          "Chamada realizada com sucesso!",
-          "Chamada realizada com sucesso, porém alguns alunos não foram chamados!",
-          "Erro ao realizar chamada!"
-        );
+        actionList["run"]("call", "Erro ao realizar chamada!");
       } else {
         setAlert({
           type: "warning",
@@ -461,7 +457,7 @@ export function EnrollManager({
   return (
     <>
       <Transition
-        mounted={opened}
+        mounted={actionStatus}
         transition="fade"
         duration={400}
         timingFunction="ease"
@@ -470,14 +466,60 @@ export function EnrollManager({
           return (
             <div style={styles}>
               <Modal
-                opened={opened}
-                onClose={close}
+                opened={actionStatus}
+                onClose={close_status}
+                fullScreen={isMobile}
+                title="Legenda de status"
+              >
+                <List
+                  center
+                  spacing="xs"
+                  size="sm"
+                >
+                  {messageStatus.map((item) => {
+                    return (
+                      <List.Item
+                        icon={
+                          item?.status === "fail" ? (
+                            <ThemeIcon color="blue" size={24} radius="xl">
+                              <IconCircleDashed size="1rem" />
+                            </ThemeIcon>
+                          ) : (
+                            <ThemeIcon color="teal" size={24} radius="xl">
+                              <IconCircleCheck size="1rem" />
+                            </ThemeIcon>
+                          )
+                        }
+                      >
+                        {item?.enroll?.user?.name}
+                      </List.Item>
+                    );
+                  })}
+                </List>
+              </Modal>
+            </div>
+          );
+        }}
+      </Transition>
+      <Transition
+        mounted={help}
+        transition="fade"
+        duration={400}
+        timingFunction="ease"
+      >
+        {(styles) => {
+          return (
+            <div style={styles}>
+              <Modal
+                opened={help}
+                onClose={close_help}
                 fullScreen={isMobile}
                 title="Legenda de status"
               >
                 <List center spacing="xs" size="sm">
                   <List.Item icon={<IconHourglassEmpty />}>
-                    Em lista de espera (disponível para chamar para uma turma) [waiting]
+                    Em lista de espera (disponível para chamar para uma turma)
+                    [waiting]
                   </List.Item>
                   <List.Item icon={<IconArchive />}>
                     Inscrição do Google Forms (disponível para chamar para uma
@@ -489,13 +531,15 @@ export function EnrollManager({
                   </List.Item>
                   <List.Item icon={<IconBackspace color="#ffbf00" />}>
                     Desistiu da vaga na turma (não poderá participar do curso de
-                    forma justificada, informado anteriormente a data do curso) [dropped]
+                    forma justificada, informado anteriormente a data do curso)
+                    [dropped]
                   </List.Item>
                   <List.Item icon={<IconCheckbox color="#ffec00" />}>
                     Confirmou convite para a turma [confirmed]
                   </List.Item>
                   <List.Item icon={<IconCertificate color="#7bc62d" />}>
-                    Participou do curso (aluno recebeu certificado no curso) [certified]
+                    Participou do curso (aluno recebeu certificado no curso)
+                    [certified]
                   </List.Item>
                   <List.Item icon={<IconCircleMinus color="#ff4500" />}>
                     Faltou no curso (este aluno não participou e deve se
@@ -504,7 +548,8 @@ export function EnrollManager({
                   </List.Item>
                   <List.Item icon={<IconMessageCircleOff color="#ff9300" />}>
                     Não deu resposta ao convite (este aluno deverá se inscrever
-                    novamente se quiser realizar o curso em outra turma) [ignored]
+                    novamente se quiser realizar o curso em outra turma)
+                    [ignored]
                   </List.Item>
                 </List>
               </Modal>
@@ -616,7 +661,12 @@ export function EnrollManager({
             onChange={handleAction}
             itemComponent={SelectItem}
           />
-          <ActionIcon size={"sm"} radius="xl" variant="outline" onClick={open}>
+          <ActionIcon
+            size={"sm"}
+            radius="xl"
+            variant="outline"
+            onClick={open_help}
+          >
             <QuestionMark size="0.875rem" />
           </ActionIcon>
         </Flex>
