@@ -227,7 +227,7 @@ export function Menu({
               <UserCircle />
               <Space w="xs" />
               <Title size={12}>{admin?.name || "--"}</Title>
-            </Box> */}
+            </Box> TODO: put top-right on site */} 
             <a
               href="/"
               className={classes.link}
