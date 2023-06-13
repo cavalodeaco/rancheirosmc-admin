@@ -24,6 +24,7 @@ import {
   IconDots,
   IconHourglassEmpty,
   IconMessageCircleOff,
+  IconSkull,
 } from "@tabler/icons";
 import { AlertType } from "../../Menu";
 import { string } from "zod";
@@ -65,6 +66,7 @@ interface EnrollTableProps {
   setSelectedEnroll: Function;
   admin: Admin | undefined;
   back2List: Function;
+  deleteUser: Function;
   setAlert: Function;
   handleSort: Function;
   classData: Class[];
@@ -84,6 +86,7 @@ export function EnrollTable({
   setSelectedEnroll,
   admin,
   back2List,
+  deleteUser,
   setAlert,
   handleSort,
   classData,
@@ -133,6 +136,28 @@ export function EnrollTable({
       setAlert({
         type: "warning",
         title: "Selecione a inscrição que deseja voltar para a lista de espera",
+      } as AlertType);
+      return undefined;
+    }
+    deleteUser();
+  }
+
+  async function deleteEnroll(item_id: string) {
+    if (selection.length > 1) {
+      console.log("Selecione somente uma inscrição");
+      setAlert({
+        type: "error",
+        title: "Selecione somente uma inscrição",
+      } as AlertType);
+      return undefined;
+    }
+    if (!selection.includes(item_id)) {
+      console.log(
+        "Selecione a inscrição que deseja deletar"
+      );
+      setAlert({
+        type: "warning",
+        title: "Selecione a inscrição que deseja deletar",
       } as AlertType);
       return undefined;
     }
@@ -222,6 +247,17 @@ export function EnrollTable({
                   }}
                 >
                   Voltar para lista de espera
+                </Menu.Item>
+                <Menu.Item
+                  disabled={
+                    !(admin?.["custom:manager"])
+                  }
+                  icon={<IconSkull size="1rem" stroke={1.5} />}
+                  onClick={() => {
+                    deleteEnroll(item.id);
+                  }}
+                >
+                  Deletar
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>

@@ -342,7 +342,7 @@ export function EnrollManager({
       }
       actionList["run"](
         "drop",
-        "Falha ao ao aplicar desistência(s)!"
+        "Falha ao aplicar desistência(s)!"
       );
     },
     ignored: function () {
@@ -351,7 +351,7 @@ export function EnrollManager({
       }
       actionList["run"](
         "ignore",
-        "Falha ao ao aplicar status de ignorado!"
+        "Falha ao aplicar status de ignorado!"
       );
     },
     waiting: async function () {
@@ -360,7 +360,16 @@ export function EnrollManager({
       }
       actionList["run"](
         "wait",
-        "Falha ao ao aplicar volta para lista de espera!"
+        "Falha ao aplicar volta para lista de espera!"
+      );
+    },
+    delete: async function () {
+      if (process.env.ENV !== "production") {
+        console.log("delete");
+      }
+      actionList["run"](
+        "delete",
+        "Falha ao deletar usuário!"
       );
     },
   } as ActionList;
@@ -707,6 +716,7 @@ export function EnrollManager({
           setSelectedEnroll={setSelectedEnroll}
           admin={admin}
           back2List={async () => actionList["waiting"]()}
+          deleteUser={async () => actionList["delete"]()}
           setAlert={setAlert}
           handleSort={handleSort}
           classData={classData}
