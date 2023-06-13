@@ -139,7 +139,7 @@ export function EnrollTable({
       } as AlertType);
       return undefined;
     }
-    deleteUser();
+    back2List();
   }
 
   async function deleteEnroll(item_id: string) {
@@ -161,7 +161,7 @@ export function EnrollTable({
       } as AlertType);
       return undefined;
     }
-    back2List();
+    deleteUser();
   }
 
   const status: any = {

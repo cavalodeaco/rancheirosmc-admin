@@ -193,6 +193,8 @@ export function EnrollManager({
           city: item.city,
           id: item.id,
           name: item.user.name,
+          driver_license: item.user.driver_license,
+          driver_license_UF: item.user.driver_license_UF,
         })),
       };
       const config = {
@@ -206,6 +208,7 @@ export function EnrollManager({
         body: JSON.stringify(data),
       };
       try {
+        console.log(data);
         const response = await fetch(
           `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
           config
