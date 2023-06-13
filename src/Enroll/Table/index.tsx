@@ -140,6 +140,7 @@ export function EnrollTable({
       return undefined;
     }
     back2List();
+    setSelection([]);
   }
 
   async function deleteEnroll(item_id: string) {
@@ -162,6 +163,7 @@ export function EnrollTable({
       return undefined;
     }
     deleteUser();
+    setSelection([]);
   }
 
   const status: any = {
