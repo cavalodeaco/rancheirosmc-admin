@@ -9,6 +9,7 @@ import {
   Group,
   List,
   Modal,
+  Text,
   Pagination,
   Paper,
   ScrollArea,
@@ -16,6 +17,7 @@ import {
   Slider,
   Stack,
   TextInput,
+  ThemeIcon,
   Title,
   Transition,
   UnstyledButton,
@@ -28,6 +30,7 @@ import {
   IconCertificate,
   IconCheckbox,
   IconCircleCheck,
+  IconCircleDashed,
   IconCircleMinus,
   IconHourglassEmpty,
   IconMessageCircleOff,
@@ -40,6 +43,7 @@ import Tokens from "../../AuthenticationForm/Tokens";
 import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
 import { QuestionMark } from "tabler-icons-react";
 import { AlertType } from "../../Menu";
+import { MessageStatus } from "../Status";
 
 const useStyles = createStyles((theme) => ({
   stretch: {
@@ -163,7 +167,12 @@ export function EnrollManager({
   const { classes } = useStyles();
   const [tableEnrollData, setTableEnrollData] = useState<Enroll[]>([]);
   const [activeEnrollPage, setActiveEnrollPage] = useState(1);
-  const [opened, { open, close }] = useDisclosure(false);
+  const [help, { open: open_help, close: close_help }] = useDisclosure(false);
+  const [actionStatus, actionStatusHandler] = useDisclosure(false, {
+    onOpen: () => console.log("Opened"),
+    onClose: () => setAction(null),
+  });
+  const [messageStatus, setMessageStatus] = useState<MessageStatus[]>([]);
   const isMobile = useMediaQuery("(max-width: 50em)");
   const [selectedEnroll, setSelectedEnroll] = useState<Enroll[]>([]);
   const [limitPage, setLimitPage] = useState(10);
@@ -176,17 +185,14 @@ export function EnrollManager({
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const actionList = {
-    update_class_and_status: async function (
-      url: string,
-      msg_success: string,
-      msg_warning: string,
-      msg_error: string
-    ) {
+    run: async function (url: string, msg_error: string) {
       const data = {
         class_name: selectedClass,
         enrolls: selectedEnroll.map((item) => ({
           enroll_date: item.enroll_date,
           city: item.city,
+          id: item.id,
+          name: item.user.name,
         })),
       };
       const config = {
@@ -204,53 +210,43 @@ export function EnrollManager({
           `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
           config
         );
-        const { message, enrolls } = await response.json();
+        const messages: MessageStatus[] = await response.json();
+        console.log(messages);
+
         const update = async () => {
           setEnrollData(
             enrollData.map((item) => {
-              for (const enroll of enrolls) {
+              for (const message of messages) {
                 if (
-                  item.city === enroll.city &&
-                  item.enroll_date === enroll.enroll_date
+                  item.city === message?.enroll?.city &&
+                  item.enroll_date === message?.enroll?.enroll_date
                 ) {
-                  item.enroll_status = enroll.enroll_status;
-                  item.updated_by = enroll.updated_by;
-                  item.updated_at = enroll.updated_at;
-                  item.class = enroll.class;
+                  item.enroll_status = message?.enroll?.enroll_status;
+                  item.updated_by = message?.enroll?.updated_by;
+                  item.updated_at = message?.enroll?.updated_at;
+                  item.class = message?.enroll?.class;
                   return item;
                 }
               }
               return item;
             })
           );
+          setMessageStatus(messages);
         };
-        update();
-        if (process.env.ENV !== "production") {
-          console.log("response", response);
-        }
-        if (response.status === 200 && message !== "partial") {
-          setAlert({ type: "success", title: msg_success } as AlertType);
-        } else if (response.status === 206 && message === "partial") {
-          setAlert({ type: "warning", title: msg_warning } as AlertType);
-        }
+        update(); // trick async        
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
 
       // TODO: create wame para com mensagens para o próprio usuário com os links de chats para cada aluno selecionado
-      setAction(null);
+      // setAction(null);
     },
     call: async function () {
       if (process.env.ENV !== "production") {
         console.log("call");
       }
       if (selectedClass) {
-        actionList["update_class_and_status"](
-          "call",
-          "Chamada realizada com sucesso!",
-          "Chamada realizada com sucesso, porém alguns alunos não foram chamados!",
-          "Erro ao realizar chamada!"
-        );
+        actionList["run"]("call", "Erro ao realizar chamada!");
       } else {
         setAlert({
           type: "warning",
@@ -260,14 +256,14 @@ export function EnrollManager({
     },
     update_status: async function (
       url: string,
-      msg_success: string,
-      msg_warning: string,
       msg_error: string
     ) {
       const data = {
         enrolls: selectedEnroll.map((item) => ({
           enroll_date: item.enroll_date,
           city: item.city,
+          id: item.id,
+          name: item.user.name,
         })),
       };
       const config = {
@@ -285,45 +281,40 @@ export function EnrollManager({
           `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
           config
         );
-        const { message, enrolls } = await response.json();
-        const updateStatus = async (enrolls: any) => {
+        const messages: MessageStatus[] = await response.json();
+        console.log(messages);
+        
+        const update = async () => {
           setEnrollData(
             enrollData.map((item) => {
-              for (const enroll of enrolls) {
+              for (const message of messages) {
                 if (
-                  item.city === enroll.city &&
-                  item.enroll_date === enroll.enroll_date
+                  item.city === message?.enroll?.city &&
+                  item.enroll_date === message?.enroll?.enroll_date
                 ) {
-                  item.enroll_status = enroll.enroll_status;
-                  item.updated_by = enroll.updated_by;
-                  item.updated_at = enroll.updated_at;
+                  item.enroll_status = message?.enroll?.enroll_status;
+                  item.updated_by = message?.enroll?.updated_by;
+                  item.updated_at = message?.enroll?.updated_at;
                   return item;
                 }
               }
               return item;
             })
           );
+          setMessageStatus(messages);
         };
-
-        updateStatus(enrolls);
-        if (response.status === 200 && message !== "partial") {
-          setAlert({ type: "success", title: msg_success } as AlertType);
-        } else if (response.status === 206 && message === "partial") {
-          setAlert({ type: "warning", title: msg_warning } as AlertType);
-        }
+        update(); // trick async        
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
-      setAction(null);
+      // setAction(null);
     },
     confirmed: async function () {
       if (process.env.ENV !== "production") {
         console.log("confirmed");
       }
-      actionList["update_status"](
+      actionList["run"](
         "confirm",
-        "Inscrição(ões) confirmada(s) para sua(s) turma(s)!",
-        "Inscrição(ões) parcialmente confirmada(s)!",
         "Falha ao confirmar inscrição(ões)!"
       );
     },
@@ -331,10 +322,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("certified");
       }
-      actionList["update_status"](
+      actionList["run"](
         "certify",
-        "Inscrição(ões) certificada(s) em sua(s) turma(s)!",
-        "Inscrição(ões) parcialmente certificada(s)!",
         "Falha ao certificar inscrição(ões)!"
       );
     },
@@ -342,10 +331,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("missed");
       }
-      actionList["update_status"](
+      actionList["run"](
         "miss",
-        "Aplicada(s) falta(s) na(s) inscrição(ões)!",
-        "Falta(s) parcialmente aplicada(s)!",
         "Falha ao aplicar falta(s)!"
       );
     },
@@ -353,10 +340,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("dropout");
       }
-      actionList["update_class_and_status"](
+      actionList["run"](
         "drop",
-        "Aplicada(s) desistência(s) na(s) inscrição(ões)!",
-        "Desistência(s) parcialmente aplicada(s)!",
         "Falha ao ao aplicar desistência(s)!"
       );
     },
@@ -364,10 +349,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("ignored");
       }
-      actionList["update_class_and_status"](
+      actionList["run"](
         "ignore",
-        "Aplicado status de ignorado na(s) inscrição(ões)!",
-        "Ignorado(s) parcialmente aplicado(s)!",
         "Falha ao ao aplicar status de ignorado!"
       );
     },
@@ -375,11 +358,9 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("waiting");
       }
-      actionList["update_class_and_status"](
+      actionList["run"](
         "wait",
-        "Inscrição de volta a lista de espera!",
-        "Falha ao voltar inscrição para lista de espera! [obs.: certificados não retornam para lista de espera.]",
-        "Falha ao voltar inscrição para lista de espera! [obs.: certificados não retornam para lista de espera.]"
+        "Falha ao ao aplicar volta para lista de espera!"
       );
     },
   } as ActionList;
@@ -437,8 +418,12 @@ export function EnrollManager({
 
   async function handleAction(value: string) {
     console.log("handleAction", value);
+    setMessageStatus([]); // clear message status
     if (value && selectedEnroll.length > 0) {
       setAlert(null);
+      setAction(value);
+      // show success and fails
+      actionStatusHandler.open();
       await actionList[value]();
     } else {
       setAlert({
@@ -461,7 +446,7 @@ export function EnrollManager({
   return (
     <>
       <Transition
-        mounted={opened}
+        mounted={actionStatus}
         transition="fade"
         duration={400}
         timingFunction="ease"
@@ -470,14 +455,66 @@ export function EnrollManager({
           return (
             <div style={styles}>
               <Modal
-                opened={opened}
-                onClose={close}
+                opened={actionStatus}
+                onClose={actionStatusHandler.close}
+                fullScreen={isMobile}
+                title={`Status de atualização: ${action}`}
+              >
+                <List center spacing="xs" size="sm">
+                  {messageStatus.map((item) => {
+                    return (
+                      <List.Item
+                        key={item.id}
+                        icon={
+                          item?.status === "fail" ? (
+                            <ThemeIcon color="red" size={24} radius="xl">
+                              <IconCircleMinus size="1rem" />
+                            </ThemeIcon>
+                          ) : (
+                            <ThemeIcon color="teal" size={24} radius="xl">
+                              <IconCircleCheck size="1rem" />
+                            </ThemeIcon>
+                          )
+                        }
+                      >
+                        <Text fz="sm" fw={500}>
+                          {item?.enroll?.user?.name}
+                        </Text>
+                        {item?.status === "fail" ? (
+                          <Text fz="xs" c="dimmed">
+                            {item?.message}
+                          </Text>
+                        ) : (
+                          <></>
+                        )}
+                      </List.Item>
+                    );
+                  })}
+                </List>
+              </Modal>
+            </div>
+          );
+        }}
+      </Transition>
+      <Transition
+        mounted={help}
+        transition="fade"
+        duration={400}
+        timingFunction="ease"
+      >
+        {(styles) => {
+          return (
+            <div style={styles}>
+              <Modal
+                opened={help}
+                onClose={close_help}
                 fullScreen={isMobile}
                 title="Legenda de status"
               >
                 <List center spacing="xs" size="sm">
                   <List.Item icon={<IconHourglassEmpty />}>
-                    Em lista de espera (disponível para chamar para uma turma) [waiting]
+                    Em lista de espera (disponível para chamar para uma turma)
+                    [waiting]
                   </List.Item>
                   <List.Item icon={<IconArchive />}>
                     Inscrição do Google Forms (disponível para chamar para uma
@@ -489,13 +526,15 @@ export function EnrollManager({
                   </List.Item>
                   <List.Item icon={<IconBackspace color="#ffbf00" />}>
                     Desistiu da vaga na turma (não poderá participar do curso de
-                    forma justificada, informado anteriormente a data do curso) [dropped]
+                    forma justificada, informado anteriormente a data do curso)
+                    [dropped]
                   </List.Item>
                   <List.Item icon={<IconCheckbox color="#ffec00" />}>
                     Confirmou convite para a turma [confirmed]
                   </List.Item>
                   <List.Item icon={<IconCertificate color="#7bc62d" />}>
-                    Participou do curso (aluno recebeu certificado no curso) [certified]
+                    Participou do curso (aluno recebeu certificado no curso)
+                    [certified]
                   </List.Item>
                   <List.Item icon={<IconCircleMinus color="#ff4500" />}>
                     Faltou no curso (este aluno não participou e deve se
@@ -504,7 +543,8 @@ export function EnrollManager({
                   </List.Item>
                   <List.Item icon={<IconMessageCircleOff color="#ff9300" />}>
                     Não deu resposta ao convite (este aluno deverá se inscrever
-                    novamente se quiser realizar o curso em outra turma) [ignored]
+                    novamente se quiser realizar o curso em outra turma)
+                    [ignored]
                   </List.Item>
                 </List>
               </Modal>
@@ -616,7 +656,12 @@ export function EnrollManager({
             onChange={handleAction}
             itemComponent={SelectItem}
           />
-          <ActionIcon size={"sm"} radius="xl" variant="outline" onClick={open}>
+          <ActionIcon
+            size={"sm"}
+            radius="xl"
+            variant="outline"
+            onClick={open_help}
+          >
             <QuestionMark size="0.875rem" />
           </ActionIcon>
         </Flex>

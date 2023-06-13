@@ -207,7 +207,7 @@ export function Menu({
     >
       <item.icon />
       <Space w="xs" />
-      <Title size={18}>{item.label}</Title>
+      {/* <Title size={18}>{item.label}</Title> */}
     </a>
   ));
 
@@ -215,18 +215,19 @@ export function Menu({
     <Navbar
       hiddenBreakpoint="sm"
       hidden={!opened}
-      width={{ sm: 300, lg: 300 }}
+      // width={{ sm: 300, lg: 300 }}
+      width={{base:80}}
       p="md"
     >
       <ScrollArea className={classes.fullHeight}>
         <Flex direction="column" className={classes.container}>
           <Navbar.Section>{links}</Navbar.Section>
           <Navbar.Section className={classes.footer}>
-            <Box className={classes.link}>
+            {/* <Box className={classes.link}>
               <UserCircle />
               <Space w="xs" />
               <Title size={12}>{admin?.name || "--"}</Title>
-            </Box>
+            </Box> TODO: put top-right on site */} 
             <a
               href="/"
               className={classes.link}
@@ -237,7 +238,7 @@ export function Menu({
             >
               <IconLogout />
               <Space w="xs" />
-              <Title size={18}>Logout</Title>
+              {/* <Title size={18}>Logout</Title> */}
             </a>
           </Navbar.Section>
         </Flex>
