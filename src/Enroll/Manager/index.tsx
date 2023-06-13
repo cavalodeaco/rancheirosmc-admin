@@ -256,14 +256,14 @@ export function EnrollManager({
     },
     update_status: async function (
       url: string,
-      msg_success: string,
-      msg_warning: string,
       msg_error: string
     ) {
       const data = {
         enrolls: selectedEnroll.map((item) => ({
           enroll_date: item.enroll_date,
           city: item.city,
+          id: item.id,
+          name: item.user.name,
         })),
       };
       const config = {
@@ -281,32 +281,29 @@ export function EnrollManager({
           `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
           config
         );
-        const { message, enrolls } = await response.json();
-        const updateStatus = async (enrolls: any) => {
+        const messages: MessageStatus[] = await response.json();
+        console.log(messages);
+        
+        const update = async () => {
           setEnrollData(
             enrollData.map((item) => {
-              for (const enroll of enrolls) {
+              for (const message of messages) {
                 if (
-                  item.city === enroll.city &&
-                  item.enroll_date === enroll.enroll_date
+                  item.city === message?.enroll?.city &&
+                  item.enroll_date === message?.enroll?.enroll_date
                 ) {
-                  item.enroll_status = enroll.enroll_status;
-                  item.updated_by = enroll.updated_by;
-                  item.updated_at = enroll.updated_at;
+                  item.enroll_status = message?.enroll?.enroll_status;
+                  item.updated_by = message?.enroll?.updated_by;
+                  item.updated_at = message?.enroll?.updated_at;
                   return item;
                 }
               }
               return item;
             })
           );
+          setMessageStatus(messages);
         };
-
-        updateStatus(enrolls);
-        if (response.status === 200 && message !== "partial") {
-          setAlert({ type: "success", title: msg_success } as AlertType);
-        } else if (response.status === 206 && message === "partial") {
-          setAlert({ type: "warning", title: msg_warning } as AlertType);
-        }
+        update(); // trick async        
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
@@ -316,10 +313,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("confirmed");
       }
-      actionList["update_status"](
+      actionList["run"](
         "confirm",
-        "Inscrição(ões) confirmada(s) para sua(s) turma(s)!",
-        "Inscrição(ões) parcialmente confirmada(s)!",
         "Falha ao confirmar inscrição(ões)!"
       );
     },
@@ -327,10 +322,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("certified");
       }
-      actionList["update_status"](
+      actionList["run"](
         "certify",
-        "Inscrição(ões) certificada(s) em sua(s) turma(s)!",
-        "Inscrição(ões) parcialmente certificada(s)!",
         "Falha ao certificar inscrição(ões)!"
       );
     },
@@ -338,10 +331,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("missed");
       }
-      actionList["update_status"](
+      actionList["run"](
         "miss",
-        "Aplicada(s) falta(s) na(s) inscrição(ões)!",
-        "Falta(s) parcialmente aplicada(s)!",
         "Falha ao aplicar falta(s)!"
       );
     },
@@ -349,10 +340,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("dropout");
       }
-      actionList["update_class_and_status"](
+      actionList["run"](
         "drop",
-        "Aplicada(s) desistência(s) na(s) inscrição(ões)!",
-        "Desistência(s) parcialmente aplicada(s)!",
         "Falha ao ao aplicar desistência(s)!"
       );
     },
@@ -360,10 +349,8 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("ignored");
       }
-      actionList["update_class_and_status"](
+      actionList["run"](
         "ignore",
-        "Aplicado status de ignorado na(s) inscrição(ões)!",
-        "Ignorado(s) parcialmente aplicado(s)!",
         "Falha ao ao aplicar status de ignorado!"
       );
     },
@@ -371,11 +358,9 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("waiting");
       }
-      actionList["update_class_and_status"](
+      actionList["run"](
         "wait",
-        "Inscrição de volta a lista de espera!",
-        "Falha ao voltar inscrição para lista de espera! [obs.: certificados não retornam para lista de espera.]",
-        "Falha ao voltar inscrição para lista de espera! [obs.: certificados não retornam para lista de espera.]"
+        "Falha ao ao aplicar volta para lista de espera!"
       );
     },
   } as ActionList;
@@ -433,6 +418,7 @@ export function EnrollManager({
 
   async function handleAction(value: string) {
     console.log("handleAction", value);
+    setMessageStatus([]); // clear message status
     if (value && selectedEnroll.length > 0) {
       setAlert(null);
       setAction(value);
