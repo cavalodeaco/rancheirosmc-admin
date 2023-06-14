@@ -19,7 +19,7 @@ export const theme: MantineThemeOverride = {
   primaryColor: 'brand',
   primaryShade: 5,
   headings: {
-    fontFamily: 'Rye, Ubuntu, sans-serif',
+    fontFamily: "'Rye', cursive",
     fontWeight: 'normal',
   },
 };
