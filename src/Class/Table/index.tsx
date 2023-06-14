@@ -152,6 +152,7 @@ export function ClassTable({
         Status: item.enroll_status,
         Nome: item.user.name,
         "CNH (UF)": `${item.user.driver_license} (${item.user.driver_license_UF})`,
+        Contato: item.user.phone,
         Imagem: item.terms.authorization ? "Sim" : "Não",
       }));
     }
