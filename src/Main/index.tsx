@@ -14,7 +14,7 @@ import {
 import { Menu } from "../Menu";
 import { EnrollManager } from "../Enroll/Manager";
 import { UserManager } from "../User/Manager";
-import icon from "../img/logo.webp";
+import icon from "../img/brasao.webp";
 import { Admin, Class, Enroll, User } from "../FetchData";
 import { useLocalStorage } from "@mantine/hooks";
 import Tokens from "../AuthenticationForm/Tokens";
@@ -70,9 +70,9 @@ export default function Main({
             <Group className={classes.header} position="apart">
               <Title order={3} transform="uppercase" italic>
                 <Center>
-                  <img src={icon} alt="Pilotando Para Vida" height={36} />
+                  <img src={icon} alt="Rancheiros MC" height={36} />
                   <Space w="xs" />
-                  Rancheiros Admin
+                  Rancheiros MC - Admin
                 </Center>
               </Title>
               <Title order={3} transform="uppercase" italic>
@@ -83,7 +83,7 @@ export default function Main({
           </MediaQuery>
           <MediaQuery largerThan="sm" styles={{ display: "none" }}>
             <Group className={classes.header} position="apart">
-              <img src={icon} alt="Rancheiros - Admin" height={36} />
+              <img src={icon} alt="Rancheiros MC - Admin" height={36} />
               <Title order={3} transform="uppercase" italic>
                 {active}
               </Title>

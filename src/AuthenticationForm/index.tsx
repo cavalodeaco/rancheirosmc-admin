@@ -18,7 +18,7 @@ import { AlertCircle } from "tabler-icons-react";
 import { useState } from "react";
 import { useLocalStorage } from "@mantine/hooks";
 import Tokens from "./Tokens";
-import logo from '../img/logo.webp';
+import logo from '../img/brasao.webp';
 
 interface LoginFormValues {
   email: string;
