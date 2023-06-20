@@ -192,10 +192,6 @@ export function EnrollManager({
           city: item.city,
           id: item.id,
         })),
-        users: selectedEnroll.map((item) => ({
-          driver_license: item.user.driver_license,
-          driver_license_UF: item.user.driver_license_UF,
-        })),
       };
       const config = {
         method: "POST",
@@ -208,27 +204,33 @@ export function EnrollManager({
         body: JSON.stringify(data),
       };
       try {
-        console.log(data);
+        if (process.env.ENV !== "production") {
+          console.log("run_delete");
+          console.log(data);
+        }
         const response = await fetch(
           `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
           config
         );
         const body = await response.json();
 
-        if (response.status == 200) {
-          const update = async () => {
-            setEnrollData(
-              enrollData.filter((item) => {
-                return item.id != body.id;
-              })
-            );
-            setMessageStatus(body.message);
-            setSelectedEnroll([]);
-          };
-          update(); // trick async
-        }
+        // if (response.status == 200) {
+        const update = async () => {
+          setEnrollData(
+            enrollData.filter((item) => {
+              return item.id != body.id;
+            })
+          );
+          setMessageStatus(body.message);
+          setSelectedEnroll([]);
+        };
+        update(); // trick async
+        // }
       } catch (error) {
-        console.log(error);
+        if (process.env.ENV !== "production") {
+          console.log("Try error");
+          console.log(error);
+        }
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
     },
@@ -286,7 +288,10 @@ export function EnrollManager({
         };
         update(); // trick async
       } catch (error) {
-        console.log(error);
+        if (process.env.ENV !== "production") {
+          console.log("Run");
+          console.log(error);
+        }
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
 

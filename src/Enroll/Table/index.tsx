@@ -11,6 +11,9 @@ import {
   Menu,
   Group,
   ActionIcon,
+  Transition,
+  Modal,
+  Button,
 } from "@mantine/core";
 import { Admin, Class, Enroll } from "../../FetchData";
 import {
@@ -28,6 +31,7 @@ import {
 } from "@tabler/icons";
 import { AlertType } from "../../Menu";
 import { string } from "zod";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
 const useStyles = createStyles((theme) => ({
   rowSelected: {
@@ -91,6 +95,9 @@ export function EnrollTable({
   handleSort,
   classData,
 }: EnrollTableProps) {
+  const [itemDelete, setItemDelete] = useState<string>("");
+  const [deleteModal, { open: open_delete, close: close_delete }] = useDisclosure(false);
+  const isMobile = useMediaQuery("(max-width: 50em)");
   const { classes, cx } = useStyles();
   const [selection, setSelection] = useState<Array<string>>([]);
   const [selectedSearch, setSelectedSearch] = useState<string>("todos");
@@ -153,9 +160,7 @@ export function EnrollTable({
       return undefined;
     }
     if (!selection.includes(item_id)) {
-      console.log(
-        "Selecione a inscrição que deseja deletar"
-      );
+      console.log("Selecione a inscrição que deseja deletar");
       setAlert({
         type: "warning",
         title: "Selecione a inscrição que deseja deletar",
@@ -251,12 +256,12 @@ export function EnrollTable({
                   Voltar para lista de espera
                 </Menu.Item>
                 <Menu.Item
-                  disabled={
-                    !(admin?.["custom:manager"])
-                  }
+                  disabled={!admin?.["custom:manager"]}
                   icon={<IconSkull size="1rem" stroke={1.5} />}
                   onClick={() => {
-                    deleteEnroll(item.id);
+                    // console.log(item.id);
+                    setItemDelete(item.id);
+                    open_delete();
                   }}
                 >
                   Deletar
@@ -289,32 +294,61 @@ export function EnrollTable({
   );
 
   return (
-    <ScrollArea>
-      <Table sx={{ minWidth: 800 }} verticalSpacing="sm">
-        <thead>
-          <tr>
-            <th style={{ width: 40 }}>
-              <Checkbox
-                onChange={toggleAll}
-                checked={selection.length === enrollData.length}
-                indeterminate={
-                  selection.length > 0 && selection.length !== enrollData.length
-                }
-                transitionDuration={0}
-              />
-            </th>
-            <th>
-              <Box
-                className={
-                  selectedSearch === "enroll_status" ? classes.box : ""
-                }
+    <>
+      <Transition
+        mounted={deleteModal}
+        transition="fade"
+        duration={400}
+        timingFunction="ease"
+      >
+        {(styles) => {
+          return (
+            <div style={styles}>
+              <Modal
+                opened={deleteModal}
+                onClose={close_delete}
+                fullScreen={isMobile}
+                title="Deseja apagar inscrição?"
               >
-                <UnstyledButton onClick={() => handleSearchBy("enroll_status")}>
-                  <Title size={15}>Status</Title>
-                </UnstyledButton>
-              </Box>
-            </th>
-            {/* <th style={{ width: 80 }}>
+                <Button onClick={() => {
+                    // console.log(itemDelete);
+                    close_delete();
+                    deleteEnroll(itemDelete);
+                  }}>Apagar inscrição</Button>
+              </Modal>
+            </div>
+          );
+        }}
+      </Transition>
+      <ScrollArea>
+        <Table sx={{ minWidth: 800 }} verticalSpacing="sm">
+          <thead>
+            <tr>
+              <th style={{ width: 40 }}>
+                <Checkbox
+                  onChange={toggleAll}
+                  checked={selection.length === enrollData.length}
+                  indeterminate={
+                    selection.length > 0 &&
+                    selection.length !== enrollData.length
+                  }
+                  transitionDuration={0}
+                />
+              </th>
+              <th>
+                <Box
+                  className={
+                    selectedSearch === "enroll_status" ? classes.box : ""
+                  }
+                >
+                  <UnstyledButton
+                    onClick={() => handleSearchBy("enroll_status")}
+                  >
+                    <Title size={15}>Status</Title>
+                  </UnstyledButton>
+                </Box>
+              </th>
+              {/* <th style={{ width: 80 }}>
             <Select
                   data={[
                       {
@@ -357,75 +391,76 @@ export function EnrollTable({
                   size="sm"
               />
             </th> */}
-            <th>
-              <Box className={selectedSearch === "city" ? classes.box : ""}>
-                <UnstyledButton onClick={() => handleSearchBy("city")}>
-                  <Title size={15}>Cidade</Title>
-                </UnstyledButton>
-              </Box>
-            </th>
-            <th>
-              <Box
-                className={selectedSearch === "sort_date" ? classes.box : ""}
-              >
-                <UnstyledButton onClick={() => handleSearchBy("sort_date")}>
-                  <Title size={15}>Data da inscrição</Title>
-                </UnstyledButton>
-              </Box>
-            </th>
-            <th>
-              <Box
-                className={selectedSearch === "user.name" ? classes.box : ""}
-              >
-                <UnstyledButton onClick={() => handleSearchBy("user.name")}>
-                  <Title size={15}>Nome</Title>
-                </UnstyledButton>
-              </Box>
-            </th>
-            <th>
-              <Box
-                className={
-                  selectedSearch === "user.driver_license" ? classes.box : ""
-                }
-              >
-                <UnstyledButton
-                  onClick={() => handleSearchBy("user.driver_license")}
+              <th>
+                <Box className={selectedSearch === "city" ? classes.box : ""}>
+                  <UnstyledButton onClick={() => handleSearchBy("city")}>
+                    <Title size={15}>Cidade</Title>
+                  </UnstyledButton>
+                </Box>
+              </th>
+              <th>
+                <Box
+                  className={selectedSearch === "sort_date" ? classes.box : ""}
                 >
-                  <Title size={15}>CNH</Title>
-                </UnstyledButton>
-              </Box>
-            </th>
-            <th>
-              <Title size={15}>Contato</Title>
-            </th>
-            <th>
-              <Box className={selectedSearch === "class" ? classes.box : ""}>
-                <UnstyledButton onClick={() => handleSearchBy("class")}>
-                  <Title size={15}>Turma</Title>
-                </UnstyledButton>
-              </Box>
-            </th>
-            <th>
-              <Box>
-                <Title size={15}>Imagem</Title>
-              </Box>
-            </th>
-            {/* <th><UnstyledButton onClick={() => handleSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
-            <th>
-              <Box
-                className={selectedSearch === "updated_by" ? classes.box : ""}
-              >
-                <UnstyledButton onClick={() => handleSearchBy("updated_by")}>
-                  <Title size={15}>Atualizado por</Title>
-                </UnstyledButton>
-              </Box>
-            </th>
-            {/* <th><UnstyledButton onClick={() => handleSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
-    </ScrollArea>
+                  <UnstyledButton onClick={() => handleSearchBy("sort_date")}>
+                    <Title size={15}>Data da inscrição</Title>
+                  </UnstyledButton>
+                </Box>
+              </th>
+              <th>
+                <Box
+                  className={selectedSearch === "user.name" ? classes.box : ""}
+                >
+                  <UnstyledButton onClick={() => handleSearchBy("user.name")}>
+                    <Title size={15}>Nome</Title>
+                  </UnstyledButton>
+                </Box>
+              </th>
+              <th>
+                <Box
+                  className={
+                    selectedSearch === "user.driver_license" ? classes.box : ""
+                  }
+                >
+                  <UnstyledButton
+                    onClick={() => handleSearchBy("user.driver_license")}
+                  >
+                    <Title size={15}>CNH</Title>
+                  </UnstyledButton>
+                </Box>
+              </th>
+              <th>
+                <Title size={15}>Contato</Title>
+              </th>
+              <th>
+                <Box className={selectedSearch === "class" ? classes.box : ""}>
+                  <UnstyledButton onClick={() => handleSearchBy("class")}>
+                    <Title size={15}>Turma</Title>
+                  </UnstyledButton>
+                </Box>
+              </th>
+              <th>
+                <Box>
+                  <Title size={15}>Imagem</Title>
+                </Box>
+              </th>
+              {/* <th><UnstyledButton onClick={() => handleSearchBy('motorcycle_brand')}><Title size={15}>Marca moto</Title></UnstyledButton></th> */}
+              <th>
+                <Box
+                  className={selectedSearch === "updated_by" ? classes.box : ""}
+                >
+                  <UnstyledButton onClick={() => handleSearchBy("updated_by")}>
+                    <Title size={15}>Atualizado por</Title>
+                  </UnstyledButton>
+                </Box>
+              </th>
+              {/* <th><UnstyledButton onClick={() => handleSearchBy('updated_at')}><Title size={15}>Data de atualização</Title></UnstyledButton></th> */}
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </Table>
+      </ScrollArea>
+    </>
   );
 }
