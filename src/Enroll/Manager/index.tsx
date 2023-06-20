@@ -185,14 +185,12 @@ export function EnrollManager({
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const actionList = {
-    run: async function (url: string, msg_error: string) {
+    run_delete: async function (url: string, msg_error: string) {
       const data = {
-        class_name: selectedClass,
         enrolls: selectedEnroll.map((item) => ({
           enroll_date: item.enroll_date,
           city: item.city,
           id: item.id,
-          name: item.user.name,
         })),
       };
       const config = {
@@ -206,12 +204,65 @@ export function EnrollManager({
         body: JSON.stringify(data),
       };
       try {
+        if (process.env.ENV !== "production") {
+          console.log("run_delete");
+          console.log(data);
+        }
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
+          config
+        );
+        const body = await response.json();
+
+        // if (response.status == 200) {
+        const update = async () => {
+          setEnrollData(
+            enrollData.filter((item) => {
+              return item.id != body.id;
+            })
+          );
+          setMessageStatus(body.message);
+          setSelectedEnroll([]);
+        };
+        update(); // trick async
+        // }
+      } catch (error) {
+        if (process.env.ENV !== "production") {
+          console.log("Try error");
+          console.log(error);
+        }
+        setAlert({ type: "error", title: msg_error } as AlertType);
+      }
+    },
+    run: async function (url: string, msg_error: string) {
+      const data = {
+        class_name: selectedClass,
+        enrolls: selectedEnroll.map((item) => ({
+          enroll_date: item.enroll_date,
+          city: item.city,
+          id: item.id,
+          name: item.user.name,
+          driver_license: item.user.driver_license,
+          driver_license_UF: item.user.driver_license_UF,
+        })),
+      };
+      const config = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // add tokens from localstorage
+          access_token: `${tokens.access_token}`,
+          id_token: `${tokens.id_token}`,
+        },
+        body: JSON.stringify(data),
+      };
+      try {
+        console.log(data);
         const response = await fetch(
           `${process.env.REACT_APP_BACKEND_ADDRESS}/manager/${url}` as string,
           config
         );
         const messages: MessageStatus[] = await response.json();
-        console.log(messages);
 
         const update = async () => {
           setEnrollData(
@@ -232,9 +283,15 @@ export function EnrollManager({
             })
           );
           setMessageStatus(messages);
+          setSelectedEnroll([]);
+          setSelectedClass(null);
         };
-        update(); // trick async        
+        update(); // trick async
       } catch (error) {
+        if (process.env.ENV !== "production") {
+          console.log("Run");
+          console.log(error);
+        }
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
 
@@ -254,10 +311,7 @@ export function EnrollManager({
         } as AlertType);
       }
     },
-    update_status: async function (
-      url: string,
-      msg_error: string
-    ) {
+    update_status: async function (url: string, msg_error: string) {
       const data = {
         enrolls: selectedEnroll.map((item) => ({
           enroll_date: item.enroll_date,
@@ -283,7 +337,7 @@ export function EnrollManager({
         );
         const messages: MessageStatus[] = await response.json();
         console.log(messages);
-        
+
         const update = async () => {
           setEnrollData(
             enrollData.map((item) => {
@@ -303,7 +357,7 @@ export function EnrollManager({
           );
           setMessageStatus(messages);
         };
-        update(); // trick async        
+        update(); // trick async
       } catch (error) {
         setAlert({ type: "error", title: msg_error } as AlertType);
       }
@@ -313,55 +367,43 @@ export function EnrollManager({
       if (process.env.ENV !== "production") {
         console.log("confirmed");
       }
-      actionList["run"](
-        "confirm",
-        "Falha ao confirmar inscrição(ões)!"
-      );
+      actionList["run"]("confirm", "Falha ao confirmar inscrição(ões)!");
     },
     certified: function () {
       if (process.env.ENV !== "production") {
         console.log("certified");
       }
-      actionList["run"](
-        "certify",
-        "Falha ao certificar inscrição(ões)!"
-      );
+      actionList["run"]("certify", "Falha ao certificar inscrição(ões)!");
     },
     missed: function () {
       if (process.env.ENV !== "production") {
         console.log("missed");
       }
-      actionList["run"](
-        "miss",
-        "Falha ao aplicar falta(s)!"
-      );
+      actionList["run"]("miss", "Falha ao aplicar falta(s)!");
     },
     dropout: function () {
       if (process.env.ENV !== "production") {
         console.log("dropout");
       }
-      actionList["run"](
-        "drop",
-        "Falha ao ao aplicar desistência(s)!"
-      );
+      actionList["run"]("drop", "Falha ao aplicar desistência(s)!");
     },
     ignored: function () {
       if (process.env.ENV !== "production") {
         console.log("ignored");
       }
-      actionList["run"](
-        "ignore",
-        "Falha ao ao aplicar status de ignorado!"
-      );
+      actionList["run"]("ignore", "Falha ao aplicar status de ignorado!");
     },
     waiting: async function () {
       if (process.env.ENV !== "production") {
         console.log("waiting");
       }
-      actionList["run"](
-        "wait",
-        "Falha ao ao aplicar volta para lista de espera!"
-      );
+      actionList["run"]("wait", "Falha ao aplicar volta para lista de espera!");
+    },
+    delete: async function () {
+      if (process.env.ENV !== "production") {
+        console.log("delete");
+      }
+      actionList["run_delete"]("delete", "Falha ao deletar usuário!");
     },
   } as ActionList;
   const marks = [
@@ -707,6 +749,7 @@ export function EnrollManager({
           setSelectedEnroll={setSelectedEnroll}
           admin={admin}
           back2List={async () => actionList["waiting"]()}
+          deleteUser={async () => actionList["delete"]()}
           setAlert={setAlert}
           handleSort={handleSort}
           classData={classData}
