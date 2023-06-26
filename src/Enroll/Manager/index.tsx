@@ -747,6 +747,7 @@ export function EnrollManager({
           enrollData={tableEnrollData}
           setSearchBy={setSearchBy}
           setSelectedEnroll={setSelectedEnroll}
+          selectedEnroll={selectedEnroll}
           admin={admin}
           back2List={async () => actionList["waiting"]()}
           deleteUser={async () => actionList["delete"]()}
