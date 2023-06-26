@@ -14,6 +14,7 @@ import {
   Transition,
   Modal,
   Button,
+  Anchor,
 } from "@mantine/core";
 import { Admin, Class, Enroll } from "../../FetchData";
 import {
@@ -205,7 +206,7 @@ export function EnrollTable({
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td align="center">
-          <a
+          <Anchor
             href={
               (/Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(
                 navigator.userAgent
@@ -218,8 +219,8 @@ export function EnrollTable({
             target="_blank"
             rel="noreferrer"
           >
-            <IconBrandWhatsapp />
-          </a>
+            {(item?.user?.phone).replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3')}
+          </Anchor>
         </td>
         <td>{item.class == "none" ? "" : item.class}</td>
         <td>{item.terms.authorization == true ? "Sim" : "Não"}</td>
