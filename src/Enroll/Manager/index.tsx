@@ -635,6 +635,7 @@ export function EnrollManager({
             clearable
             className={classes.stretch}
             onChange={setSelectedClass}
+            value={selectedClass}
           />
           <Select
             data={[
