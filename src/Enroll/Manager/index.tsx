@@ -309,6 +309,7 @@ export function EnrollManager({
           type: "warning",
           title: "Selecione uma turma para realizar chamada!",
         } as AlertType);
+        actionStatusHandler.close();
       }
     },
     update_status: async function (url: string, msg_error: string) {
