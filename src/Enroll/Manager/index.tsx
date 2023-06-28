@@ -309,6 +309,7 @@ export function EnrollManager({
           type: "warning",
           title: "Selecione uma turma para realizar chamada!",
         } as AlertType);
+        actionStatusHandler.close();
       }
     },
     update_status: async function (url: string, msg_error: string) {
@@ -635,6 +636,7 @@ export function EnrollManager({
             clearable
             className={classes.stretch}
             onChange={setSelectedClass}
+            value={selectedClass}
           />
           <Select
             data={[
@@ -747,6 +749,7 @@ export function EnrollManager({
           enrollData={tableEnrollData}
           setSearchBy={setSearchBy}
           setSelectedEnroll={setSelectedEnroll}
+          selectedEnroll={selectedEnroll}
           admin={admin}
           back2List={async () => actionList["waiting"]()}
           deleteUser={async () => actionList["delete"]()}

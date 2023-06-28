@@ -14,6 +14,7 @@ import {
   Transition,
   Modal,
   Button,
+  Anchor,
 } from "@mantine/core";
 import { Admin, Class, Enroll } from "../../FetchData";
 import {
@@ -68,6 +69,7 @@ interface EnrollTableProps {
   enrollData: Enroll[];
   setSearchBy: Function;
   setSelectedEnroll: Function;
+  selectedEnroll: Enroll[];
   admin: Admin | undefined;
   back2List: Function;
   deleteUser: Function;
@@ -88,6 +90,7 @@ export function EnrollTable({
   enrollData,
   setSearchBy,
   setSelectedEnroll,
+  selectedEnroll,
   admin,
   back2List,
   deleteUser,
@@ -99,16 +102,13 @@ export function EnrollTable({
   const [deleteModal, { open: open_delete, close: close_delete }] = useDisclosure(false);
   const isMobile = useMediaQuery("(max-width: 50em)");
   const { classes, cx } = useStyles();
-  const [selection, setSelection] = useState<Array<string>>([]);
   const [selectedSearch, setSelectedSearch] = useState<string>("todos");
   const toggleRow = (id: string) => {
-    if (selection.includes(id)) {
-      setSelection((current) => current.filter((item) => item !== id));
+    if (selectedEnroll.find((item) => item.id === id)) {
       setSelectedEnroll((current: Enroll[]) =>
         current.filter((item) => item.id !== id)
       );
     } else {
-      setSelection((current) => [...current, id]);
       setSelectedEnroll((current: Enroll[]) => [
         ...current,
         enrollData.find((item) => item.id === id),
@@ -116,11 +116,6 @@ export function EnrollTable({
     }
   };
   const toggleAll = () => {
-    setSelection((current) =>
-      current.length === enrollData.length
-        ? []
-        : enrollData.map((item) => item.id)
-    );
     setSelectedEnroll((current: Enroll[]) =>
       current.length === enrollData.length ? [] : enrollData
     );
@@ -128,7 +123,7 @@ export function EnrollTable({
 
   async function back2WaitingList(item_id: string) {
     console.log(item_id);
-    if (selection.length > 1) {
+    if (selectedEnroll.length > 1) {
       console.log("Selecione somente uma inscrição");
       setAlert({
         type: "error",
@@ -136,7 +131,7 @@ export function EnrollTable({
       } as AlertType);
       return undefined;
     }
-    if (!selection.includes(item_id)) {
+    if (!selectedEnroll.find((item) => item.id === item_id)) {
       console.log(
         "Selecione a inscrição que deseja voltar para a lista de espera"
       );
@@ -147,11 +142,11 @@ export function EnrollTable({
       return undefined;
     }
     back2List();
-    setSelection([]);
+    setSelectedEnroll([]);
   }
 
   async function deleteEnroll(item_id: string) {
-    if (selection.length > 1) {
+    if (selectedEnroll.length > 1) {
       console.log("Selecione somente uma inscrição");
       setAlert({
         type: "error",
@@ -159,7 +154,7 @@ export function EnrollTable({
       } as AlertType);
       return undefined;
     }
-    if (!selection.includes(item_id)) {
+    if (!selectedEnroll.find((item) => item.id === item_id)) {
       console.log("Selecione a inscrição que deseja deletar");
       setAlert({
         type: "warning",
@@ -168,7 +163,7 @@ export function EnrollTable({
       return undefined;
     }
     deleteUser();
-    setSelection([]);
+    setSelectedEnroll([]);
   }
 
   const status: any = {
@@ -183,7 +178,7 @@ export function EnrollTable({
   };
 
   const rows = enrollData.map((item) => {
-    const selected = selection.includes(item.id);
+    const selected = selectedEnroll.some((selectedEnrollItem) => selectedEnrollItem.id === item.id);
     const _class = classData.find(
       (item_class) => item_class.name === item.class
     );
@@ -200,7 +195,7 @@ export function EnrollTable({
       <tr key={item.id} className={cx({ [classes.rowSelected]: selected })}>
         <td>
           <Checkbox
-            checked={selection.includes(item.id)}
+            checked={selected}
             onChange={() => toggleRow(item.id)}
             transitionDuration={0}
           />
@@ -211,7 +206,7 @@ export function EnrollTable({
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td align="center">
-          <a
+          <Anchor
             href={
               (/Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(
                 navigator.userAgent
@@ -224,8 +219,8 @@ export function EnrollTable({
             target="_blank"
             rel="noreferrer"
           >
-            <IconBrandWhatsapp />
-          </a>
+            {(item?.user?.phone).replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3')}
+          </Anchor>
         </td>
         <td>{item.class == "none" ? "" : item.class}</td>
         <td>{item.terms.authorization == true ? "Sim" : "Não"}</td>
@@ -327,10 +322,10 @@ export function EnrollTable({
               <th style={{ width: 40 }}>
                 <Checkbox
                   onChange={toggleAll}
-                  checked={selection.length === enrollData.length}
+                  checked={selectedEnroll.length === enrollData.length}
                   indeterminate={
-                    selection.length > 0 &&
-                    selection.length !== enrollData.length
+                    selectedEnroll.length > 0 &&
+                    selectedEnroll.length !== enrollData.length
                   }
                   transitionDuration={0}
                 />
