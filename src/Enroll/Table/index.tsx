@@ -182,6 +182,10 @@ export function EnrollTable({
     const _class = classData.find(
       (item_class) => item_class.name === item.class
     );
+
+    console.log(item);
+    console.log(admin);
+
     item.text_link = `?text=Olá%20${
       item?.user?.name.split(" ")[0]
     },\%0AAqui%20é%20${
