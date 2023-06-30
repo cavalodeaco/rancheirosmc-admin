@@ -213,24 +213,26 @@ export function EnrollTable({
         <td>{item.user.name}</td>
         <td>{`${item.user.driver_license}/${item.user.driver_license_UF}`}</td>
         <td align="center">
-          <Anchor
-            href={
-              (/Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(
-                navigator.userAgent
-              )
-                ? "whatsapp://wa.me/55"
-                : "https://wa.me/55") +
-              item?.user?.phone.match(regex)?.join("") +
-              (item?.enroll_status === "called" ? item.text_link : "")
-            }
-            target="_blank"
-            rel="noreferrer"
-          >
-            {(item?.user?.phone).replace(
-              /^(\d{2})(\d{5})(\d{4}).*/,
-              "($1) $2-$3"
-            )}
-          </Anchor>
+          {item?.user?.phone && (
+            <Anchor
+              href={
+                (/Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(
+                  navigator.userAgent
+                )
+                  ? "whatsapp://wa.me/55"
+                  : "https://wa.me/55") +
+                item?.user?.phone.match(regex)?.join("") +
+                (item?.enroll_status === "called" ? item.text_link : "")
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
+              {(item?.user?.phone).replace(
+                /^(\d{2})(\d{5})(\d{4}).*/,
+                "($1) $2-$3"
+              )}
+            </Anchor>
+          )}
         </td>
         <td>{item.class == "none" ? "" : item.class}</td>
         <td>{item.terms.authorization == true ? "Sim" : "Não"}</td>
