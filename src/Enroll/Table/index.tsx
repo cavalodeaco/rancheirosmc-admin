@@ -99,7 +99,8 @@ export function EnrollTable({
   classData,
 }: EnrollTableProps) {
   const [itemDelete, setItemDelete] = useState<string>("");
-  const [deleteModal, { open: open_delete, close: close_delete }] = useDisclosure(false);
+  const [deleteModal, { open: open_delete, close: close_delete }] =
+    useDisclosure(false);
   const isMobile = useMediaQuery("(max-width: 50em)");
   const { classes, cx } = useStyles();
   const [selectedSearch, setSelectedSearch] = useState<string>("todos");
@@ -178,7 +179,9 @@ export function EnrollTable({
   };
 
   const rows = enrollData.map((item) => {
-    const selected = selectedEnroll.some((selectedEnrollItem) => selectedEnrollItem.id === item.id);
+    const selected = selectedEnroll.some(
+      (selectedEnrollItem) => selectedEnrollItem.id === item.id
+    );
     const _class = classData.find(
       (item_class) => item_class.name === item.class
     );
@@ -187,7 +190,7 @@ export function EnrollTable({
     console.log(admin);
 
     item.text_link = `?text=Olá%20${
-      item?.user?.name.split(" ")[0]
+      item?.user?.name ? item?.user?.name.split(" ")[0] : ""
     },\%0AAqui%20é%20${
       admin?.name.split(" ")[0]
     }%20-%20Rancheiros%20Moto%20Clube,%20tudo%20certo?\%0Ahttps://www.rancheirosmc.com.br\%0A\%0AEstou%20entrando%20em%20contato%20para%20confirmar%20sua%20presença%20em%20nosso%20treinamento%20do%20curso%20Manobras%20para%20Vida%20.\%0A\%0AO%20curso%20ocorrerá%20na%20região%20de%20${
@@ -223,7 +226,10 @@ export function EnrollTable({
             target="_blank"
             rel="noreferrer"
           >
-            {(item?.user?.phone).replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3')}
+            {(item?.user?.phone).replace(
+              /^(\d{2})(\d{5})(\d{4}).*/,
+              "($1) $2-$3"
+            )}
           </Anchor>
         </td>
         <td>{item.class == "none" ? "" : item.class}</td>
@@ -309,11 +315,15 @@ export function EnrollTable({
                 fullScreen={isMobile}
                 title="Deseja apagar inscrição?"
               >
-                <Button onClick={() => {
+                <Button
+                  onClick={() => {
                     // console.log(itemDelete);
                     close_delete();
                     deleteEnroll(itemDelete);
-                  }}>Apagar inscrição</Button>
+                  }}
+                >
+                  Apagar inscrição
+                </Button>
               </Modal>
             </div>
           );
