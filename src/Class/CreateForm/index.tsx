@@ -9,13 +9,17 @@ import Create from "../Create";
 
 const pageSchema = z.object({
   class: z.object({
-    // validate location using regex to identify the pattern https://goo.gl/maps/XXXXXX
+    // validate location using regex to identify the pattern
+    /* * 
+    * @TODO: google changed the pattern of the URL. We need to think 
+    * on a validation that support it changing again in the future.
+    * New format example: https://maps.app.goo.gl/96TsfNNeeu82uMFX6.
+    * */
     location: z.string().refine(
       (value) => {
-        const regex = new RegExp("^(https:\\/\\/goo\\.gl\\/maps\\/)");
-        return regex.test(value);
+        return value !== ""
       },
-      { message: "Localização inválida, utilizar https://goo.gl/maps/XXXXXX" }
+      { message: "Localização inválida." }
     ),
     // validate date using regex to identify the pattern DD/MM/AAAA
     date: z.string().refine(
