@@ -26,10 +26,13 @@ export default function Create({
         withAsterisk
         {...page.getInputProps("class.city")}
         data={[
+          // @TODO this input could allow creating new if doesn't exist
           { value: "curitiba", label: "Curitiba" },
           { value: "maringa", label: "Maringá" },
           { value: "londrina", label: "Londrina" },
           { value: "cambira", label: "Cambira" },
+          { value: "arapongas", label: "Arapongas" },
+          { value: "medianeira", label: "Medianeira" },
         ]}
       />
       <TextInput

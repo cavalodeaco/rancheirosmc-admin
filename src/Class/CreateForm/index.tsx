@@ -31,7 +31,7 @@ const pageSchema = z.object({
       },
       { message: "Data inválida, utilizar DD/MM/AAAA" }
     ),
-    city: z.enum(["curitiba", "maringa", "londrina", "cambira"]),
+    city: z.enum(["curitiba", "maringa", "londrina", "cambira", "arapongas", "medianeira"]),
   }),
 });
 
@@ -46,7 +46,7 @@ export function CreateForm() {
     validate: zodResolver(pageSchema),
     initialValues: {
       class: {
-        city: "curitiba",
+        city: "cambira",
         location: "",
         date: "",
       },
