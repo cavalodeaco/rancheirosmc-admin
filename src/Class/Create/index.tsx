@@ -18,6 +18,11 @@ export default function Create({
     };
   }>;
 }): ReactElement {
+  /**
+   * @TODO futuramente a cidade poderia ser um campo de texto
+   * facilitando a inserção de novas cidades pelo usuário.
+   * Ou termos um CMS (como Strapi por exemplo) pra permitir o cadastro de novas cidades.
+   */
   return (
     <>
       <Select
@@ -30,6 +35,8 @@ export default function Create({
           { value: "maringa", label: "Maringá" },
           { value: "londrina", label: "Londrina" },
           { value: "cambira", label: "Cambira" },
+          { value: "medianeira", label: "Medianeira" },
+          { value: "arapongas", label: "Arapongas" },
         ]}
       />
       <TextInput
