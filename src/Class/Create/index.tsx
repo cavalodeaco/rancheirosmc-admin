@@ -30,6 +30,8 @@ export default function Create({
           { value: "maringa", label: "Maringá" },
           { value: "londrina", label: "Londrina" },
           { value: "cambira", label: "Cambira" },
+          { value: "medianeira", label: "Medianeira" },
+          { value: "arapongas", label: "Arapongas" },
         ]}
       />
       <TextInput
