@@ -31,7 +31,7 @@ const pageSchema = z.object({
       },
       { message: "Data inválida, utilizar DD/MM/AAAA" }
     ),
-    city: z.enum(["curitiba", "maringa", "londrina", "cambira"]),
+    city: z.enum(["curitiba", "maringa", "londrina", "cambira", "medianeira", "arapongas"]),
   }),
 });
 
