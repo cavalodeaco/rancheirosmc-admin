@@ -186,15 +186,11 @@ export function EnrollTable({
       (item_class) => item_class.name === item.class
     );
 
-    item.text_link = `?text=Olá%20${
-      item?.user?.name ? item?.user?.name.split(" ")[0] : ""
-    },\%0AAqui%20é%20${
-      admin?.name.split(" ")[0]
-    }%20-%20Rancheiros%20Moto%20Clube,%20tudo%20certo?\%0Ahttps://www.rancheirosmc.com.br\%0A\%0AEstou%20entrando%20em%20contato%20para%20confirmar%20sua%20presença%20em%20nosso%20treinamento%20do%20curso%20Manobras%20para%20Vida%20.\%0A\%0AO%20curso%20ocorrerá%20na%20região%20de%20${
-      _class?.city
-    }%20no%20dia%20${_class?.date}%20no%20seguinte%20local%20${
-      _class?.location
-    }.&type=phone_number&app_absent=0`;
+    item.text_link = `?text=Olá%20${item?.user?.name ? item?.user?.name.split(" ")[0] : ""
+      },\%0AAqui%20é%20${admin?.name.split(" ")[0]
+      }%20-%20Rancheiros%20Moto%20Clube,%20tudo%20certo?\%0Ahttps://www.rancheirosmc.com.br\%0A\%0AEstou%20entrando%20em%20contato%20para%20confirmar%20sua%20presença%20em%20nosso%20treinamento%20do%20curso%20Manobras%20para%20Vida%20.\%0A\%0AO%20curso%20ocorrerá%20na%20região%20de%20${_class?.city
+      }%20no%20dia%20${_class?.date}%20no%20seguinte%20local%20${_class?.location
+      }\%0A\%0AGostaria%20de%20reafirmar%20a%20nossa%20alegria%20em%20tê-lo(a)%20conosco%20e%20lembra-lo(a)%20de%20algumas%20recomendações%20importantes:\%0A\%0A1.%20O%20treinamento%20inicia%20pontualmente%20as%208h.\%0A\%0A2.%20Para%20a%20realização%20do%20treinamento%20é%20necessário%20que%20venha%20com%20a%20sua%20motocicleta%20(não%20fornecemos%20motos)\%0A\%0A3.%20Você%20deverá%20vir%20devidamente%20equipado,%20com%20capacete,%20calça%20comprida%20e%20calçado%20fechado%20(por%20segurança%20esses%20são%20os%20requisitos%20mínimos,%20sendo%20vedada%20a%20participação%20caso%20não%20sejam%20cumpridos)\%0A\%0A4.%20Somente%20será%20certificado%20o%20aluno(a)%20que%20permanecer%20até%20o%20final%20do%20treinamento.\%0A\%0AQualquer%20dúvida%20estamos%20a%20disposição%20para%20esclarecimentos.\%0A\%0ADeus%20abençoe%20grandemente.&type=phone_number&app_absent=0`;
     return (
       <tr key={item.id} className={cx({ [classes.rowSelected]: selected })}>
         <td>
